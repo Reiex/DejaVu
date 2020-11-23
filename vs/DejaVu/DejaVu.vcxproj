@@ -21,7 +21,9 @@
   <ItemGroup>
     <ClInclude Include="..\..\include\DejaVu\Core\Img.hpp" />
     <ClInclude Include="..\..\include\DejaVu\DejaVu.hpp" />
+    <ClInclude Include="..\..\include\DejaVu\ImageProcessing\EdgeDetection.hpp" />
     <ClInclude Include="..\..\include\DejaVu\types.hpp" />
+    <ClInclude Include="..\..\src\DejaVu\ImageProcessing\EdgeDetection.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\DejaVu\Core\Img.cpp" />

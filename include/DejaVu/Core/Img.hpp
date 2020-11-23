@@ -43,6 +43,7 @@ namespace djv
 
 			void setActiveChannels(ColorChannel activeChannels);
 			ColorChannel getActiveChannels() const;
+			const Mat& getComponent(ColorChannel channel) const;
 
 			~Img() = default;
 

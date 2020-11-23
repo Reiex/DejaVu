@@ -19,6 +19,12 @@
     <Filter Include="Source Files\Core">
       <UniqueIdentifier>{38e75873-8a9b-450d-9b39-76f94f4934a3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\ImageProcessing">
+      <UniqueIdentifier>{165d17b6-8be0-4c9e-b757-228e748d78e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ImageProcessing">
+      <UniqueIdentifier>{3a06972f-913f-4269-ab8d-5472475cf1a7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\DejaVu\DejaVu.hpp">
@@ -29,6 +35,12 @@
     </ClInclude>
     <ClInclude Include="..\..\include\DejaVu\types.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\DejaVu\ImageProcessing\EdgeDetection.hpp">
+      <Filter>Header Files\ImageProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\DejaVu\ImageProcessing\EdgeDetection.hpp">
+      <Filter>Source Files\ImageProcessing</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
