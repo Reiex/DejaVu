@@ -4,23 +4,23 @@
 
 namespace djv
 {
-	enum class ColorChannel
+	enum class ColorChannels
 	{
-		RED = 1,
-		GREEN = 2,
-		BLUE = 4,
-		ALPHA = 8
+		R = 1,
+		G = 2,
+		B = 4,
+		A = 8
 	};
 
-	ColorChannel operator|(ColorChannel a, ColorChannel b);
-	ColorChannel operator&(ColorChannel a, ColorChannel b);
+	ColorChannels operator|(ColorChannels a, ColorChannels b);
+	ColorChannels operator&(ColorChannels a, ColorChannels b);
 
-	struct Pixel
+	enum class ColorComponent
 	{
-		float& r;
-		float& g;
-		float& b;
-		float& a;
+		R = 0,
+		G = 1,
+		B = 2,
+		A = 3
 	};
 
 	class Img
@@ -29,21 +29,23 @@ namespace djv
 
 			Img() = delete;
 			Img(const std::string& filename);
-			Img(uint64_t width, uint64_t height, ColorChannel activeChannels = static_cast<ColorChannel>(15));
+			Img(uint64_t width, uint64_t height, ColorChannels activeChannels = static_cast<ColorChannels>(15));
 			Img(const Img& image) = default;
 			Img(Img&& image) = default;
 
 			Img& operator=(const Img& image) = default;
 			Img& operator=(Img&& image) = default;
 
-			Pixel& operator()(uint64_t x, uint64_t y);
-			const Pixel& operator()(uint64_t x, uint64_t y) const;
+			float& operator()(uint64_t x, uint64_t y, ColorComponent component);
+			const float& operator()(uint64_t x, uint64_t y, ColorComponent component) const;
+			float& operator()(uint64_t x, uint64_t y, uint8_t component);
+			const float& operator()(uint64_t x, uint64_t y, uint8_t component) const;
 
 			Img subRect(uint64_t left, uint64_t top, uint64_t width, uint64_t height);
 
-			void setActiveChannels(ColorChannel activeChannels);
-			ColorChannel getActiveChannels() const;
-			const Mat& getComponent(ColorChannel channel) const;
+			void setActiveChannels(ColorChannels activeChannels);
+			ColorChannels getActiveChannels() const;
+			const Mat& getComponent(ColorComponent channel) const;
 
 			~Img() = default;
 
@@ -54,6 +56,6 @@ namespace djv
 			Mat _b;
 			Mat _a;
 
-			ColorChannel _activeChannels;
+			ColorChannels _activeChannels;
 	};
 }

@@ -1,7 +1,10 @@
 #pragma once
 
-#include <string>
+#include <array>
 #include <cstdint>
+#include <functional>
+#include <string>
+#include <vector>
 
 #include <SciPP/SciPP.hpp>
 
