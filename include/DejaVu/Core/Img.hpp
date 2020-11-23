@@ -51,6 +51,18 @@ namespace djv
 
 		private:
 
+			struct RawImg
+			{
+				uint64_t width;
+				uint64_t height;
+				uint64_t channelCount;
+				uint8_t* data;
+			};
+
+			static RawImg loadRaw(const std::string& filename);
+
+			Img(RawImg raw);
+
 			Mat _r;
 			Mat _g;
 			Mat _b;
