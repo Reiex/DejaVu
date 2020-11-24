@@ -25,6 +25,12 @@
     <Filter Include="Source Files\ImageProcessing">
       <UniqueIdentifier>{3a06972f-913f-4269-ab8d-5472475cf1a7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Core\stb">
+      <UniqueIdentifier>{de0928bd-83db-4152-b27e-8b86bb57219e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\stb">
+      <UniqueIdentifier>{6d7f9a86-5c18-461b-8fc7-3c60b69e4514}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\DejaVu\DejaVu.hpp">
@@ -42,10 +48,22 @@
     <ClInclude Include="..\..\src\DejaVu\ImageProcessing\EdgeDetection.hpp">
       <Filter>Source Files\ImageProcessing</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\DejaVu\Core\stb\stb_image.hpp">
+      <Filter>Header Files\Core\stb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\DejaVu\Core\stb\stb_image_write.hpp">
+      <Filter>Header Files\Core\stb</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\DejaVu\Core\Img.cpp">
       <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\DejaVu\Core\stb\stb_image.cpp">
+      <Filter>Source Files\Core\stb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\DejaVu\Core\stb\stb_image_write.cpp">
+      <Filter>Source Files\Core\stb</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

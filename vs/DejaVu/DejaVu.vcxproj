@@ -20,6 +20,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\DejaVu\Core\Img.hpp" />
+    <ClInclude Include="..\..\include\DejaVu\Core\stb\stb_image.hpp" />
+    <ClInclude Include="..\..\include\DejaVu\Core\stb\stb_image_write.hpp" />
     <ClInclude Include="..\..\include\DejaVu\DejaVu.hpp" />
     <ClInclude Include="..\..\include\DejaVu\ImageProcessing\EdgeDetection.hpp" />
     <ClInclude Include="..\..\include\DejaVu\types.hpp" />
@@ -27,6 +29,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\DejaVu\Core\Img.cpp" />
+    <ClCompile Include="..\..\src\DejaVu\Core\stb\stb_image.cpp" />
+    <ClCompile Include="..\..\src\DejaVu\Core\stb\stb_image_write.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

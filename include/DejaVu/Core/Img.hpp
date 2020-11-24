@@ -27,13 +27,12 @@ namespace djv
 	{
 		public:
 
-			Img() = delete;
+			Img(uint64_t width = 1, uint64_t height = 1);
 			Img(const std::string& filename);
-			Img(uint64_t width, uint64_t height, ColorChannels activeChannels = static_cast<ColorChannels>(15));
-			Img(const Img& image) = default;
+			Img(const Img& image);
 			Img(Img&& image) = default;
 
-			Img& operator=(const Img& image) = default;
+			Img& operator=(const Img& image);
 			Img& operator=(Img&& image) = default;
 
 			float& operator()(uint64_t x, uint64_t y, ColorComponent component);
@@ -41,33 +40,24 @@ namespace djv
 			float& operator()(uint64_t x, uint64_t y, uint8_t component);
 			const float& operator()(uint64_t x, uint64_t y, uint8_t component) const;
 
-			Img subRect(uint64_t left, uint64_t top, uint64_t width, uint64_t height);
+			void saveToFile(const std::string& filename) const;
+			Img subRect(uint64_t left, uint64_t top, uint64_t width, uint64_t height) const;
 
-			void setActiveChannels(ColorChannels activeChannels);
-			ColorChannels getActiveChannels() const;
-			const Mat& getComponent(ColorComponent channel) const;
+			Mat& getComponent(ColorComponent component);
+			const Mat& getComponent(ColorComponent component) const;
+			uint64_t width() const;
+			uint64_t height() const;
 
 			~Img() = default;
 
 		private:
 
-			struct RawImg
-			{
-				uint64_t width;
-				uint64_t height;
-				uint64_t channelCount;
-				uint8_t* data;
-			};
+			uint64_t _width;
+			uint64_t _height;
 
-			static RawImg loadRaw(const std::string& filename);
-
-			Img(RawImg raw);
-
-			Mat _r;
-			Mat _g;
-			Mat _b;
-			Mat _a;
-
-			ColorChannels _activeChannels;
+			std::unique_ptr<Mat> _r;
+			std::unique_ptr<Mat> _g;
+			std::unique_ptr<Mat> _b;
+			std::unique_ptr<Mat> _a;
 	};
 }
