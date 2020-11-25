@@ -24,13 +24,15 @@
     <ClInclude Include="..\..\include\DejaVu\Core\stb\stb_image_write.hpp" />
     <ClInclude Include="..\..\include\DejaVu\DejaVu.hpp" />
     <ClInclude Include="..\..\include\DejaVu\ImageProcessing\EdgeDetection.hpp" />
+    <ClInclude Include="..\..\include\DejaVu\ImageProcessing\Misc.hpp" />
     <ClInclude Include="..\..\include\DejaVu\types.hpp" />
-    <ClInclude Include="..\..\src\DejaVu\ImageProcessing\EdgeDetection.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\DejaVu\Core\Img.cpp" />
     <ClCompile Include="..\..\src\DejaVu\Core\stb\stb_image.cpp" />
     <ClCompile Include="..\..\src\DejaVu\Core\stb\stb_image_write.cpp" />
+    <ClCompile Include="..\..\src\DejaVu\ImageProcessing\EdgeDetection.cpp" />
+    <ClCompile Include="..\..\src\DejaVu\ImageProcessing\Misc.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

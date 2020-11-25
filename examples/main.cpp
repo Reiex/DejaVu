@@ -4,7 +4,7 @@ int main()
 {
 	djv::Img image("examples/assets/Lena.png");
 
-	image.saveToFile("test.png");
+	djv::Img(djv::laplacianOfGaussian(image.getComponent(djv::ColorComponent::R), 1.4f)).saveToFile("test.png");
 
 	return 0;
 }

@@ -45,14 +45,14 @@
     <ClInclude Include="..\..\include\DejaVu\ImageProcessing\EdgeDetection.hpp">
       <Filter>Header Files\ImageProcessing</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\DejaVu\ImageProcessing\EdgeDetection.hpp">
-      <Filter>Source Files\ImageProcessing</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\DejaVu\Core\stb\stb_image.hpp">
       <Filter>Header Files\Core\stb</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\DejaVu\Core\stb\stb_image_write.hpp">
       <Filter>Header Files\Core\stb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\DejaVu\ImageProcessing\Misc.hpp">
+      <Filter>Header Files\ImageProcessing</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -64,6 +64,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\DejaVu\Core\stb\stb_image_write.cpp">
       <Filter>Source Files\Core\stb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\DejaVu\ImageProcessing\Misc.cpp">
+      <Filter>Source Files\ImageProcessing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\DejaVu\ImageProcessing\EdgeDetection.cpp">
+      <Filter>Source Files\ImageProcessing</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

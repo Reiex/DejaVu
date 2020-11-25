@@ -29,6 +29,7 @@ namespace djv
 
 			Img(uint64_t width = 1, uint64_t height = 1);
 			Img(const std::string& filename);
+			Img(const scp::Mat<float>& grayScale);
 			Img(const Img& image);
 			Img(Img&& image) = default;
 
@@ -43,8 +44,8 @@ namespace djv
 			void saveToFile(const std::string& filename) const;
 			Img subRect(uint64_t left, uint64_t top, uint64_t width, uint64_t height) const;
 
-			Mat& getComponent(ColorComponent component);
-			const Mat& getComponent(ColorComponent component) const;
+			scp::Mat<float>& getComponent(ColorComponent component);
+			const scp::Mat<float>& getComponent(ColorComponent component) const;
 			uint64_t width() const;
 			uint64_t height() const;
 
@@ -55,9 +56,9 @@ namespace djv
 			uint64_t _width;
 			uint64_t _height;
 
-			std::unique_ptr<Mat> _r;
-			std::unique_ptr<Mat> _g;
-			std::unique_ptr<Mat> _b;
-			std::unique_ptr<Mat> _a;
+			std::unique_ptr<scp::Mat<float>> _r;
+			std::unique_ptr<scp::Mat<float>> _g;
+			std::unique_ptr<scp::Mat<float>> _b;
+			std::unique_ptr<scp::Mat<float>> _a;
 	};
 }

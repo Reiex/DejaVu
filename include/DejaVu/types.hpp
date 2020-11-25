@@ -1,7 +1,9 @@
 #pragma once
 
-#include <cassert>
+#include <algorithm>
 #include <array>
+#include <cassert>
+#include <cmath>
 #include <cstdint>
 #include <functional>
 #include <memory>
@@ -16,7 +18,5 @@
 
 namespace djv
 {
-	typedef scp::Mat<float> Mat;
-
 	class Img;
 }

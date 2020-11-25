@@ -15,10 +15,10 @@ namespace djv
 	Img::Img(uint64_t width, uint64_t height) :
 		_width(width),
 		_height(height),
-		_r(std::make_unique<Mat>(width, height)),
-		_g(std::make_unique<Mat>(width, height)),
-		_b(std::make_unique<Mat>(width, height)),
-		_a(std::make_unique<Mat>(width, height))
+		_r(std::make_unique<scp::Mat<float>>(width, height)),
+		_g(std::make_unique<scp::Mat<float>>(width, height)),
+		_b(std::make_unique<scp::Mat<float>>(width, height)),
+		_a(std::make_unique<scp::Mat<float>>(width, height))
 	{
 		assert(width != 0 && height != 0);
 	}
@@ -30,10 +30,10 @@ namespace djv
 		_width = x;
 		_height = y;
 
-		_r = std::make_unique<Mat>(_width, _height);
-		_g = std::make_unique<Mat>(_width, _height);
-		_b = std::make_unique<Mat>(_width, _height);
-		_a = std::make_unique<Mat>(_width, _height);
+		_r = std::make_unique<scp::Mat<float>>(_width, _height);
+		_g = std::make_unique<scp::Mat<float>>(_width, _height);
+		_b = std::make_unique<scp::Mat<float>>(_width, _height);
+		_a = std::make_unique<scp::Mat<float>>(_width, _height);
 
 		for (uint64_t i(0); i < _width; i++)
 		{
@@ -49,13 +49,23 @@ namespace djv
 		stbi_image_free(image);
 	}
 
+	Img::Img(const scp::Mat<float>& grayScale) :
+		_width(grayScale.m),
+		_height(grayScale.n),
+		_r(std::make_unique<scp::Mat<float>>(grayScale)),
+		_g(std::make_unique<scp::Mat<float>>(grayScale)),
+		_b(std::make_unique<scp::Mat<float>>(grayScale)),
+		_a(std::make_unique<scp::Mat<float>>(grayScale.m, grayScale.n, 1.f))
+	{
+	}
+
 	Img::Img(const Img& image) :
 		_width(image._width),
 		_height(image._height),
-		_r(std::make_unique<Mat>(*image._r)),
-		_g(std::make_unique<Mat>(*image._g)),
-		_b(std::make_unique<Mat>(*image._b)),
-		_a(std::make_unique<Mat>(*image._a))
+		_r(std::make_unique<scp::Mat<float>>(*image._r)),
+		_g(std::make_unique<scp::Mat<float>>(*image._g)),
+		_b(std::make_unique<scp::Mat<float>>(*image._b)),
+		_a(std::make_unique<scp::Mat<float>>(*image._a))
 	{
 	}
 
@@ -63,10 +73,10 @@ namespace djv
 	{
 		_width = image._width;
 		_height = image._height;
-		_r = std::make_unique<Mat>(*image._r);
-		_g = std::make_unique<Mat>(*image._g);
-		_b = std::make_unique<Mat>(*image._b);
-		_a = std::make_unique<Mat>(*image._a);
+		_r = std::make_unique<scp::Mat<float>>(*image._r);
+		_g = std::make_unique<scp::Mat<float>>(*image._g);
+		_b = std::make_unique<scp::Mat<float>>(*image._b);
+		_a = std::make_unique<scp::Mat<float>>(*image._a);
 
 		return *this;
 	}
@@ -110,10 +120,10 @@ namespace djv
 		{
 			for (uint64_t j(0); j < _height; j++)
 			{
-				image[4*(j + _width * i)] = 255.f * (*_r)[i][j];
-				image[4*(j + _width * i) + 1] = 255.f * (*_g)[i][j];
-				image[4*(j + _width * i) + 2] = 255.f * (*_b)[i][j];
-				image[4*(j + _width * i) + 3] = 255.f * (*_a)[i][j];
+				image[4*(j + _width * i)] = 255.f * std::min(std::max((*_r)[i][j], 0.f), 1.f);
+				image[4*(j + _width * i) + 1] = 255.f * std::min(std::max((*_g)[i][j], 0.f), 1.f);
+				image[4*(j + _width * i) + 2] = 255.f * std::min(std::max((*_b)[i][j], 0.f), 1.f);
+				image[4*(j + _width * i) + 3] = 255.f * std::min(std::max((*_a)[i][j], 0.f), 1.f);
 			}
 		}
 
@@ -148,7 +158,7 @@ namespace djv
 			return;
 		}
 		else
-			throw std::runtime_error("Image format of '" + filename + "' unrecognized.");
+			throw std::runtime_error("Image forscp::Mat<float> of '" + filename + "' unrecognized.");
 	}
 
 	Img Img::subRect(uint64_t left, uint64_t top, uint64_t width, uint64_t height) const
@@ -171,7 +181,7 @@ namespace djv
 		return image;
 	}
 
-	Mat& Img::getComponent(ColorComponent component)
+	scp::Mat<float>& Img::getComponent(ColorComponent component)
 	{
 		switch (component)
 		{
@@ -188,7 +198,7 @@ namespace djv
 		}
 	}
 
-	const Mat& Img::getComponent(ColorComponent component) const
+	const scp::Mat<float>& Img::getComponent(ColorComponent component) const
 	{
 		switch (component)
 		{
