@@ -54,6 +54,9 @@
     <ClInclude Include="..\..\include\DejaVu\ImageProcessing\Misc.hpp">
       <Filter>Header Files\ImageProcessing</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\DejaVu\Core\Shape.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\DejaVu\Core\Img.cpp">
@@ -70,6 +73,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\DejaVu\ImageProcessing\EdgeDetection.cpp">
       <Filter>Source Files\ImageProcessing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\DejaVu\Core\Shape.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\DejaVu\Core\Img.hpp" />
+    <ClInclude Include="..\..\include\DejaVu\Core\Shape.hpp" />
     <ClInclude Include="..\..\include\DejaVu\Core\stb\stb_image.hpp" />
     <ClInclude Include="..\..\include\DejaVu\Core\stb\stb_image_write.hpp" />
     <ClInclude Include="..\..\include\DejaVu\DejaVu.hpp" />
@@ -29,6 +30,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\DejaVu\Core\Img.cpp" />
+    <ClCompile Include="..\..\src\DejaVu\Core\Shape.cpp" />
     <ClCompile Include="..\..\src\DejaVu\Core\stb\stb_image.cpp" />
     <ClCompile Include="..\..\src\DejaVu\Core\stb\stb_image_write.cpp" />
     <ClCompile Include="..\..\src\DejaVu\ImageProcessing\EdgeDetection.cpp" />
