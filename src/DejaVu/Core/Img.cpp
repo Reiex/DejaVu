@@ -23,26 +23,51 @@ namespace djv
 		assert(width != 0 && height != 0);
 	}
 
-	Img::Img(const std::string& filename)
+	Img::Img(const std::string& filename, bool transpose, bool flipHorizontally, bool flipVertically)
 	{
-		int x, y;
-		uint8_t* image = stbi_load(filename.c_str(), &x, &y, nullptr, STBI_rgb_alpha);
-		_width = x;
-		_height = y;
+		int w, h;
+		uint8_t* image = stbi_load(filename.c_str(), &w, &h, nullptr, STBI_rgb_alpha);
+		if (image == nullptr)
+			throw std::runtime_error("Couldn't open '" + filename + "'.");
+
+		if (transpose)
+		{
+			_width = h;
+			_height = w;
+		}
+		else
+		{
+			_width = w;
+			_height = h;
+		}
 
 		_r = std::make_unique<scp::Mat<float>>(_width, _height);
 		_g = std::make_unique<scp::Mat<float>>(_width, _height);
 		_b = std::make_unique<scp::Mat<float>>(_width, _height);
 		_a = std::make_unique<scp::Mat<float>>(_width, _height);
 
-		for (uint64_t i(0); i < _width; i++)
+		for (uint64_t i(0); i < w; i++)
 		{
-			for (uint64_t j(0); j < _height; j++)
+			for (uint64_t j(0); j < h; j++)
 			{
-				(*_r)[i][j] = static_cast<float>(image[4*(j + _width * i)])/255.f;
-				(*_g)[i][j] = static_cast<float>(image[4*(j + _width * i) + 1])/255.f;
-				(*_b)[i][j] = static_cast<float>(image[4*(j + _width * i) + 2])/255.f;
-				(*_a)[i][j] = static_cast<float>(image[4*(j + _width * i) + 3])/255.f;
+				uint64_t x = flipHorizontally && !transpose || flipVertically && transpose ? w - i - 1: i;
+				uint64_t y = flipVertically && !transpose || flipHorizontally && transpose ? h - j - 1: j;
+				uint64_t coord = 4*(x + w*y);
+
+				if (transpose)
+				{
+					(*_r)[j][i] = static_cast<float>(image[coord])/255.f;
+					(*_g)[j][i] = static_cast<float>(image[coord + 1])/255.f;
+					(*_b)[j][i] = static_cast<float>(image[coord + 2])/255.f;
+					(*_a)[j][j] = static_cast<float>(image[coord + 3])/255.f;
+				}
+				else
+				{
+					(*_r)[i][j] = static_cast<float>(image[coord])/255.f;
+					(*_g)[i][j] = static_cast<float>(image[coord + 1])/255.f;
+					(*_b)[i][j] = static_cast<float>(image[coord + 2])/255.f;
+					(*_a)[i][j] = static_cast<float>(image[coord + 3])/255.f;
+				}
 			}
 		}
 
@@ -120,10 +145,10 @@ namespace djv
 		{
 			for (uint64_t j(0); j < _height; j++)
 			{
-				image[4*(j + _width * i)] = 255.f * std::min(std::max((*_r)[i][j], 0.f), 1.f);
-				image[4*(j + _width * i) + 1] = 255.f * std::min(std::max((*_g)[i][j], 0.f), 1.f);
-				image[4*(j + _width * i) + 2] = 255.f * std::min(std::max((*_b)[i][j], 0.f), 1.f);
-				image[4*(j + _width * i) + 3] = 255.f * std::min(std::max((*_a)[i][j], 0.f), 1.f);
+				image[4*(i + _width * j)] = 255.f * std::min(std::max((*_r)[i][j], 0.f), 1.f);
+				image[4*(i + _width * j) + 1] = 255.f * std::min(std::max((*_g)[i][j], 0.f), 1.f);
+				image[4*(i + _width * j) + 2] = 255.f * std::min(std::max((*_b)[i][j], 0.f), 1.f);
+				image[4*(i + _width * j) + 3] = 255.f * std::min(std::max((*_a)[i][j], 0.f), 1.f);
 			}
 		}
 

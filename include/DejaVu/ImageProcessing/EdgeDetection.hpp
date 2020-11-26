@@ -4,5 +4,5 @@
 
 namespace djv
 {
-	scp::Mat<float> laplacianOfGaussian(scp::Mat<float> m, float sigma = 1.4f, uint64_t patchSize = 0);
+	scp::Mat<float> marrHildrethEdgeDetector(scp::Mat<float> m, float sigma0, float scaleFactor);
 }

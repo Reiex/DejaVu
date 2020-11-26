@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <cassert>
 #include <cmath>
 #include <complex>
 #include <cstdint>
@@ -22,5 +23,6 @@ namespace scp
     class Rational;
     template<typename T> class Polynomial;
     template<typename T> class Vec;
+    enum class ConvolveMethod;
     template<typename T> class Mat; 
 }

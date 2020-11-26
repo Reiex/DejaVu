@@ -28,7 +28,7 @@ namespace djv
 		public:
 
 			Img(uint64_t width = 1, uint64_t height = 1);
-			Img(const std::string& filename);
+			Img(const std::string& filename, bool transpose = false, bool flipHorizontally = false, bool flipVertically = false);
 			Img(const scp::Mat<float>& grayScale);
 			Img(const Img& image);
 			Img(Img&& image) = default;

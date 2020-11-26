@@ -26,6 +26,7 @@ namespace scp
     {
         public:
 
+            Vec() = delete;
             Vec(uint64_t count, int64_t value = 0);  ///< Init all the components of the vector with T(value).
             Vec(uint64_t count, const T& value);     ///< Init all the components of the vector with value.
             Vec(const std::vector<T>& values);       ///< Init the vec with the values.
@@ -45,6 +46,8 @@ namespace scp
             Vec<T>& operator%=(const Vec<T>& v);
 
             const uint64_t n;  ///< Size of the vector.
+
+            ~Vec() = default;
 
         private:
 
@@ -149,6 +152,26 @@ namespace scp
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     template<typename T>
     T norm(const Vec<T> v);
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \enum ConvolveMethod
+    /// \brief Enumeration of the different conventions for behaviour of convolution at borders.
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    enum class ConvolveMethod
+    {
+        Periodic,    ///< When going beyond the border, the matrix/vector is repeated.
+        Continuous,  ///< When going beyond the border, the value at the border is kept.
+        Zero         ///< When going beyond the border, the value kept is 0.
+    };
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// \relates Vec
+    /// \brief Convolution product of `a` by `b`. For behaviour at vector borders, see ConvolveMethod
+    /// 
+    /// The convolution vector (`b`) is centered. It means the the coefficient `b[b.n/2 + 1]` is the one that applies
+    /// on `a[0]` to compute the first coefficient of the result.
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename T>
+    Vec<T> convolve(const Vec<T>& a, const Vec<T>& b, ConvolveMethod method = ConvolveMethod::Periodic);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// \relates Vec

@@ -386,6 +386,47 @@ namespace scp
         return std::sqrt(normSq(v));
     }
 
+
+    template<typename T>
+    Vec<T> convolve(const Vec<T>& a, const Vec<T>& b, ConvolveMethod method)
+    {
+        assert(b.n % 2 == 1);
+
+        Vec<T> c(a.n);
+
+        for (uint64_t i(0); i < a.n; i++)
+        {
+            for (uint64_t j(0); j < b.n; j++)
+            {
+                int64_t k = (int64_t)i + (int64_t)j - (int64_t)b.n / 2;
+                T coeff;
+                if (method == ConvolveMethod::Periodic)
+                {
+                    if (k < 0) k += a.n;
+                    if (k >= a.n) k -= a.n;
+                    coeff = a[k];
+                }
+                else if (method == ConvolveMethod::Continuous)
+                {
+                    if (k < 0) k = 0;
+                    if (k >= a.n) k = a.n - 1;
+                    coeff = a[k];
+                }
+                else if (method == ConvolveMethod::Zero)
+                {
+                    if (k < 0 || k >= a.n)
+                        coeff = 0;
+                    else
+                        coeff = a[k];
+                }
+                c[i] += coeff * b[j];
+            }
+        }
+
+        return c;
+    }
+
+
     template<typename T>
     Vec<std::complex<T>> dft(const Vec<std::complex<T>>& f)
     {
@@ -413,6 +454,7 @@ namespace scp
 
         return f / Vec<std::complex<T>>(fh.n, std::complex<T>(fh.n));
     }
+
 
     namespace
     {
