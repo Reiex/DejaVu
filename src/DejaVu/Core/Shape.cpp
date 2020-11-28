@@ -83,14 +83,15 @@ namespace djv
 
 	void Rect::draw(Img& target) const
 	{
-		assert(top_left.x < bottom_right.x && top_left.y < bottom_right.y);
-		assert(bottom_right.x < target.width() && bottom_right.y < target.height());
+		assert(topLeft.x < bottomRight.x && topLeft.y < bottomRight.y);
+
+		Point realBottomRight{ std::min(bottomRight.x, target.width()), std::min(bottomRight.y, target.height()) };
 
 		if (fill)
 		{
-			for (uint64_t x(top_left.x); x <= bottom_right.x; x++)
+			for (uint64_t x(topLeft.x); x <= bottomRight.x; x++)
 			{
-				for (uint64_t y(top_left.y); y <= bottom_right.y; y++)
+				for (uint64_t y(topLeft.y); y <= bottomRight.y; y++)
 				{
 					target(x, y, ColorComponent::R) = color.r;
 					target(x, y, ColorComponent::G) = color.g;
@@ -101,30 +102,30 @@ namespace djv
 		}
 		else
 		{
-			for (uint64_t x(top_left.x); x <= bottom_right.x; x++)
+			for (uint64_t x(topLeft.x); x <= bottomRight.x; x++)
 			{
-				target(x, top_left.y, ColorComponent::R) = color.r;
-				target(x, top_left.y, ColorComponent::G) = color.g;
-				target(x, top_left.y, ColorComponent::B) = color.b;
-				target(x, top_left.y, ColorComponent::A) = color.a;
+				target(x, topLeft.y, ColorComponent::R) = color.r;
+				target(x, topLeft.y, ColorComponent::G) = color.g;
+				target(x, topLeft.y, ColorComponent::B) = color.b;
+				target(x, topLeft.y, ColorComponent::A) = color.a;
 
-				target(x, bottom_right.y, ColorComponent::R) = color.r;
-				target(x, bottom_right.y, ColorComponent::G) = color.g;
-				target(x, bottom_right.y, ColorComponent::B) = color.b;
-				target(x, bottom_right.y, ColorComponent::A) = color.a;
+				target(x, bottomRight.y, ColorComponent::R) = color.r;
+				target(x, bottomRight.y, ColorComponent::G) = color.g;
+				target(x, bottomRight.y, ColorComponent::B) = color.b;
+				target(x, bottomRight.y, ColorComponent::A) = color.a;
 			}
 
-			for (uint64_t y(top_left.y + 1); y < bottom_right.y; y++)
+			for (uint64_t y(topLeft.y + 1); y < bottomRight.y; y++)
 			{
-				target(top_left.x, y, ColorComponent::R) = color.r;
-				target(top_left.x, y, ColorComponent::G) = color.g;
-				target(top_left.x, y, ColorComponent::B) = color.b;
-				target(top_left.x, y, ColorComponent::A) = color.a;
+				target(topLeft.x, y, ColorComponent::R) = color.r;
+				target(topLeft.x, y, ColorComponent::G) = color.g;
+				target(topLeft.x, y, ColorComponent::B) = color.b;
+				target(topLeft.x, y, ColorComponent::A) = color.a;
 
-				target(bottom_right.x, y, ColorComponent::R) = color.r;
-				target(bottom_right.x, y, ColorComponent::G) = color.g;
-				target(bottom_right.x, y, ColorComponent::B) = color.b;
-				target(bottom_right.x, y, ColorComponent::A) = color.a;
+				target(bottomRight.x, y, ColorComponent::R) = color.r;
+				target(bottomRight.x, y, ColorComponent::G) = color.g;
+				target(bottomRight.x, y, ColorComponent::B) = color.b;
+				target(bottomRight.x, y, ColorComponent::A) = color.a;
 			}
 		}
 	}

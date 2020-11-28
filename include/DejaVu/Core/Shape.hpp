@@ -43,8 +43,8 @@ namespace djv
 
 			void draw(Img& target) const;
 
-			Point top_left;
-			Point bottom_right;
+			Point topLeft;
+			Point bottomRight;
 			bool fill;
 	};
 }
