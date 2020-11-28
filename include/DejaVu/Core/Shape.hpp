@@ -18,7 +18,7 @@ namespace djv
 		uint64_t y;
 	};
 
-	class Shape
+	struct Shape
 	{
 		public:
 
@@ -27,42 +27,24 @@ namespace djv
 			Color color;
 	};
 
-	class ClosedShape : public Shape
+	class Line : public Shape
 	{
 		public:
 
-			bool fill;
-			uint64_t borderThickness;
-	};
-
-	class OpenShape : public Shape
-	{
-		public:
-
-			uint64_t thickness;
-	};
-
-	class Line : public OpenShape
-	{
-		public:
+			void draw(Img& target) const;
 
 			Point p1;
 			Point p2;
 	};
 
-	class Rect : public ClosedShape
+	class Rect : public Shape
 	{
 		public:
+
+			void draw(Img& target) const;
 
 			Point top_left;
 			Point bottom_right;
-	};
-
-	class Circle : public ClosedShape
-	{
-		public:
-
-			Point center;
-			uint64_t radius;
+			bool fill;
 	};
 }

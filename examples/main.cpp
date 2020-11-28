@@ -2,6 +2,7 @@
 
 int main()
 {
+
 	djv::Img image("examples/assets/Lena.png");
 
 	// Kernels
@@ -26,7 +27,9 @@ int main()
 
 	// Edge detectors
 
-	djv::Img(djv::marrHildrethEdgeDetector(image.getComponent(djv::ColorComponent::R))).saveToFile("build/marrHildrethEdgeDetector.png");
+	/*
+	djv::Img(djv::marrHildrethEdgeDetector((image.getComponent(djv::ColorComponent::R) + image.getComponent(djv::ColorComponent::G) + image.getComponent(djv::ColorComponent::B))/3.f)).saveToFile("build/marrHildrethEdgeDetector.png");
+	*/
 
 	return 0;
 }

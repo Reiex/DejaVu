@@ -43,6 +43,7 @@ namespace djv
 
 			void saveToFile(const std::string& filename) const;
 			Img subRect(uint64_t left, uint64_t top, uint64_t width, uint64_t height) const;
+			void draw(const Shape& shape);
 
 			scp::Mat<float>& getComponent(ColorComponent component);
 			const scp::Mat<float>& getComponent(ColorComponent component) const;

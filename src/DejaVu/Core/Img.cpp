@@ -206,6 +206,11 @@ namespace djv
 		return image;
 	}
 
+	void Img::draw(const Shape& shape)
+	{
+		shape.draw(*this);
+	}
+
 	scp::Mat<float>& Img::getComponent(ColorComponent component)
 	{
 		switch (component)
