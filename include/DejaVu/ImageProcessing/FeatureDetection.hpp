@@ -10,5 +10,5 @@ namespace djv
 
 	// Edge extractors
 
-	std::vector<Line> houghTransform(const scp::Mat<float>& m, float dTheta = 5e-2f, float dRho = 10.f, float threshold = 0.5f);
+	std::vector<Line> houghTransform(const scp::Mat<float>& m, float dTheta = 5e-2f, float dRho = 10.f, float threshold = 0.6f);
 }
