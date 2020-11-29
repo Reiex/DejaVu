@@ -3,7 +3,7 @@
 int main()
 {
 
-	djv::Img image("examples/assets/Lena.png");
+	djv::Img image("examples/assets/Cathedrale.jpg");
 
 	// Kernels
 
@@ -25,11 +25,19 @@ int main()
 	djv::Img((djv::gaussianBlur(image.getComponent(djv::ColorComponent::R), 1.f) - djv::gaussianBlur(image.getComponent(djv::ColorComponent::R), 2.f))*10.f).saveToFile("build/DoG.png");
 	*/
 
-	// Edge detectors
+	// FeatureDetection
 
-	/*
-	djv::Img(djv::marrHildrethEdgeDetector((image.getComponent(djv::ColorComponent::R) + image.getComponent(djv::ColorComponent::G) + image.getComponent(djv::ColorComponent::B))/3.f)).saveToFile("build/marrHildrethEdgeDetector.png");
-	*/
+	// djv::Img(djv::marrHildrethEdgeDetector((image.getComponent(djv::ColorComponent::R) + image.getComponent(djv::ColorComponent::G) + image.getComponent(djv::ColorComponent::B))/3.f)).saveToFile("build/marrHildrethEdgeDetector.png");
+	
+	scp::Mat<float> edges = djv::marrHildrethEdgeDetector((image.getComponent(djv::ColorComponent::R) + image.getComponent(djv::ColorComponent::G) + image.getComponent(djv::ColorComponent::B)) / 3.f);
+	std::vector<djv::Line> lines = djv::houghTransform(scp::hadamardProduct(edges, edges));
+	for (uint64_t i(0); i < lines.size(); i++)
+	{
+		lines[i].color = { 1, 0, 0, 1 };
+		image.draw(lines[i]);
+	}
+
+	image.saveToFile("build/test.png");
 
 	return 0;
 }
