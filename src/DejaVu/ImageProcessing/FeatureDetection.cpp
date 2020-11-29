@@ -153,6 +153,14 @@ namespace djv
 			}
 		}
 
+		/*
+		
+		TODO:
+			- Filtre gaussien et recherche de maximum local
+			- Découpage segment (histogramme)
+
+		*/
+
 		return result;
 	}
 }
