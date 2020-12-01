@@ -18,5 +18,11 @@
 
 namespace djv
 {
+	class Color;
+	class Point;
+	class Shape;
+	class Line;
+	class Rect;
+
 	class Img;
 }

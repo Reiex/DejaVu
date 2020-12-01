@@ -4,21 +4,19 @@
 
 namespace djv
 {
-	// Kernels
+	namespace kernel
+	{
+		// Gradient
+		const std::array<scp::Mat<float>, 2>& sobel();
+		const std::array<scp::Mat<float>, 2>& prewitt();
+		std::array<scp::Mat<float>, 2> derivativeOfGaussian(float sigma = 1.f, uint64_t patchSize = 0);
 
-	// Gradient
+		// Laplacian
+		scp::Mat<float> laplacianOfGaussian(float sigma = 1.4f, uint64_t patchSize = 0);
 
-	const std::array<scp::Mat<float>, 2>& sobelKernel();
-	std::array<scp::Mat<float>, 2> derivativeOfGaussianKernel(float sigma = 1.f, uint64_t patchSize = 0);
-
-	// Laplacian
-
-	scp::Mat<float> laplacianOfGaussianKernel(float sigma = 1.4f, uint64_t patchSize = 0);
-
-	// Blur
-
-	scp::Mat<float> gaussianKernel(float sigma = 1.f, uint64_t patchSize = 0);
-
+		// Blur
+		scp::Mat<float> gaussian(float sigma = 1.f, uint64_t patchSize = 0);
+	}
 
 	// Processings
 
@@ -27,6 +25,5 @@ namespace djv
 	// Laplacian
 
 	// Blur
-
 	scp::Mat<float> gaussianBlur(const scp::Mat<float>& m, float sigma = 1.f, uint64_t patchSize = 0);
 }

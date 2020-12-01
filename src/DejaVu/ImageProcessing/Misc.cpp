@@ -2,107 +2,111 @@
 
 namespace djv
 {
-	// Kernels
-
-	// Gradient
-
-	const std::array<scp::Mat<float>, 2>& sobelKernel()
+	namespace kernel
 	{
-		static const std::array<scp::Mat<float>, 2> S{
-			scp::Mat<float>{ {
-				{-1.f, -2.f, -1.f},
-				{ 0.f,  0.f,  0.f},
-				{ 1.f,  2.f,  1.f}
-			} }, scp::Mat<float>{ {
-				{-1.f, 0.f, 1.f},
-				{-2.f, 0.f, 2.f},
-				{-1.f, 0.f, 1.f}
-		} } };
-
-		return S;
-	}
-
-	std::array<scp::Mat<float>, 2> derivativeOfGaussianKernel(float sigma, uint64_t patchSize)
-	{
-		if (patchSize == 0)
-			patchSize = 3 * (static_cast<uint64_t>(sigma) + 1);
-
-		std::array<scp::Mat<float>, 2> D{
-			scp::Mat<float>(2*patchSize + 1, 2*patchSize + 1),
-			scp::Mat<float>(2*patchSize + 1, 2*patchSize + 1)
-		};
-
-		float sigmaSq = sigma * sigma;
-		for (uint64_t i(0); i < D[0].m; i++)
+		const std::array<scp::Mat<float>, 2>& sobel()
 		{
-			for (uint64_t j(0); j < D[0].n; j++)
-			{
-				float x = static_cast<float>(i) - patchSize;
-				float y = static_cast<float>(j) - patchSize;
-				float alpha = -(x*x + y*y) / (2*sigmaSq);
-				D[0][i][j] = -std::exp(alpha) * x / (6.2831853f * sigmaSq * sigmaSq);
-				D[1][i][j] = -std::exp(alpha) * y / (6.2831853f * sigmaSq * sigmaSq);
-			}
+			static const std::array<scp::Mat<float>, 2> S{
+				scp::Mat<float>{ {
+					{-1.f, -2.f, -1.f},
+					{ 0.f,  0.f,  0.f},
+					{ 1.f,  2.f,  1.f}
+				} }, scp::Mat<float>{ {
+					{-1.f, 0.f, 1.f},
+					{-2.f, 0.f, 2.f},
+					{-1.f, 0.f, 1.f}
+			} } };
+
+			return S;
 		}
 
-		return D;
-	}
-
-	// Laplacian
-
-	scp::Mat<float> laplacianOfGaussianKernel(float sigma, uint64_t patchSize) 
-	{
-		if (patchSize == 0)
-			patchSize = 3 * (static_cast<uint64_t>(sigma) + 1);
-
-		scp::Mat<float> G(2*patchSize + 1, 2*patchSize + 1);
-
-		float sigmaSq = sigma * sigma;
-		for (uint64_t i(0); i < G.m; i++)
+		const std::array<scp::Mat<float>, 2>& prewitt()
 		{
-			for (uint64_t j(0); j < G.n; j++)
-			{
-				float x = static_cast<float>(i) - patchSize;
-				float y = static_cast<float>(j) - patchSize;
-				float alpha = -(x*x + y*y) / (2*sigmaSq);
-				G[i][j] = -std::exp(alpha) * (1 + alpha) / (3.14159266f*sigmaSq*sigmaSq);
-			}
+			static const std::array<scp::Mat<float>, 2> S{
+				scp::Mat<float>{ {
+					{-1.f, -1.f, -1.f},
+					{ 0.f,  0.f,  0.f},
+					{ 1.f,  1.f,  1.f}
+				} }, scp::Mat<float>{ {
+					{-1.f, 0.f, 1.f},
+					{-1.f, 0.f, 1.f},
+					{-1.f, 0.f, 1.f}
+			} } };
+
+			return S;
 		}
 
-		return G;
-	}
-
-	// Blur
-
-	scp::Mat<float> gaussianKernel(float sigma, uint64_t patchSize)
-	{
-		if (patchSize == 0)
-			patchSize = 3 * (static_cast<uint64_t>(sigma) + 1);
-
-		scp::Mat<float> G(2*patchSize + 1, 2*patchSize + 1);
-
-		float sigmaSq = sigma * sigma;
-		for (uint64_t i(0); i < G.m; i++)
+		std::array<scp::Mat<float>, 2> derivativeOfGaussian(float sigma, uint64_t patchSize)
 		{
-			for (uint64_t j(0); j < G.n; j++)
+			if (patchSize == 0)
+				patchSize = 3 * (static_cast<uint64_t>(sigma) + 1);
+
+			std::array<scp::Mat<float>, 2> D{
+				scp::Mat<float>(2 * patchSize + 1, 2 * patchSize + 1),
+				scp::Mat<float>(2 * patchSize + 1, 2 * patchSize + 1)
+			};
+
+			float sigmaSq = sigma * sigma;
+			for (uint64_t i(0); i < D[0].m; i++)
 			{
-				float x = static_cast<float>(i) - patchSize;
-				float y = static_cast<float>(j) - patchSize;
-				G[i][j] = std::exp(-(x*x + y*y)/(2*sigmaSq)) / (6.2831853f*sigmaSq);
+				for (uint64_t j(0); j < D[0].n; j++)
+				{
+					float x = static_cast<float>(i) - patchSize;
+					float y = static_cast<float>(j) - patchSize;
+					float alpha = -(x * x + y * y) / (2 * sigmaSq);
+					D[0][i][j] = -std::exp(alpha) * x / (6.2831853f * sigmaSq * sigmaSq);
+					D[1][i][j] = -std::exp(alpha) * y / (6.2831853f * sigmaSq * sigmaSq);
+				}
 			}
+
+			return D;
 		}
 
-		return G;
+
+		scp::Mat<float> laplacianOfGaussian(float sigma, uint64_t patchSize)
+		{
+			if (patchSize == 0)
+				patchSize = 3 * (static_cast<uint64_t>(sigma) + 1);
+
+			scp::Mat<float> G(2 * patchSize + 1, 2 * patchSize + 1);
+
+			float sigmaSq = sigma * sigma;
+			for (uint64_t i(0); i < G.m; i++)
+			{
+				for (uint64_t j(0); j < G.n; j++)
+				{
+					float x = static_cast<float>(i) - patchSize;
+					float y = static_cast<float>(j) - patchSize;
+					float alpha = -(x * x + y * y) / (2 * sigmaSq);
+					G[i][j] = -std::exp(alpha) * (1 + alpha) / (3.14159266f * sigmaSq * sigmaSq);
+				}
+			}
+
+			return G;
+		}
+
+
+		scp::Mat<float> gaussian(float sigma, uint64_t patchSize)
+		{
+			if (patchSize == 0)
+				patchSize = 3 * (static_cast<uint64_t>(sigma) + 1);
+
+			scp::Mat<float> G(2 * patchSize + 1, 2 * patchSize + 1);
+
+			float sigmaSq = sigma * sigma;
+			for (uint64_t i(0); i < G.m; i++)
+			{
+				for (uint64_t j(0); j < G.n; j++)
+				{
+					float x = static_cast<float>(i) - patchSize;
+					float y = static_cast<float>(j) - patchSize;
+					G[i][j] = std::exp(-(x * x + y * y) / (2 * sigmaSq)) / (6.2831853f * sigmaSq);
+				}
+			}
+
+			return G;
+		}
 	}
-
-	
-	// Processings
-
-	// Gradient
-
-	// Laplacian
-
-	// Blur
 
 	scp::Mat<float> gaussianBlur(const scp::Mat<float>& m, float sigma, uint64_t patchSize)
 	{

@@ -12,6 +12,7 @@ namespace djv
 		return static_cast<ColorChannels>(static_cast<int>(a) & static_cast<int>(b));
 	}
 
+
 	Img::Img(uint64_t width, uint64_t height) :
 		_width(width),
 		_height(height),
@@ -94,6 +95,7 @@ namespace djv
 	{
 	}
 
+
 	Img& Img::operator=(const Img& image)
 	{
 		_width = image._width;
@@ -105,6 +107,7 @@ namespace djv
 
 		return *this;
 	}
+
 
 	float& Img::operator()(uint64_t x, uint64_t y, ColorComponent component)
 	{
@@ -118,15 +121,6 @@ namespace djv
 		return getComponent(component)[x][y];
 	}
 
-	uint64_t Img::width() const
-	{
-		return _width;
-	}
-
-	uint64_t Img::height() const
-	{
-		return _height;
-	}
 
 	float& Img::operator()(uint64_t x, uint64_t y, uint8_t component)
 	{
@@ -137,6 +131,7 @@ namespace djv
 	{
 		return (*this)(x, y, static_cast<ColorComponent>(component));
 	}
+
 
 	void Img::saveToFile(const std::string& filename) const
 	{
@@ -211,6 +206,7 @@ namespace djv
 		shape.draw(*this);
 	}
 
+
 	scp::Mat<float>& Img::getComponent(ColorComponent component)
 	{
 		switch (component)
@@ -244,4 +240,15 @@ namespace djv
 				throw std::runtime_error("Cannot get component " + std::to_string(static_cast<int>(component)) + " of Img.");
 		}
 	}
+
+	uint64_t Img::width() const
+	{
+		return _width;
+	}
+
+	uint64_t Img::height() const
+	{
+		return _height;
+	}
+
 }
