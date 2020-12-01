@@ -50,7 +50,7 @@ namespace djv
 			return P;
 		}
 
-		scp::Mat<float> marrHildreth(const scp::Mat<float>& m, float sigma0, float scaleFactor, float threshold)
+		scp::Mat<float> marrHildreth(const scp::Mat<float>& m, float threshold, float sigma0, float scaleFactor)
 		{
 			scp::Mat<float> r(m.m, m.n), gPreced(m.m, m.n);
 			float sigma = sigma0;
@@ -86,8 +86,11 @@ namespace djv
 			return r / static_cast<float>(scaleCount);
 		}
 
-		scp::Mat<float> canny(const scp::Mat<float>& m, float sigma0, float scaleFactor, float threshold)
+		scp::Mat<float> canny(const scp::Mat<float>& m, float threshold, float sigma0, float scaleFactor)
 		{
+			/*
+				https://en.wikipedia.org/wiki/Canny_edge_detector
+			*/
 			return m;
 		}
 	}
