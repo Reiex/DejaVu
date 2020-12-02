@@ -4,84 +4,118 @@ namespace djv
 {
 	namespace edgeDetector
 	{
-		scp::Mat<float> sobel(const scp::Mat<float>& m, float threshold)
+		scp::Mat<float> sobel(const scp::Mat<float>& m)
 		{
 			scp::Mat<float> Sx = scp::convolve(m, kernel::sobel()[0], scp::ConvolveMethod::Continuous);
 			scp::Mat<float> Sy = scp::convolve(m, kernel::sobel()[1], scp::ConvolveMethod::Continuous);
 			scp::Mat<float> S = scp::hadamardProduct(Sx, Sx) + scp::hadamardProduct(Sy, Sy);
-
-			float Smax = scp::maxElement(S);
-			float thresholdSq = threshold * threshold;
-			for (uint64_t i(0); i < S.m; i++)
-				for (uint64_t j(0); j < S.n; j++)
-					if (S[i][j] > thresholdSq)
-						S[i][j] = std::sqrt((S[i][j] - thresholdSq)/(1.f - thresholdSq));
-					else
-						S[i][j] = 0;
 			
-			return S;
+			return S / scp::maxElement(S);
 		}
 
-		scp::Mat<float> prewitt(const scp::Mat<float>& m, float threshold)
+		scp::Mat<float> prewitt(const scp::Mat<float>& m)
 		{
 			scp::Mat<float> Px = scp::convolve(m, kernel::prewitt()[0], scp::ConvolveMethod::Continuous);
 			scp::Mat<float> Py = scp::convolve(m, kernel::prewitt()[1], scp::ConvolveMethod::Continuous);
 			scp::Mat<float> P = scp::hadamardProduct(Px, Px) + scp::hadamardProduct(Py, Py);
 
-			float Pmax = scp::maxElement(P);
-			float thresholdSq = threshold * threshold;
-			for (uint64_t i(0); i < P.m; i++)
-				for (uint64_t j(0); j < P.n; j++)
-					if (P[i][j] > thresholdSq)
-						P[i][j] = std::sqrt((P[i][j] - thresholdSq) / (1.f - thresholdSq));
-					else
-						P[i][j] = 0;
-
-			return P;
+			return P / scp::maxElement(P);
 		}
 
-		scp::Mat<float> marrHildreth(const scp::Mat<float>& m, float threshold, float sigma0, float scaleFactor)
+		scp::Mat<float> marrHildreth(const scp::Mat<float>& m, float sigma)
 		{
-			scp::Mat<float> r(m.m, m.n), gPreced(m.m, m.n);
-			float sigma = sigma0;
-			std::array<scp::Mat<float>, 2> gradKernel = { scp::Mat<float>{ { {-1.f, 0.f, 1.f} } }, scp::Mat<float>{ { {-1.f}, {0.f}, {1.f} } } };
-			scp::Mat<float> g = gaussianBlur(m, sigma);
-			sigma *= scaleFactor;
-			uint64_t scaleCount(1);
+			scp::Mat<float> r(m.m, m.n);
+			scp::Mat<float> laplacian = scp::convolve(m, kernel::laplacianOfGaussian(sigma), scp::ConvolveMethod::Continuous);
+			std::array<scp::Mat<float>, 2> grad = {
+				scp::convolve(m, kernel::derivativeOfGaussian(sigma)[0], scp::ConvolveMethod::Continuous),
+				scp::convolve(m, kernel::derivativeOfGaussian(sigma)[1], scp::ConvolveMethod::Continuous)
+			};
+			scp::Mat<float> gradMag = scp::hadamardProduct(grad[0], grad[0]) + scp::hadamardProduct(grad[1], grad[1]);
 
-			while (4 * sigma < m.m / 2 && 4 * sigma < m.n / 2)
+			gradMag /= scp::maxElement(gradMag);
+
+			for (uint64_t i(0); i < laplacian.m - 1; i++)
+				for (uint64_t j(0); j < laplacian.n - 1; j++)
+					if ((laplacian[i][j] * laplacian[i + 1][j] < 0 || laplacian[i][j] * laplacian[i][j + 1] < 0))
+						r[i][j] = gradMag[i][j];
+
+			return r;
+		}
+
+		scp::Mat<float> canny(const scp::Mat<float>& m, float sigma)
+		{
+			std::array<scp::Mat<float>, 2> grad = {
+				scp::convolve(m, kernel::derivativeOfGaussian(sigma)[0], scp::ConvolveMethod::Continuous),
+				scp::convolve(m, kernel::derivativeOfGaussian(sigma)[1], scp::ConvolveMethod::Continuous)
+			};
+			scp::Mat<float> gradMag = scp::hadamardProduct(grad[0], grad[0]) + scp::hadamardProduct(grad[1], grad[1]);
+			gradMag /= scp::maxElement(gradMag);
+
+			scp::Mat<float> gradArg(m.m, m.n);
+			for (uint64_t i(0); i < gradArg.m; i++)
+				for (uint64_t j(0); j < gradArg.n; j++)
+					gradArg[i][j] = std::atan2f(grad[1][i][j], grad[0][i][j]);
+			
+			float pi = scp::pi;
+			scp::Mat<float> r = gradMag;
+			for (uint64_t i(0); i < r.m; i++)
 			{
-				scaleCount++;
-				gPreced = g;
-				g = gaussianBlur(m, sigma);
-
-				scp::Mat<float> dog = g - gPreced;
-				std::array<scp::Mat<float>, 2> grad = { scp::convolve(g, gradKernel[0]), scp::convolve(g, gradKernel[1]) };
-				scp::Mat<float> gradMag = scp::hadamardProduct(grad[0], grad[0]) + scp::hadamardProduct(grad[1], grad[1]);
-
-				for (uint64_t i(0); i < dog.m - 1; i++)
+				for (uint64_t j(0); j < r.n; j++)
 				{
-					for (uint64_t j(0); j < dog.n - 1; j++)
+					int64_t x(0), y(0);
+					if (gradArg[i][j] >= 7*pi/8 || gradArg[i][j] < -7*pi/8)
 					{
-						if ((dog[i][j] * dog[i + 1][j] < 0 || dog[i][j] * dog[i][j + 1] < 0) && gradMag[i][j] > threshold)
-						{
-							r[i][j] += 1.f;
-						}
+						x = -1;
+						y = 0;
 					}
-				}
+					else if (gradArg[i][j] >= 5*pi/8 && gradArg[i][j] < 7*pi/8)
+					{
+						x = -1;
+						y = 1;
+					}
+					else if (gradArg[i][j] >= 3*pi/8 && gradArg[i][j] < 5*pi/8)
+					{
+						x = 0;
+						y = 1;
+					}
+					else if (gradArg[i][j] >= pi/8 && gradArg[i][j] < 3*pi/8)
+					{
+						x = 1;
+						y = 1;
+					}
+					else if (gradArg[i][j] >= -pi/8 && gradArg[i][j] < pi/8)
+					{
+						x = 1;
+						y = 0;
+					}
+					else if (gradArg[i][j] >= -3*pi/8 && gradArg[i][j] < -pi/8)
+					{
+						x = 1;
+						y = -1;
+					}
+					else if (gradArg[i][j] >= -5*pi/8 && gradArg[i][j] < -3*pi/8)
+					{
+						x = 0;
+						y = -1;
+					}
+					else if (gradArg[i][j] >= -7*pi/8 && gradArg[i][j] < -5*pi/8)
+					{
+						x = -1;
+						y = -1;
+					}
 
-				sigma *= scaleFactor;
+					int64_t xForward = std::min(std::max(static_cast<int64_t>(i) + x, 0LL), static_cast<int64_t>(r.m - 1));
+					int64_t yForward = std::min(std::max(static_cast<int64_t>(j) + y, 0LL), static_cast<int64_t>(r.n - 1));
+
+					int64_t xBackward = std::min(std::max(static_cast<int64_t>(i) - x, 0LL), static_cast<int64_t>(r.m - 1));
+					int64_t yBackward = std::min(std::max(static_cast<int64_t>(j) - y, 0LL), static_cast<int64_t>(r.n - 1));
+
+					if (gradMag[xForward][yForward] > gradMag[i][j] || gradMag[xBackward][yBackward] > gradMag[i][j])
+						r[i][j] = 0.f;
+				}
 			}
 
-			return r / static_cast<float>(scaleCount);
-		}
-
-		scp::Mat<float> canny(const scp::Mat<float>& m, float threshold, float sigma0, float scaleFactor)
-		{
-			/*
-				https://en.wikipedia.org/wiki/Canny_edge_detector
-			*/
-			return m;
+			return r;
 		}
 	}
 

@@ -6,11 +6,11 @@ namespace djv
 {
 	namespace edgeDetector
 	{
-		scp::Mat<float> sobel(const scp::Mat<float>& m, float threshold = 0.5f);
-		scp::Mat<float> prewitt(const scp::Mat<float>& m, float threshold = 0.5f);
+		scp::Mat<float> sobel(const scp::Mat<float>& m);
+		scp::Mat<float> prewitt(const scp::Mat<float>& m);
 
-		scp::Mat<float> marrHildreth(const scp::Mat<float>& m, float threshold = 1e-3f, float sigma0 = 1.f, float scaleFactor = 2.f);
-		scp::Mat<float> canny(const scp::Mat<float>& m, float threshold = 1e-3f, float sigma0 = 1.f, float scaleFactor = 2.f);
+		scp::Mat<float> marrHildreth(const scp::Mat<float>& m, float sigma = 1.5f);
+		scp::Mat<float> canny(const scp::Mat<float>& m, float sigma = 1.5f);
 	}
 
 	namespace lineExtractor
