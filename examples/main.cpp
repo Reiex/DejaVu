@@ -35,13 +35,13 @@ int main()
 	djv::Img(djv::edgeDetector::marrHildreth((image.getComponent(djv::ColorComponent::R) + image.getComponent(djv::ColorComponent::G) + image.getComponent(djv::ColorComponent::B))/3.f)).saveToFile("build/marrHildrethEdgeDetector.png");
 	*/
 	djv::Img(djv::edgeDetector::canny((image.getComponent(djv::ColorComponent::R) + image.getComponent(djv::ColorComponent::G) + image.getComponent(djv::ColorComponent::B)) / 3.f)).saveToFile("build/cannyEdgeDetector.png");
-	
+
 	// Line extractors
 
-	/*
+
 	{
 		scp::Mat<float> edges = djv::edgeDetector::marrHildreth((image.getComponent(djv::ColorComponent::R) + image.getComponent(djv::ColorComponent::G) + image.getComponent(djv::ColorComponent::B)) / 3.f);
-		std::vector<djv::Line> lines = djv::lineExtractor::hough(edges, 0.7f, 0.1f, 5);
+		std::vector<djv::Line> lines = djv::lineExtractor::hough(edges, 0.5f, 0.1f, 5);
 		djv::Img result = image;
 		for (uint64_t i(0); i < lines.size(); i++)
 		{
@@ -50,7 +50,6 @@ int main()
 		}
 		result.saveToFile("build/houghLineExtractor.png");
 	}
-	*/
 
 	return 0;
 }

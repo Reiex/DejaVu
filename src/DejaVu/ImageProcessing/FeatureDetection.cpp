@@ -10,12 +10,7 @@ namespace djv
 			scp::Mat<float> Sy = scp::convolve(m, kernel::sobel()[1], scp::ConvolveMethod::Continuous);
 			scp::Mat<float> S = scp::hadamardProduct(Sx, Sx) + scp::hadamardProduct(Sy, Sy);
 
-			float Smax = S[0][0];
-			for (uint64_t i(0); i < S.m; i++)
-				for (uint64_t j(0); j < S.n; j++)
-					if (S[i][j] > Smax)
-						Smax = S[i][j];
-			
+			float Smax = scp::maxElement(S);
 			float thresholdSq = threshold * threshold;
 			for (uint64_t i(0); i < S.m; i++)
 				for (uint64_t j(0); j < S.n; j++)
@@ -33,12 +28,7 @@ namespace djv
 			scp::Mat<float> Py = scp::convolve(m, kernel::prewitt()[1], scp::ConvolveMethod::Continuous);
 			scp::Mat<float> P = scp::hadamardProduct(Px, Px) + scp::hadamardProduct(Py, Py);
 
-			float Pmax = P[0][0];
-			for (uint64_t i(0); i < P.m; i++)
-				for (uint64_t j(0); j < P.n; j++)
-					if (P[i][j] > Pmax)
-						Pmax = P[i][j];
-
+			float Pmax = scp::maxElement(P);
 			float thresholdSq = threshold * threshold;
 			for (uint64_t i(0); i < P.m; i++)
 				for (uint64_t j(0); j < P.n; j++)
