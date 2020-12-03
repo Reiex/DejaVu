@@ -25,4 +25,6 @@ namespace djv
 	class Rect;
 
 	class Img;
+
+	class Perceptron;
 }

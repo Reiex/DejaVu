@@ -5,3 +5,5 @@
 
 #include <DejaVu/ImageProcessing/Misc.hpp>
 #include <DejaVu/ImageProcessing/FeatureDetection.hpp>
+
+#include <DejaVu/MachineLearning/Perceptron.hpp>
