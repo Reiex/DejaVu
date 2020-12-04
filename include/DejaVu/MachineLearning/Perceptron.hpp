@@ -10,9 +10,12 @@ namespace djv
 
 			Perceptron(uint64_t inputSize, float learningRate);
 
-			virtual float operator()(const scp::Vec<float>& x) const = 0;
+			float operator()(const scp::Vec<float>& x) const;
 
-			virtual void train(const scp::Vec<float>& x, float y) = 0;
+			void train(const scp::Vec<float>& x, float y);
+
+			virtual float f(float z) const = 0;
+			virtual float df(float a, float z) const = 0;
 
 			const scp::Vec<float>& getWeights() const;
 			void setWeights(const scp::Vec<float>& weights);
@@ -32,8 +35,9 @@ namespace djv
 		public:
 
 			SigmoidPerceptron(uint64_t inputSize, float learningRate = 0.005f);
-			float operator()(const scp::Vec<float>& x) const;
-			void train(const scp::Vec<float>& x, float y);
+
+			float f(float z) const;
+			float df(float a, float z) const;
 	};
 
 	/*
