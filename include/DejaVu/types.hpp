@@ -5,6 +5,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstdint>
+#include <cstdlib>
 #include <functional>
 #include <memory>
 #include <stdexcept>
@@ -27,4 +28,7 @@ namespace djv
 	class Img;
 
 	class Perceptron;
+	class SigmoidPerceptron;
+
+	class NeuralNetwork;
 }
