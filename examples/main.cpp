@@ -52,58 +52,5 @@ int main()
 	}
 	*/
 
-	// Neural network
-
-	djv::SigmoidPerceptron p(784);
-
-	for (uint64_t i(0); i < 10000; i++)
-	{
-		uint64_t j = std::rand() % 5000;
-		uint64_t n = std::rand() % 10; while (n == 5) n = std::rand() % 10;
-
-		djv::Img zeroImg("examples/assets/MNIST/training/5/" + std::to_string(j) + ".png");
-		djv::Img oneImg("examples/assets/MNIST/training/" + std::to_string(n) + "/" + std::to_string(j) + ".png");
-
-		scp::Vec<float> zero(784), one(784);
-		for (uint64_t k(0); k < 28; k++)
-		{
-			for (uint64_t l(0); l < 28; l++)
-			{
-				zero[28*k + l] = zeroImg.getComponent(djv::ColorComponent::R)[k][l];
-				one[28*k + l] = oneImg.getComponent(djv::ColorComponent::R)[k][l];
-			}
-		}
-
-		p.train(zero, 0);
-		p.train(one, 1);
-	}
-	
-	float count(0);
-	for (uint64_t i(0); i < 500; i++)
-	{
-		uint64_t n = std::rand() % 10; while (n == 5) n = std::rand() % 10;
-		djv::Img zeroImg("examples/assets/MNIST/testing/5/" + std::to_string(i) + ".png");
-		djv::Img oneImg("examples/assets/MNIST/testing/" + std::to_string(n) + "/" + std::to_string(i) + ".png");
-
-		scp::Vec<float> zero(784), one(784);
-		for (uint64_t k(0); k < 28; k++)
-		{
-			for (uint64_t l(0); l < 28; l++)
-			{
-				zero[28 * k + l] = zeroImg.getComponent(djv::ColorComponent::R)[k][l];
-				one[28 * k + l] = oneImg.getComponent(djv::ColorComponent::R)[k][l];
-			}
-		}
-
-		if (p(zero) < 0.5)
-			count++;
-		if (p(one) > 0.5)
-			count++;
-	}
-
-	std::cout << count / 1000.f << std::endl;
-
-	system("pause");
-
 	return 0;
 }

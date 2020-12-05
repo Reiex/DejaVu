@@ -8,11 +8,12 @@ namespace djv
 	{
 		public:
 
-			Perceptron(uint64_t inputSize, float learningRate);
+			Perceptron(uint64_t inputSize);
 
 			float operator()(const scp::Vec<float>& x) const;
 
-			void train(const scp::Vec<float>& x, float y);
+			void train(const scp::Vec<float>& x, float y, float learningRate = 0.005f);
+			float nntrain(const scp::Vec<float>& x, float weightedDelta, float a, float z, float learningRate);
 
 			virtual float f(float z) const = 0;
 			virtual float df(float a, float z) const = 0;
@@ -26,15 +27,13 @@ namespace djv
 
 			scp::Vec<float> _weights;
 			float _bias;
-
-			float _learningRate;
 	};
 
 	class SigmoidPerceptron: public Perceptron
 	{
 		public:
 
-			SigmoidPerceptron(uint64_t inputSize, float learningRate = 0.005f);
+			SigmoidPerceptron(uint64_t inputSize);
 
 			float f(float z) const;
 			float df(float a, float z) const;

@@ -2,10 +2,9 @@
 
 namespace djv
 {
-	Perceptron::Perceptron(uint64_t inputSize, float learningRate) :
+	Perceptron::Perceptron(uint64_t inputSize) :
 		_weights(inputSize),
-		_bias(0),
-		_learningRate(learningRate)
+		_bias(0)
 	{
 		for (uint64_t i(0); i < inputSize; i++)
 			_weights[i] = static_cast<float>(std::rand()) / RAND_MAX - 0.5f;
@@ -18,14 +17,25 @@ namespace djv
 		return f(scp::dot(x, _weights) + _bias);
 	}
 
-	void Perceptron::train(const scp::Vec<float>& x, float y)
+	void Perceptron::train(const scp::Vec<float>& x, float y, float learningRate)
 	{
 		float z = scp::dot(x, _weights) + _bias;
 		float a = f(z);
-		float c = _learningRate*(a - y)*df(a, z);
+		float c = learningRate*(a - y)*df(a, z);
 		for (uint64_t i(0); i < _weights.n; i++)
 			_weights[i] -= c*x[i];
 		_bias -= c;
+	}
+
+	float Perceptron::nntrain(const scp::Vec<float>& x, float weightedDelta, float a, float z, float learningRate)
+	{
+		weightedDelta *= df(a, z);
+		float c = learningRate * weightedDelta;
+		for (uint64_t i(0); i < _weights.n; i++)
+			_weights[i] -= c * x[i];
+		_bias -= c;
+
+		return weightedDelta;
 	}
 
 	const scp::Vec<float>& Perceptron::getWeights() const
@@ -49,8 +59,8 @@ namespace djv
 	}
 
 
-	SigmoidPerceptron::SigmoidPerceptron(uint64_t inputSize, float learningRate) :
-		Perceptron(inputSize, learningRate)
+	SigmoidPerceptron::SigmoidPerceptron(uint64_t inputSize) :
+		Perceptron(inputSize)
 	{
 	}
 

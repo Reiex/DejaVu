@@ -13,9 +13,9 @@ namespace djv
 			template<typename TPerceptron = SigmoidPerceptron>
 			void appendLayer(uint64_t layerSize);
 
-			scp::Vec<float> operator()(scp::Vec<float> x) const;
+			scp::Vec<float> operator()(const scp::Vec<float>& x) const;
 
-			void train(scp::Vec<float> x, scp::Vec<float> y);
+			void train(const scp::Vec<float>& x, const scp::Vec<float>& y, float learningRate = 0.01f);
 
 		private:
 
