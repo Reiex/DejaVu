@@ -8,9 +8,9 @@ namespace djv
 	{
 		public:
 
-			template<typename TPerceptron = SigmoidPerceptron>
+			template<typename TPerceptron = Perceptron::Sigmoid>
 			void setInputLayer(uint64_t inputSize, uint64_t layerSize);
-			template<typename TPerceptron = SigmoidPerceptron>
+			template<typename TPerceptron = Perceptron::Sigmoid>
 			void appendLayer(uint64_t layerSize);
 
 			scp::Vec<float> operator()(const scp::Vec<float>& x) const;
@@ -19,7 +19,7 @@ namespace djv
 
 		private:
 
-			std::vector<std::vector<std::unique_ptr<Perceptron>>> _neurons;
+			std::vector<std::vector<std::unique_ptr<Perceptron::Perceptron>>> _neurons;
 	};
 }
 

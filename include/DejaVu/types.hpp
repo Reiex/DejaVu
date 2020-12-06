@@ -28,8 +28,17 @@ namespace djv
 
 	class Img;
 
-	class Perceptron;
-	class SigmoidPerceptron;
+	namespace Perceptron
+	{
+		class Perceptron;
+
+		class BinaryStep;
+		class LeakyReLU;
+		class Linear;
+		class ReLU;
+		class Sigmoid;
+		class Tanh;
+	}
 
 	class NeuralNetwork;
 }

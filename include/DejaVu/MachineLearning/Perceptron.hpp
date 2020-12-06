@@ -4,53 +4,91 @@
 
 namespace djv
 {
-	class Perceptron
+	namespace Perceptron
 	{
-		public:
+		class Perceptron
+		{
+			public:
 
-			Perceptron(uint64_t inputSize);
+				Perceptron(uint64_t inputSize);
 
-			float operator()(const scp::Vec<float>& x) const;
+				float operator()(const scp::Vec<float>& x) const;
 
-			void train(const scp::Vec<float>& x, float y, float learningRate = 0.005f);
-			float nntrain(const scp::Vec<float>& x, float weightedDelta, float a, float z, float learningRate);
+				void train(const scp::Vec<float>& x, float y, float learningRate = 0.005f);
+				float nntrain(const scp::Vec<float>& x, float weightedDelta, float a, float z, float learningRate);
 
-			virtual float f(float z) const = 0;
-			virtual float df(float a, float z) const = 0;
+				virtual float f(float z) const = 0;
+				virtual float df(float a, float z) const = 0;
 
-			const scp::Vec<float>& getWeights() const;
-			void setWeights(const scp::Vec<float>& weights);
-			float getBias() const;
-			void setBias(float bias);
+				const scp::Vec<float>& getWeights() const;
+				void setWeights(const scp::Vec<float>& weights);
+				float getBias() const;
+				void setBias(float bias);
 
-		protected:
+			protected:
 
-			scp::Vec<float> _weights;
-			float _bias;
-	};
+				scp::Vec<float> _weights;
+				float _bias;
+		};
 
-	class SigmoidPerceptron: public Perceptron
-	{
-		public:
+		class BinaryStep : public Perceptron
+		{
+			public:
 
-			SigmoidPerceptron(uint64_t inputSize);
+				BinaryStep(uint64_t inputSize);
 
-			float f(float z) const;
-			float df(float a, float z) const;
-	};
+				float f(float z) const;
+				float df(float a, float z) const;
+		};
 
-	/*
-	
-	Allow for generalization of sigmoid (1/(1+exp(-lambda*x)))
+		class LeakyReLU : public Perceptron
+		{
+			public:
 
-	Future perceptrons:
-		- CustomPerceptron
-		- ReLU
-		- Leaky ReLU
-		- Linear
-		- Smooth max
-		- Softmax
-		- tanh
+				LeakyReLU(uint64_t inputSize);
 
-	*/
+				float f(float z) const;
+				float df(float a, float z) const;
+		};
+
+		class Linear : public Perceptron
+		{
+			public:
+
+				Linear(uint64_t inputSize);
+
+				float f(float z) const;
+				float df(float a, float z) const;
+		};
+
+		class ReLU : public Perceptron
+		{
+			public:
+
+				ReLU(uint64_t inputSize);
+
+				float f(float z) const;
+				float df(float a, float z) const;
+		};
+
+		class Sigmoid: public Perceptron
+		{
+			public:
+
+				Sigmoid(uint64_t inputSize);
+
+				float f(float z) const;
+				float df(float a, float z) const;
+		};
+
+		class Tanh : public Perceptron
+		{
+			public:
+
+				Tanh(uint64_t inputSize);
+
+				float f(float z) const;
+				float df(float a, float z) const;
+		};
+	}
 }
