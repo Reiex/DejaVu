@@ -8,7 +8,7 @@ namespace djv
 		a.push_back(x);
 		for (uint64_t i(0); i < _neurons.size(); i++)
 		{
-			const std::vector<std::unique_ptr<Perceptron::Perceptron>>& layer = _neurons[i];
+			const std::vector<std::unique_ptr<Perceptron::PerceptronBase>>& layer = _neurons[i];
 			a.push_back(scp::Vec<float>(layer.size()));
 			for (uint64_t j(0); j < layer.size(); j++)
 				a[i + 1][j] = (*layer[j])(a[i]);
@@ -25,7 +25,7 @@ namespace djv
 		delta.push_back(scp::Vec<float>(0));
 		for (uint64_t i(0); i < _neurons.size(); i++)
 		{
-			const std::vector<std::unique_ptr<Perceptron::Perceptron>>& layer = _neurons[i];
+			const std::vector<std::unique_ptr<Perceptron::PerceptronBase>>& layer = _neurons[i];
 
 			z.push_back(scp::Vec<float>(layer.size()));
 			a.push_back(scp::Vec<float>(layer.size()));

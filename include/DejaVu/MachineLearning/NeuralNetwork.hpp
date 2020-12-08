@@ -19,7 +19,7 @@ namespace djv
 
 		private:
 
-			std::vector<std::vector<std::unique_ptr<Perceptron::Perceptron>>> _neurons;
+			std::vector<std::vector<std::unique_ptr<Perceptron::PerceptronBase>>> _neurons;
 	};
 }
 

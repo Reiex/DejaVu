@@ -30,7 +30,7 @@ namespace djv
 
 	namespace Perceptron
 	{
-		class Perceptron;
+		class PerceptronBase;
 
 		class BinaryStep;
 		class LeakyReLU;

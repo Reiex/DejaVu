@@ -6,16 +6,16 @@ namespace djv
 {
 	namespace Perceptron
 	{
-		class Perceptron
+		class PerceptronBase
 		{
 			public:
 
-				Perceptron(uint64_t inputSize);
+				PerceptronBase(uint64_t inputSize);
 
 				float operator()(const scp::Vec<float>& x) const;
 
 				void train(const scp::Vec<float>& x, float y, float learningRate = 0.005f);
-				float nntrain(const scp::Vec<float>& x, float weightedDelta, float a, float z, float learningRate);
+				float nntrain(const scp::Vec<float>& x, float weightedError, float a, float z, float learningRate);
 
 				virtual float f(float z) const = 0;
 				virtual float df(float a, float z) const = 0;
@@ -31,7 +31,7 @@ namespace djv
 				float _bias;
 		};
 
-		class BinaryStep : public Perceptron
+		class BinaryStep : public PerceptronBase
 		{
 			public:
 
@@ -41,7 +41,7 @@ namespace djv
 				float df(float a, float z) const;
 		};
 
-		class LeakyReLU : public Perceptron
+		class LeakyReLU : public PerceptronBase
 		{
 			public:
 
@@ -51,7 +51,7 @@ namespace djv
 				float df(float a, float z) const;
 		};
 
-		class Linear : public Perceptron
+		class Linear : public PerceptronBase
 		{
 			public:
 
@@ -61,7 +61,7 @@ namespace djv
 				float df(float a, float z) const;
 		};
 
-		class ReLU : public Perceptron
+		class ReLU : public PerceptronBase
 		{
 			public:
 
@@ -71,7 +71,7 @@ namespace djv
 				float df(float a, float z) const;
 		};
 
-		class Sigmoid: public Perceptron
+		class Sigmoid: public PerceptronBase
 		{
 			public:
 
@@ -81,7 +81,7 @@ namespace djv
 				float df(float a, float z) const;
 		};
 
-		class Tanh : public Perceptron
+		class Tanh : public PerceptronBase
 		{
 			public:
 
