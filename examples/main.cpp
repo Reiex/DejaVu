@@ -78,6 +78,7 @@ int main()
 
 	djv::NeuralNetwork net;
 	net.setInputLayer(784, 10);
+	net.appendLayer<djv::layer::SoftMax>(10);
 
 	for (uint64_t i(0); true; i++)
 	{
@@ -87,7 +88,7 @@ int main()
 		scp::Vec<float> y(10);
 		y[n] = 1.f;
 
-		net.train(mnist_training[n][j], y);
+		net.train(mnist_training[n][j], y, 0.1f);
 
 		if (i % 1000 == 0)
 		{
