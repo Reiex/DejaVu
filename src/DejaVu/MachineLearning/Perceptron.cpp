@@ -41,8 +41,8 @@ namespace djv
 			weightedError *= df(a, z);
 			float c = learningRate * weightedError;
 			for (uint64_t i(0); i < _weights.n; i++)
-				_weights[i] = 1.001f*_weights[i] -  c*x[i];
-			_bias -= 1.001f*_bias - c;
+				_weights[i] -= c*x[i];
+			_bias -= c;
 
 			return weightedError;
 		}
