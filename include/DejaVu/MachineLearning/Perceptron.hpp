@@ -16,7 +16,8 @@ namespace djv
 
 				void goThrough(const scp::Vec<float>& x, float& a, float& z) const;
 				void train(const scp::Vec<float>& x, float y, float learningRate = 0.005f);
-				float nntrain(const scp::Vec<float>& x, float weightedError, float a, float z, float learningRate);
+				void computeCorrection(const scp::Vec<float>& x, float err, float a, float z, float learningRate, float& nextErr, scp::Vec<float>& correction) const;
+				void applyCorrection(const scp::Vec<float>& correction);
 
 				virtual float f(float z) const = 0;
 				virtual float df(float a, float z) const = 0;

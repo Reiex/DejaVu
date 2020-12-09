@@ -36,15 +36,20 @@ namespace djv
 			_bias -= c;
 		}
 
-		float PerceptronBase::nntrain(const scp::Vec<float>& x, float weightedError, float a, float z, float learningRate)
+		void PerceptronBase::computeCorrection(const scp::Vec<float>& x, float err, float a, float z, float learningRate, float& nextErr, scp::Vec<float>& correction) const
 		{
-			weightedError *= df(a, z);
-			float c = learningRate * weightedError;
+			nextErr = df(a, z) * err;
+			float c = learningRate * nextErr;
 			for (uint64_t i(0); i < _weights.n; i++)
-				_weights[i] -= c*x[i];
-			_bias -= c;
+				correction[i] = c*x[i];
+			correction[correction.n - 1] = c;
+		}
 
-			return weightedError;
+		void PerceptronBase::applyCorrection(const scp::Vec<float>& correction)
+		{
+			for (uint64_t i(0); i < _weights.n; i++)
+				_weights[i] -= correction[i];
+			_bias -= correction[correction.n - 1];
 		}
 
 		const scp::Vec<float>& PerceptronBase::getWeights() const

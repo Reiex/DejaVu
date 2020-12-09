@@ -111,13 +111,13 @@ namespace djv
 
 	float& Img::operator()(uint64_t x, uint64_t y, ColorComponent component)
 	{
-		assert(x > 0 && x <= _width && y > 0 && y < _height);
+		assert(x < _width && y < _height);
 		return getComponent(component)[x][y];
 	}
 
 	const float& Img::operator()(uint64_t x, uint64_t y, ColorComponent component) const
 	{
-		assert(x > 0 && x <= _width && y > 0 && y < _height);
+		assert(x < _width && y < _height);
 		return getComponent(component)[x][y];
 	}
 

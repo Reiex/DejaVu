@@ -7,18 +7,18 @@ namespace djv
 	namespace layer
 	{
 		template<typename TPerceptron>
-		Perceptrons<TPerceptron>::Perceptrons(uint64_t inputSize, uint64_t layerSize) :
-			LayerBase(inputSize, layerSize),
-			_neurons(layerSize, TPerceptron(inputSize))
+		Perceptrons<TPerceptron>::Perceptrons(uint64_t inputSize, uint64_t outputSize) :
+			LayerBase(inputSize, outputSize),
+			_neurons(outputSize, TPerceptron(inputSize))
 		{
 		}
 
 		template<typename TPerceptron>
 		scp::Vec<float> Perceptrons<TPerceptron>::operator()(const scp::Vec<float>& x) const
 		{
-			scp::Vec<float> result(_layerSize);
+			scp::Vec<float> result(_outputSize);
 
-			for (uint64_t i(0); i < _layerSize; i++)
+			for (uint64_t i(0); i < _outputSize; i++)
 				result[i] = _neurons[i](x);
 			
 			return result;
@@ -27,38 +27,43 @@ namespace djv
 		template<typename TPerceptron>
 		void Perceptrons<TPerceptron>::goThrough(const scp::Vec<float>& x, scp::Vec<float>& a, scp::Vec<float>& z) const
 		{
-			for (uint64_t i(0); i < _layerSize; i++)
+			for (uint64_t i(0); i < _outputSize; i++)
 				_neurons[i].goThrough(x, a[i], z[i]);
 		}
 
 		template<typename TPerceptron>
-		scp::Vec<float> Perceptrons<TPerceptron>::train(const scp::Vec<float>& x, const scp::Vec<float>& weightedErrors, const scp::Vec<float>& a, const scp::Vec<float>& z, float learningRate)
+		void Perceptrons<TPerceptron>::computeCorrection(const scp::Vec<float>& x, const scp::Vec<float>& err, const scp::Vec<float>& a, const scp::Vec<float>& z, float learningRate, scp::Vec<float>& nextErr, scp::Mat<float>& correction) const
 		{
-			scp::Vec<float> newWeightedErrors(_inputSize);
-
-			for (uint64_t i(0); i < _layerSize; i++)
+			for (uint64_t i(0); i < _outputSize; i++)
 			{
-				scp::Vec<float> w = _neurons[i].getWeights();
-				float error = _neurons[i].nntrain(x, weightedErrors[i], a[i], z[i], learningRate);
-				for (uint64_t j(0); j < w.n; j++)
-					newWeightedErrors[j] += w[j] * error;
-			}
+				const scp::Vec<float>& w = _neurons[i].getWeights();
+				float computedError;
+				_neurons[i].computeCorrection(x, err[i], a[i], z[i], learningRate, computedError, correction[i]);
 
-			return newWeightedErrors;
+				for (uint64_t j(0); j < nextErr.n; j++)
+					nextErr[j] += computedError * w[j];
+			}
+		}
+
+		template<typename TPerceptron>
+		void Perceptrons<TPerceptron>::applyCorrection(const scp::Mat<float>& correction)
+		{
+			for (uint64_t i(0); i < _outputSize; i++)
+				_neurons[i].applyCorrection(correction[i]);
 		}
 	}
 
 	template<typename TLayer>
-	void NeuralNetwork::setInputLayer(uint64_t inputSize, uint64_t layerSize)
+	void NeuralNetwork::setInputLayer(uint64_t inputSize, uint64_t outputSize)
 	{
 		assert(_layers.size() == 0);
-		_layers.push_back(std::unique_ptr<layer::LayerBase>(new TLayer(inputSize, layerSize)));
+		_layers.push_back(std::unique_ptr<layer::LayerBase>(new TLayer(inputSize, outputSize)));
 	}
 
 	template<typename TLayer>
-	void NeuralNetwork::appendLayer(uint64_t layerSize)
+	void NeuralNetwork::appendLayer(uint64_t outputSize)
 	{
 		assert(_layers.size() != 0);
-		_layers.push_back(std::unique_ptr<layer::LayerBase>(new TLayer(_layers.back()->getLayerSize(), layerSize)));
+		_layers.push_back(std::unique_ptr<layer::LayerBase>(new TLayer(_layers.back()->getOutputSize(), outputSize)));
 	}
 }
