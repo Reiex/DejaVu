@@ -54,7 +54,7 @@ namespace djv
 			scp::Mat<float> gradArg(m.m, m.n);
 			for (uint64_t i(0); i < gradArg.m; i++)
 				for (uint64_t j(0); j < gradArg.n; j++)
-					gradArg[i][j] = std::atan2f(grad[1][i][j], grad[0][i][j]);
+					gradArg[i][j] = std::atan2(grad[1][i][j], grad[0][i][j]);
 			
 			float pi = scp::pi;
 			scp::Mat<float> r = gradMag;
@@ -104,11 +104,11 @@ namespace djv
 						y = -1;
 					}
 
-					int64_t xForward = std::min(std::max(static_cast<int64_t>(i) + x, 0LL), static_cast<int64_t>(r.m - 1));
-					int64_t yForward = std::min(std::max(static_cast<int64_t>(j) + y, 0LL), static_cast<int64_t>(r.n - 1));
+					int64_t xForward = std::min(std::max(static_cast<int64_t>(i) + x, static_cast<int64_t>(0)), static_cast<int64_t>(r.m - 1));
+					int64_t yForward = std::min(std::max(static_cast<int64_t>(j) + y, static_cast<int64_t>(0)), static_cast<int64_t>(r.n - 1));
 
-					int64_t xBackward = std::min(std::max(static_cast<int64_t>(i) - x, 0LL), static_cast<int64_t>(r.m - 1));
-					int64_t yBackward = std::min(std::max(static_cast<int64_t>(j) - y, 0LL), static_cast<int64_t>(r.n - 1));
+					int64_t xBackward = std::min(std::max(static_cast<int64_t>(i) - x, static_cast<int64_t>(0)), static_cast<int64_t>(r.m - 1));
+					int64_t yBackward = std::min(std::max(static_cast<int64_t>(j) - y, static_cast<int64_t>(0)), static_cast<int64_t>(r.n - 1));
 
 					if (gradMag[xForward][yForward] > gradMag[i][j] || gradMag[xBackward][yBackward] > gradMag[i][j])
 						r[i][j] = 0.f;
