@@ -20,9 +20,9 @@
 
 namespace djv
 {
-	class Color;
-	class Point;
-	class Shape;
+	struct Color;
+	struct Point;
+	struct Shape;
 	class Line;
 	class Rect;
 

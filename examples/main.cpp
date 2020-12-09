@@ -77,8 +77,8 @@ int main()
 	}
 
 	djv::NeuralNetwork net;
-	net.setInputLayer(784, 32);
-	net.appendLayer(10);
+	net.setInputLayer(784, 10);
+	float accuracy = 0.f;
 
 	for (uint64_t i(0); i < 100000000; i++)
 	{
@@ -88,21 +88,21 @@ int main()
 		scp::Vec<float> y(10);
 		y[n] = 1.f;
 
-		net.train(mnist_training[n][j], y);
+		net.train(mnist_training[n][j], y, 0.1f*std::pow((1.f - accuracy), 2));
 
 		if (i % 1000 == 0)
 		{
-			float count(0);
+			accuracy = 0.f;
 			for (uint64_t k(0); k < 1000; k++)
 			{
 				uint64_t l = std::rand() % 500;
 				uint64_t m = std::rand() % 10;
 				scp::Vec<float> prediction = net(mnist_testing[m][l]);
 				if (scp::maxElement(prediction) == prediction[m])
-					count++;
+					accuracy += 0.001f;
 			}
 
-			std::cout << count / 1000.f << std::endl;
+			std::cout << accuracy << std::endl;
 		}
 	}
 

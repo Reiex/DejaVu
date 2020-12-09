@@ -27,7 +27,7 @@ namespace djv
 		std::vector<scp::Vec<float>> a;
 		a.push_back(x);
 		for (uint64_t i(0); i < _layers.size(); i++)
-			a.push_back((*_layers[i])(a[i]));
+			a.push_back((*_layers[i])(a.back()));
 
 		return a.back();
 	}

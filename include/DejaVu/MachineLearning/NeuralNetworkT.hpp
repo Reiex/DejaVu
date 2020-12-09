@@ -52,13 +52,13 @@ namespace djv
 	void NeuralNetwork::setInputLayer(uint64_t inputSize, uint64_t layerSize)
 	{
 		assert(_layers.size() == 0);
-		_layers.push_back(std::make_unique<TLayer>(inputSize, layerSize));
+		_layers.push_back(std::unique_ptr<layer::LayerBase>(new TLayer(inputSize, layerSize)));
 	}
 
 	template<typename TLayer>
 	void NeuralNetwork::appendLayer(uint64_t layerSize)
 	{
 		assert(_layers.size() != 0);
-		_layers.push_back(std::make_unique<TLayer>(_layers.back()->getLayerSize(), layerSize));
+		_layers.push_back(std::unique_ptr<layer::LayerBase>(new TLayer(_layers.back()->getLayerSize(), layerSize)));
 	}
 }
