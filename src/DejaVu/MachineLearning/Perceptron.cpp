@@ -2,7 +2,7 @@
 
 namespace djv
 {
-	namespace Perceptron
+	namespace perceptron
 	{
 		PerceptronBase::PerceptronBase(uint64_t inputSize) :
 			_weights(inputSize),
@@ -19,10 +19,17 @@ namespace djv
 			return f(scp::dot(x, _weights) + _bias);
 		}
 
+		void PerceptronBase::goThrough(const scp::Vec<float>& x, float& a, float& z) const
+		{
+			z = scp::dot(x, _weights) + _bias;
+			a = f(z);
+		}
+
 		void PerceptronBase::train(const scp::Vec<float>& x, float y, float learningRate)
 		{
-			float z = scp::dot(x, _weights) + _bias;
-			float a = f(z);
+			float a, z;
+			goThrough(x, a, z);
+
 			float c = learningRate*(a - y)*df(a, z);
 			for (uint64_t i(0); i < _weights.n; i++)
 				_weights[i] -= c*x[i];
@@ -62,7 +69,7 @@ namespace djv
 
 
 		BinaryStep::BinaryStep(uint64_t inputSize) :
-			Perceptron(inputSize)
+			PerceptronBase(inputSize)
 		{
 		}
 
@@ -78,7 +85,7 @@ namespace djv
 
 
 		LeakyReLU::LeakyReLU(uint64_t inputSize) :
-			Perceptron(inputSize)
+			PerceptronBase(inputSize)
 		{
 		}
 
@@ -94,7 +101,7 @@ namespace djv
 
 
 		Linear::Linear(uint64_t inputSize) :
-			Perceptron(inputSize)
+			PerceptronBase(inputSize)
 		{
 		}
 
@@ -110,7 +117,7 @@ namespace djv
 
 
 		ReLU::ReLU(uint64_t inputSize) :
-			Perceptron(inputSize)
+			PerceptronBase(inputSize)
 		{
 		}
 
@@ -126,7 +133,7 @@ namespace djv
 
 
 		Sigmoid::Sigmoid(uint64_t inputSize) :
-			Perceptron(inputSize)
+			PerceptronBase(inputSize)
 		{
 		}
 
@@ -142,7 +149,7 @@ namespace djv
 	
 
 		Tanh::Tanh(uint64_t inputSize) :
-			Perceptron(inputSize)
+			PerceptronBase(inputSize)
 		{
 		}
 

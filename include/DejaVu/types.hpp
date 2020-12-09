@@ -28,7 +28,8 @@ namespace djv
 
 	class Img;
 
-	namespace Perceptron
+
+	namespace perceptron
 	{
 		class PerceptronBase;
 
@@ -38,6 +39,14 @@ namespace djv
 		class ReLU;
 		class Sigmoid;
 		class Tanh;
+	}
+
+	namespace layer
+	{
+		class LayerBase;
+		
+		template<typename TPerceptron> class Perceptrons;
+		class SoftMax;
 	}
 
 	class NeuralNetwork;

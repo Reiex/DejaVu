@@ -4,7 +4,7 @@
 
 namespace djv
 {
-	namespace Perceptron
+	namespace perceptron
 	{
 		class PerceptronBase
 		{
@@ -14,6 +14,7 @@ namespace djv
 
 				float operator()(const scp::Vec<float>& x) const;
 
+				void goThrough(const scp::Vec<float>& x, float& a, float& z) const;
 				void train(const scp::Vec<float>& x, float y, float learningRate = 0.005f);
 				float nntrain(const scp::Vec<float>& x, float weightedError, float a, float z, float learningRate);
 

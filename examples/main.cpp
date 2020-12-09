@@ -52,5 +52,63 @@ int main()
 	}
 	*/
 
+	// Neural network
+
+	std::vector<std::vector<scp::Vec<float>>> mnist_training(10), mnist_testing(10);
+	for (uint64_t n(0); n < 10; n++)
+	{
+		mnist_training[n].resize(5000, scp::Vec<float>(784));
+		for (uint64_t i(0); i < mnist_training[n].size(); i++)
+		{
+			djv::Img nImg("examples/assets/MNIST/training/" + std::to_string(n) + "/" + std::to_string(i) + ".png");
+			for (uint64_t k(0); k < 28; k++)
+				for (uint64_t l(0); l < 28; l++)
+					mnist_training[n][i][28*k + l] = nImg(k, l, 0);
+		}
+
+		mnist_testing[n].resize(500, scp::Vec<float>(784));
+		for (uint64_t i(0); i < mnist_testing[n].size(); i++)
+		{
+			djv::Img nImg("examples/assets/MNIST/testing/" + std::to_string(n) + "/" + std::to_string(i) + ".png");
+			for (uint64_t k(0); k < 28; k++)
+				for (uint64_t l(0); l < 28; l++)
+					mnist_testing[n][i][28*k + l] = nImg(k, l, 0);
+		}
+	}
+
+	djv::NeuralNetwork net;
+	net.setInputLayer(784, 32);
+	net.appendLayer(10);
+
+	for (uint64_t i(0); i < 100000000; i++)
+	{
+		uint64_t j = std::rand() % mnist_training.size();
+		uint64_t n = std::rand() % 10;
+
+		scp::Vec<float> y(10);
+		y[n] = 1.f;
+
+		net.train(mnist_training[n][j], y);
+
+		if (i % 1000 == 0)
+		{
+			float count(0);
+			for (uint64_t k(0); k < 1000; k++)
+			{
+				uint64_t l = std::rand() % 500;
+				uint64_t m = std::rand() % 10;
+				scp::Vec<float> prediction = net(mnist_testing[m][l]);
+				if (scp::maxElement(prediction) == prediction[m])
+					count++;
+			}
+
+			std::cout << count / 1000.f << std::endl;
+		}
+	}
+
+	system("pause");
+
+
+
 	return 0;
 }
