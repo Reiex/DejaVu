@@ -37,13 +37,13 @@ EXAMPLES_OBJS = $(OBJ_EXAMPLES_DIR)/main.o
 # Compiler
 CC = g++
 # Compiler options
-LIBRARY_CFLAGS = -I$(INCLUDE_DIR) -Iexternal/include -fpic
-EXAMPLES_CFLAGS = -I$(INCLUDE_DIR) -Iexternal/include
+LIBRARY_CFLAGS = -I$(INCLUDE_DIR) -Iexternal/include -fpic -fopenmp
+EXAMPLES_CFLAGS = -I$(INCLUDE_DIR) -Iexternal/include -fopenmp
 # Linker options
 LDFLAGS = -L$(LIB_DIR) -Lexternal/lib -Wl,-rpath=$(LIB_DIR):external/lib
 # Libraries linked
-LIBRARY_LDLIBS = -lSciPP
-EXAMPLES_LDLIBS = -lDejaVu
+LIBRARY_LDLIBS = -lSciPP -lgomp
+EXAMPLES_LDLIBS = -lDejaVu -lgomp
 
 
 ###############################################################################

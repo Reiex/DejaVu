@@ -2,47 +2,47 @@
 
 #include <time.h>
 
-
 int main()
 {
 	djv::Img image("examples/assets/Cathedrale.jpg");
+	scp::Mat<float> grayScaleImage = image.grayScale();
 
 	// Kernels
 
-	/*
-	djv::Img(scp::convolve(image.getComponent(djv::ColorComponent::R), djv::kernel::sobel()[0])).saveToFile("build/sobelKernelX.png");
-	djv::Img(scp::convolve(image.getComponent(djv::ColorComponent::R), djv::kernel::sobel()[1])).saveToFile("build/sobelKernelY.png");
-	djv::Img(scp::convolve(image.getComponent(djv::ColorComponent::R), djv::kernel::prewitt()[0])).saveToFile("build/prewittKernelX.png");
-	djv::Img(scp::convolve(image.getComponent(djv::ColorComponent::R), djv::kernel::prewitt()[1])).saveToFile("build/prewittKernelY.png");
-	djv::Img(scp::convolve(image.getComponent(djv::ColorComponent::R), djv::kernel::derivativeOfGaussian()[0])*3.f).saveToFile("build/derivativeOfGaussianKernelX.png");
-	djv::Img(scp::convolve(image.getComponent(djv::ColorComponent::R), djv::kernel::derivativeOfGaussian()[1])*3.f).saveToFile("build/derivativeOfGaussianKernelY.png");
 
-	djv::Img(scp::convolve(image.getComponent(djv::ColorComponent::R), djv::kernel::laplacianOfGaussian())*10.f).saveToFile("build/LoGKernel.png");
+	djv::Img(scp::convolve(grayScaleImage, djv::kernel::sobel()[0])).saveToFile("build/sobelKernelX.png");
+	djv::Img(scp::convolve(grayScaleImage, djv::kernel::sobel()[1])).saveToFile("build/sobelKernelY.png");
+	djv::Img(scp::convolve(grayScaleImage, djv::kernel::prewitt()[0])).saveToFile("build/prewittKernelX.png");
+	djv::Img(scp::convolve(grayScaleImage, djv::kernel::prewitt()[1])).saveToFile("build/prewittKernelY.png");
+	djv::Img(scp::convolve(grayScaleImage, djv::kernel::derivativeOfGaussian()[0])*3.f).saveToFile("build/derivativeOfGaussianKernelX.png");
+	djv::Img(scp::convolve(grayScaleImage, djv::kernel::derivativeOfGaussian()[1])*3.f).saveToFile("build/derivativeOfGaussianKernelY.png");
 
-	djv::Img(scp::convolve(image.getComponent(djv::ColorComponent::R), djv::kernel::gaussian(5.f))).saveToFile("build/gaussianKernel.png");
-	*/
+	djv::Img(scp::convolve(grayScaleImage, djv::kernel::laplacianOfGaussian())*10.f).saveToFile("build/LoGKernel.png");
+
+	djv::Img(scp::convolve(grayScaleImage, djv::kernel::gaussian(5.f))).saveToFile("build/gaussianKernel.png");
+
 
 	// Processings
 
-	/*
-	djv::Img(djv::gaussianBlur(image.getComponent(djv::ColorComponent::R), 5.f)).saveToFile("build/gaussianBlur.png");
-	djv::Img((djv::gaussianBlur(image.getComponent(djv::ColorComponent::R), 1.f) - djv::gaussianBlur(image.getComponent(djv::ColorComponent::R), 2.f))*10.f).saveToFile("build/DoG.png");
-	*/
+	
+	djv::Img(djv::gaussianBlur(grayScaleImage, 5.f)).saveToFile("build/gaussianBlur.png");
+	djv::Img((djv::gaussianBlur(grayScaleImage, 1.f) - djv::gaussianBlur(image.getComponent(djv::ColorComponent::R), 2.f))*10.f).saveToFile("build/DoG.png");
+	
 
 	// Edge detectors
 
-	/*
-	djv::Img(djv::edgeDetector::sobel((image.getComponent(djv::ColorComponent::R) + image.getComponent(djv::ColorComponent::G) + image.getComponent(djv::ColorComponent::B)) / 3.f)).saveToFile("build/sobelEdgeDetector.png");
-	djv::Img(djv::edgeDetector::prewitt((image.getComponent(djv::ColorComponent::R) + image.getComponent(djv::ColorComponent::G) + image.getComponent(djv::ColorComponent::B)) / 3.f)).saveToFile("build/prewittEdgeDetector.png");
-	djv::Img(djv::edgeDetector::marrHildreth((image.getComponent(djv::ColorComponent::R) + image.getComponent(djv::ColorComponent::G) + image.getComponent(djv::ColorComponent::B)) / 3.f)).saveToFile("build/marrHildrethEdgeDetector.png");
-	djv::Img(djv::edgeDetector::canny((image.getComponent(djv::ColorComponent::R) + image.getComponent(djv::ColorComponent::G) + image.getComponent(djv::ColorComponent::B)) / 3.f)).saveToFile("build/cannyEdgeDetector.png");
-	*/
+	
+	djv::Img(djv::edgeDetector::sobel(grayScaleImage)).saveToFile("build/sobelEdgeDetector.png");
+	djv::Img(djv::edgeDetector::prewitt(grayScaleImage)).saveToFile("build/prewittEdgeDetector.png");
+	djv::Img(djv::edgeDetector::marrHildreth(grayScaleImage)).saveToFile("build/marrHildrethEdgeDetector.png");
+	djv::Img(djv::edgeDetector::canny(grayScaleImage)).saveToFile("build/cannyEdgeDetector.png");
+	
 
 	// Line extractors
 
-	/*
+	
 	{
-		scp::Mat<float> edges = djv::edgeDetector::marrHildreth((image.getComponent(djv::ColorComponent::R) + image.getComponent(djv::ColorComponent::G) + image.getComponent(djv::ColorComponent::B)) / 3.f);
+		scp::Mat<float> edges = djv::edgeDetector::marrHildreth(grayScaleImage);
 		std::vector<djv::Line> lines = djv::lineExtractor::hough(edges, 0.6f, 0.1f, 5);
 		djv::Img result = image;
 		for (uint64_t i(0); i < lines.size(); i++)
@@ -52,10 +52,11 @@ int main()
 		}
 		result.saveToFile("build/houghLineExtractor.png");
 	}
-	*/
+	
 
 	// Neural network
 
+	/*
 	time_t t(time(nullptr));
 	std::srand(t);
 	std::cout << "Seed: " << t << std::endl;
@@ -63,8 +64,9 @@ int main()
 	std::vector<std::vector<scp::Vec<float>>> mnist_training(10), mnist_testing(10);
 	for (uint64_t n(0); n < 10; n++)
 	{
+		std::cout << "Loading number " << n << " of MNIST." << std::endl;
 		mnist_training[n].resize(5000, scp::Vec<float>(784));
-		for (uint64_t i(0); i < mnist_training[n].size(); i++)
+		for (int64_t i = 0; i < mnist_training[n].size(); i++)
 		{
 			djv::Img nImg("examples/assets/MNIST/training/" + std::to_string(n) + "/" + std::to_string(i) + ".png");
 			for (uint64_t k(0); k < 28; k++)
@@ -73,7 +75,7 @@ int main()
 		}
 
 		mnist_testing[n].resize(500, scp::Vec<float>(784));
-		for (uint64_t i(0); i < mnist_testing[n].size(); i++)
+		for (int64_t i = 0; i < mnist_testing[n].size(); i++)
 		{
 			djv::Img nImg("examples/assets/MNIST/testing/" + std::to_string(n) + "/" + std::to_string(i) + ".png");
 			for (uint64_t k(0); k < 28; k++)
@@ -117,6 +119,7 @@ int main()
 			std::cout << count / 5000.f << std::endl;
 		}
 	}
+	*/
 
 	return 0;
 }

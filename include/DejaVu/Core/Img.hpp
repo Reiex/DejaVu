@@ -45,6 +45,7 @@ namespace djv
 			Img subRect(uint64_t left, uint64_t top, uint64_t width, uint64_t height) const;
 			void draw(const Shape& shape);
 
+			scp::Mat<float> grayScale(float redFactor = 0.2126f, float greenFactor = 0.7152f, float blueFactor = 0.0722f) const;
 			scp::Mat<float>& getComponent(ColorComponent component);
 			const scp::Mat<float>& getComponent(ColorComponent component) const;
 			uint64_t width() const;

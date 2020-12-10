@@ -207,6 +207,11 @@ namespace djv
 	}
 
 
+	scp::Mat<float> Img::grayScale(float redFactor, float greenFactor, float blueFactor) const
+	{
+		return redFactor*(*_r) + greenFactor*(*_g) + blueFactor*(*_b);
+	}
+
 	scp::Mat<float>& Img::getComponent(ColorComponent component)
 	{
 		switch (component)
@@ -250,5 +255,4 @@ namespace djv
 	{
 		return _height;
 	}
-
 }
