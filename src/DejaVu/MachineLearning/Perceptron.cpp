@@ -9,9 +9,9 @@ namespace djv
 			_bias(0)
 		{
 			for (uint64_t i(0); i < inputSize; i++)
-				_weights[i] = static_cast<float>(std::rand()) / RAND_MAX - 0.5f;
+				_weights[i] = (static_cast<float>(std::rand()) / RAND_MAX)/10.f - 0.05f;
 
-			_bias = static_cast<float>(std::rand()) / RAND_MAX - 0.5f;
+			_bias = (static_cast<float>(std::rand()) / RAND_MAX)/10.f - 0.05f;
 		}
 
 		float PerceptronBase::operator()(const scp::Vec<float>& x) const

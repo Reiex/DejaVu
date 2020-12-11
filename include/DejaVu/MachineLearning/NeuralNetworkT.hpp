@@ -36,10 +36,10 @@ namespace djv
 		{
 			for (uint64_t i(0); i < _outputSize; i++)
 			{
-				const scp::Vec<float>& w = _neurons[i].getWeights();
 				float computedError;
 				_neurons[i].computeCorrection(x, err[i], a[i], z[i], learningRate, computedError, correction[i]);
 
+				const scp::Vec<float>& w = _neurons[i].getWeights();
 				for (uint64_t j(0); j < nextErr.n; j++)
 					nextErr[j] += computedError * w[j];
 			}

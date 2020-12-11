@@ -83,16 +83,14 @@ int main()
 
 	djv::NeuralNetwork net;
 	net.setInputLayer(784, 10);
-	net.appendLayer(10);
-	net.appendLayer<djv::layer::SoftMax>(10);
 
 	for (uint64_t i(0); true; i++)
 	{
 		std::vector<scp::Vec<float>> x, y;
-		for (uint64_t j(0); j < 5; j++)
+		for (uint64_t j(0); j < 10; j++)
 		{
-			uint64_t k = std::rand() % mnist_training.size();
 			uint64_t n = std::rand() % 10;
+			uint64_t k = std::rand() % mnist_training.size();
 			x.push_back(mnist_training[n][k]);
 
 			y.push_back(scp::Vec<float>(10));
@@ -101,9 +99,12 @@ int main()
 
 		net.batchTrain(x, y, 0.01f);
 
-		if (i % 100 == 0)
+		if (i % 1000 == 0)
 		{
-			float count(0);
+			float count[10];
+			for (uint64_t m(0); m < 10; m++)
+				count[m] = 0;
+
 			#pragma omp parallel for shared(count, mnist_testing)
 			for (int64_t m = 0; m < 10; m++)
 			{
@@ -112,11 +113,13 @@ int main()
 					scp::Vec<float> prediction = net(mnist_testing[m][l]);
 					if (scp::maxElement(prediction) == prediction[m])
 						#pragma omp atomic
-						count++;
+						count[m]++;
 				}
 			}
 
-			std::cout << count / 5000.f << std::endl;
+			for (uint64_t m(0); m < 10; m++)
+				std::cout << count[m] << " ";
+			std::cout << std::endl;
 		}
 	}
 
