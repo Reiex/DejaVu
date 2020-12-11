@@ -49,11 +49,6 @@ int main()
 
 	// Neural network
 
-	
-	time_t t(time(nullptr));
-	std::srand(t);
-	std::cout << "Seed: " << t << std::endl;
-
 	std::vector<std::vector<scp::Vec<float>>> mnist_training(10), mnist_testing(10);
 	for (uint64_t n(0); n < 10; n++)
 	{
@@ -84,24 +79,25 @@ int main()
 	}
 
 	djv::NeuralNetwork net;
-	net.setInputLayer(784, 10);
+	net.setInputLayer(784, 16);
+	net.appendLayer(10);
 
 	for (uint64_t i(0); true; i++)
 	{
 		std::vector<scp::Vec<float>> x, y;
-		for (uint64_t j(0); j < 10; j++)
+		for (uint64_t j(0); j < 8; j++)
 		{
 			uint64_t n = std::rand() % 10;
-			uint64_t k = std::rand() % mnist_training.size();
+			uint64_t k = std::rand() % mnist_training[0].size();
 			x.push_back(mnist_training[n][k]);
 
 			y.push_back(scp::Vec<float>(10));
 			y.back()[n] = 1.f;
 		}
 
-		net.batchTrain(x, y, 0.01f);
+		net.batchTrain(x, y, 0.1f);
 
-		if (i % 1000 == 0)
+		if (i % 10000 == 0)
 		{
 			float count[10];
 			for (uint64_t m(0); m < 10; m++)
