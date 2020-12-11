@@ -149,7 +149,7 @@ namespace djv
 
 		float Sigmoid::df(float a, float z) const
 		{
-			return a*(1 - a);
+			return a*(1.f - a);
 		}
 	
 

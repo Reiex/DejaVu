@@ -7,43 +7,35 @@ int main()
 	djv::Img image("examples/assets/Cathedrale.jpg");
 	scp::Mat<float> grayScaleImage = image.grayScale();
 
-	// Kernels
-
-
-	djv::Img(scp::convolve(grayScaleImage, djv::kernel::sobel()[0])).saveToFile("build/sobelKernelX.png");
-	djv::Img(scp::convolve(grayScaleImage, djv::kernel::sobel()[1])).saveToFile("build/sobelKernelY.png");
-	djv::Img(scp::convolve(grayScaleImage, djv::kernel::prewitt()[0])).saveToFile("build/prewittKernelX.png");
-	djv::Img(scp::convolve(grayScaleImage, djv::kernel::prewitt()[1])).saveToFile("build/prewittKernelY.png");
-	djv::Img(scp::convolve(grayScaleImage, djv::kernel::derivativeOfGaussian()[0])*3.f).saveToFile("build/derivativeOfGaussianKernelX.png");
-	djv::Img(scp::convolve(grayScaleImage, djv::kernel::derivativeOfGaussian()[1])*3.f).saveToFile("build/derivativeOfGaussianKernelY.png");
-
-	djv::Img(scp::convolve(grayScaleImage, djv::kernel::laplacianOfGaussian())*10.f).saveToFile("build/LoGKernel.png");
-
-	djv::Img(scp::convolve(grayScaleImage, djv::kernel::gaussian(5.f))).saveToFile("build/gaussianKernel.png");
-
-
 	// Processings
 
 	
-	djv::Img(djv::gaussianBlur(grayScaleImage, 5.f)).saveToFile("build/gaussianBlur.png");
-	djv::Img((djv::gaussianBlur(grayScaleImage, 1.f) - djv::gaussianBlur(image.getComponent(djv::ColorComponent::R), 2.f))*10.f).saveToFile("build/DoG.png");
+	djv::Img(djv::operators::sobel(grayScaleImage)[0]).saveToFile("build/SobelX.png");
+	djv::Img(djv::operators::sobel(grayScaleImage)[1]).saveToFile("build/SobelY.png");
+	djv::Img(djv::operators::prewitt(grayScaleImage)[0]).saveToFile("build/PrewittX.png");
+	djv::Img(djv::operators::prewitt(grayScaleImage)[1]).saveToFile("build/PrewittY.png");
+	djv::Img(djv::operators::derivativeOfGaussian(grayScaleImage)[0]).saveToFile("build/DerivativeOfGaussianX.png");
+	djv::Img(djv::operators::derivativeOfGaussian(grayScaleImage)[1]).saveToFile("build/DerivativeOfGaussianY.png");
+
+	djv::Img(djv::operators::laplacianOfGaussian(grayScaleImage)).saveToFile("build/LaplacianOfGaussian.png");
+
+	djv::Img(djv::operators::gaussianBlur(grayScaleImage, 10.f)).saveToFile("build/GaussianBlur.png");
 	
 
 	// Edge detectors
 
-	
+
 	djv::Img(djv::edgeDetector::sobel(grayScaleImage)).saveToFile("build/sobelEdgeDetector.png");
 	djv::Img(djv::edgeDetector::prewitt(grayScaleImage)).saveToFile("build/prewittEdgeDetector.png");
 	djv::Img(djv::edgeDetector::marrHildreth(grayScaleImage)).saveToFile("build/marrHildrethEdgeDetector.png");
 	djv::Img(djv::edgeDetector::canny(grayScaleImage)).saveToFile("build/cannyEdgeDetector.png");
-	
+
 
 	// Line extractors
 
-	
 	{
 		scp::Mat<float> edges = djv::edgeDetector::marrHildreth(grayScaleImage);
-		std::vector<djv::Line> lines = djv::lineExtractor::hough(edges, 0.6f, 0.1f, 5);
+		std::vector<djv::Line> lines = djv::lineExtractor::hough(edges, 0.4);
 		djv::Img result = image;
 		for (uint64_t i(0); i < lines.size(); i++)
 		{
@@ -52,11 +44,10 @@ int main()
 		}
 		result.saveToFile("build/houghLineExtractor.png");
 	}
-	
 
 	// Neural network
 
-	/*
+	
 	time_t t(time(nullptr));
 	std::srand(t);
 	std::cout << "Seed: " << t << std::endl;
@@ -66,32 +57,39 @@ int main()
 	{
 		std::cout << "Loading number " << n << " of MNIST." << std::endl;
 		mnist_training[n].resize(5000, scp::Vec<float>(784));
-		for (int64_t i = 0; i < mnist_training[n].size(); i++)
+		int64_t i, k, l;
+		djv::Img nImg;
+
+		#pragma omp parallel for private(i, k, l, nImg) shared(mnist_training)
+		for (i = 0; i < mnist_training[n].size(); i++)
 		{
-			djv::Img nImg("examples/assets/MNIST/training/" + std::to_string(n) + "/" + std::to_string(i) + ".png");
-			for (uint64_t k(0); k < 28; k++)
-				for (uint64_t l(0); l < 28; l++)
+			nImg = djv::Img("examples/assets/MNIST/training/" + std::to_string(n) + "/" + std::to_string(i) + ".png");
+			for (k = 0; k < 28; k++)
+				for (l = 0; l < 28; l++)
 					mnist_training[n][i][28*k + l] = nImg(k, l, 0);
 		}
 
 		mnist_testing[n].resize(500, scp::Vec<float>(784));
+
+		#pragma omp parallel for private(i, k, l, nImg) shared(mnist_testing)
 		for (int64_t i = 0; i < mnist_testing[n].size(); i++)
 		{
-			djv::Img nImg("examples/assets/MNIST/testing/" + std::to_string(n) + "/" + std::to_string(i) + ".png");
-			for (uint64_t k(0); k < 28; k++)
-				for (uint64_t l(0); l < 28; l++)
+			nImg = djv::Img("examples/assets/MNIST/testing/" + std::to_string(n) + "/" + std::to_string(i) + ".png");
+			for (k = 0; k < 28; k++)
+				for (l = 0; l < 28; l++)
 					mnist_testing[n][i][28*k + l] = nImg(k, l, 0);
 		}
 	}
 
 	djv::NeuralNetwork net;
 	net.setInputLayer(784, 10);
+	net.appendLayer(10);
 	net.appendLayer<djv::layer::SoftMax>(10);
 
 	for (uint64_t i(0); true; i++)
 	{
 		std::vector<scp::Vec<float>> x, y;
-		for (uint64_t j(0); j < 10; j++)
+		for (uint64_t j(0); j < 5; j++)
 		{
 			uint64_t k = std::rand() % mnist_training.size();
 			uint64_t n = std::rand() % 10;
@@ -101,17 +99,19 @@ int main()
 			y.back()[n] = 1.f;
 		}
 
-		net.batchTrain(x, y, 0.1f);
+		net.batchTrain(x, y, 0.01f);
 
 		if (i % 100 == 0)
 		{
 			float count(0);
-			for (uint64_t m(0); m < 10; m++)
+			#pragma omp parallel for shared(count, mnist_testing)
+			for (int64_t m = 0; m < 10; m++)
 			{
-				for (uint64_t l(0); l < 500; l++)
+				for (int64_t l = 0; l < 500; l++)
 				{
 					scp::Vec<float> prediction = net(mnist_testing[m][l]);
 					if (scp::maxElement(prediction) == prediction[m])
+						#pragma omp atomic
 						count++;
 				}
 			}
@@ -119,7 +119,6 @@ int main()
 			std::cout << count / 5000.f << std::endl;
 		}
 	}
-	*/
 
 	return 0;
 }

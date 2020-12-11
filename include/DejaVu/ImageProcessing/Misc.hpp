@@ -18,12 +18,17 @@ namespace djv
 		scp::Mat<float> gaussian(float sigma = 1.f, uint64_t patchSize = 0);
 	}
 
-	// Processings
+	namespace operators
+	{
+		// Gradient
+		std::array<scp::Mat<float>, 2> sobel(const scp::Mat<float>& m);
+		std::array<scp::Mat<float>, 2> prewitt(const scp::Mat<float>& m);
+		std::array<scp::Mat<float>, 2> derivativeOfGaussian(const scp::Mat<float>& m, float sigma = 1.f, uint64_t patchSize = 0);
 
-	// Gradient
+		// Laplacian
+		scp::Mat<float> laplacianOfGaussian(const scp::Mat<float>& m, float sigma = 1.f, uint64_t patchSize = 0);
 
-	// Laplacian
-
-	// Blur
-	scp::Mat<float> gaussianBlur(const scp::Mat<float>& m, float sigma = 1.f, uint64_t patchSize = 0);
+		// Blur
+		scp::Mat<float> gaussianBlur(const scp::Mat<float>& m, float sigma = 1.f, uint64_t patchSize = 0);
+	}
 }

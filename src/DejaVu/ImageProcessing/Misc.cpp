@@ -94,12 +94,15 @@ namespace djv
 			scp::Mat<float> G(2 * patchSize + 1, 2 * patchSize + 1);
 
 			float sigmaSq = sigma * sigma;
-			for (uint64_t i(0); i < G.m; i++)
+
+			int64_t i, j;
+			float x, y;
+			for (i = 0; i < G.m; i++)
 			{
-				for (uint64_t j(0); j < G.n; j++)
+				for (j = 0; j < G.n; j++)
 				{
-					float x = static_cast<float>(i) - patchSize;
-					float y = static_cast<float>(j) - patchSize;
+					x = static_cast<float>(i) - patchSize;
+					y = static_cast<float>(j) - patchSize;
 					G[i][j] = std::exp(-(x * x + y * y) / (2 * sigmaSq)) / (6.2831853f * sigmaSq);
 				}
 			}
@@ -108,42 +111,139 @@ namespace djv
 		}
 	}
 
-	scp::Mat<float> gaussianBlur(const scp::Mat<float>& m, float sigma, uint64_t patchSize)
+	namespace operators
 	{
-		if (patchSize == 0)
-			patchSize = 3 * (static_cast<uint64_t>(sigma) + 1);
-
-		scp::Mat<float> r(m.m, m.n);
-
-		scp::Vec<float> g(2*patchSize + 1);
-		float sigmaSq = sigma * sigma;
-		for (uint64_t i(0); i < g.n; i++)
+		std::array<scp::Mat<float>, 2> sobel(const scp::Mat<float>& m)
 		{
-			float x = static_cast<float>(i) - patchSize;
-			g[i] = std::exp(-x*x / (2*sigmaSq))/(2.506628275f*sigma);
-		}
+			scp::Mat<float> Sx(m.m, m.n), Sy(m.m, m.n);
 
-		for (uint64_t i(0); i < m.m; i++)
-		{
-			for (uint64_t j(0); j < m.n; j++)
+			int64_t iPreced, iNext, jPreced, jNext;
+			int64_t i, j;
+			#pragma omp parallel for private(i, j, iPreced, iNext, jPreced, jNext) shared(Sx, Sy, m)
+			for (i = 0; i < m.m; i++)
 			{
-				for (uint64_t k(0); k < g.n; k++)
+				for (j = 0; j < m.n; j++)
 				{
-					if (i + k >= patchSize && i + k - patchSize < m.m)
-						r[i][j] += g[k] * m[i + k - patchSize][j];
-					else if (i + k < patchSize)
-						r[i][j] += g[k] * m[0][j];
-					else
-						r[i][j] += g[k] * m[m.m - 1][j];
+					iPreced = std::max(i - 1, static_cast<int64_t>(0));
+					iNext = std::min(i + 1, static_cast<int64_t>(m.m - 1));
+					jPreced = std::max(j - 1, static_cast<int64_t>(0));
+					jNext = std::min(j + 1, static_cast<int64_t>(m.n - 1));
+
+					Sx[i][j] = (m[iNext][jNext] + 2*m[iNext][j] + m[iNext][jPreced]) - (m[iPreced][jNext] + 2*m[iPreced][j] + m[iPreced][jPreced]);
+					Sy[i][j] = (m[iNext][jNext] + 2*m[i][jNext] + m[iPreced][jNext]) - (m[iNext][jPreced] + 2*m[i][jPreced] + m[iPreced][jPreced]);
 				}
 			}
+
+			return { Sx / scp::maxElement(Sx), Sy / scp::maxElement(Sy) };
 		}
 
-		for (uint64_t i(0); i < m.m; i++)
+		std::array<scp::Mat<float>, 2> prewitt(const scp::Mat<float>& m)
 		{
-			r[i] = scp::convolve(r[i], g, scp::ConvolveMethod::Continuous);
+			scp::Mat<float> Px(m.m, m.n), Py(m.m, m.n);
+
+			int64_t iPreced, iNext, jPreced, jNext;
+			int64_t i, j;
+			#pragma omp parallel for private(i, j, iPreced, iNext, jPreced, jNext) shared(Px, Py, m)
+			for (i = 0; i < m.m; i++)
+			{
+				for (j = 0; j < m.n; j++)
+				{
+					iPreced = std::max(i - 1, static_cast<int64_t>(0));
+					iNext = std::min(i + 1, static_cast<int64_t>(m.m - 1));
+					jPreced = std::max(j - 1, static_cast<int64_t>(0));
+					jNext = std::min(j + 1, static_cast<int64_t>(m.n - 1));
+
+					Px[i][j] = (m[iNext][jNext] + m[iNext][j] + m[iNext][jPreced]) - (m[iPreced][jNext] + m[iPreced][j] + m[iPreced][jPreced]);
+					Py[i][j] = (m[iNext][jNext] + m[i][jNext] + m[iPreced][jNext]) - (m[iNext][jPreced] + m[i][jPreced] + m[iPreced][jPreced]);
+				}
+			}
+
+			return { Px / scp::maxElement(Px), Py / scp::maxElement(Py) };
 		}
 
-		return r;
+		std::array<scp::Mat<float>, 2> derivativeOfGaussian(const scp::Mat<float>& m, float sigma, uint64_t patchSize)
+		{
+			scp::Mat<float> g = gaussianBlur(m, sigma, patchSize);
+			scp::Mat<float> gx(m.m, m.n), gy(m.m, m.n);
+
+			int64_t iPreced, iNext, jPreced, jNext;
+			int64_t i, j;
+			#pragma omp parallel for private(i, j, iPreced, iNext, jPreced, jNext) shared(gx, gy, g)
+			for (i = 0; i < g.m; i++)
+			{
+				for (j = 0; j < g.n; j++)
+				{
+					iPreced = std::max(i - 1, static_cast<int64_t>(0));
+					iNext = std::min(i + 1, static_cast<int64_t>(m.m - 1));
+					jPreced = std::max(j - 1, static_cast<int64_t>(0));
+					jNext = std::min(j + 1, static_cast<int64_t>(m.n - 1));
+
+					gx[i][j] = g[iNext][j] - g[iPreced][j];
+					gy[i][j] = g[i][jNext] - g[i][jPreced];
+				}
+			}
+
+			return { gx / scp::maxElement(gx), gy / scp::maxElement(gy) };
+		}
+
+
+		scp::Mat<float> laplacianOfGaussian(const scp::Mat<float>& m, float sigma, uint64_t patchSize)
+		{
+			scp::Mat<float> g = gaussianBlur(m, sigma, patchSize);
+			scp::Mat<float> r(m.m, m.n);
+
+			int64_t iPreced, iNext, jPreced, jNext;
+			int64_t i, j;
+			#pragma omp parallel for private(i, j, iPreced, iNext, jPreced, jNext) shared(r, g)
+			for (i = 0; i < r.m; i++)
+			{
+				for (j = 0; j < r.n; j++)
+				{
+					iPreced = std::max(i - 1, static_cast<int64_t>(0));
+					iNext = std::min(i + 1, static_cast<int64_t>(m.m - 1));
+					jPreced = std::max(j - 1, static_cast<int64_t>(0));
+					jNext = std::min(j + 1, static_cast<int64_t>(m.n - 1));
+
+					r[i][j] = g[iNext][j] + g[i][jNext] + g[iPreced][j] + g[i][jPreced] - 4*g[i][j];
+				}
+			}
+
+			return r / std::max(scp::maxElement(r), -scp::minElement(r));
+		}
+
+
+		scp::Mat<float> gaussianBlur(const scp::Mat<float>& m, float sigma, uint64_t patchSize)
+		{
+			if (patchSize == 0)
+				patchSize = 3 * (static_cast<uint64_t>(sigma) + 1);
+
+			scp::Mat<float> r(m.m, m.n);
+
+			scp::Vec<float> g(2*patchSize + 1);
+			float sigmaSq = sigma * sigma;
+			for (uint64_t i(0); i < g.n; i++)
+			{
+				float x = static_cast<float>(i) - patchSize;
+				g[i] = std::exp(-x*x / (2*sigmaSq))/(2.506628275f*sigma);
+			}
+
+			int64_t i, j, k;
+			#pragma omp parallel for private(i, j, k) shared(m, g, r, patchSize)
+			for (i = 0; i < m.m; i++)
+				for (j = 0; j < m.n; j++)
+					for (k = 0; k < g.n; k++)
+						if (i + k >= patchSize && i + k - patchSize < m.m)
+							r[i][j] += g[k] * m[i + k - patchSize][j];
+						else if (i + k < patchSize)
+							r[i][j] += g[k] * m[0][j];
+						else
+							r[i][j] += g[k] * m[m.m - 1][j];
+
+			#pragma omp parallel for private(i) shared(m, g, r)
+			for (i = 0; i < m.m; i++)
+				r[i] = scp::convolve(r[i], g, scp::ConvolveMethod::Continuous);
+
+			return r;
+		}
 	}
 }

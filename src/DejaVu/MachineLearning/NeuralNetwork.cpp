@@ -81,13 +81,15 @@ namespace djv
 		std::vector<scp::Mat<float>> corrections;
 		for (uint64_t i(0); i < _layers.size(); i++)
 			corrections.push_back(scp::Mat<float>(_layers[i]->getOutputSize(), _layers[i]->getInputSize() + 1));
-
-		for (uint64_t i(0); i < x.size(); i++)
+		
+		int64_t i, j;
+		#pragma omp parallel for private(i, j) shared(x, learningRate, corrections)
+		for (i = 0; i < x.size(); i++)
 		{
 			std::vector<scp::Vec<float>> z, a, delta;
 			z.push_back(scp::Vec<float>(0));
 			a.push_back(x[i]);
-			for (uint64_t j(0); j < _layers.size(); j++)
+			for (j = 0; j < _layers.size(); j++)
 			{
 				a.push_back(scp::Vec<float>(_layers[j]->getOutputSize()));
 				z.push_back(scp::Vec<float>(_layers[j]->getOutputSize()));
@@ -96,10 +98,11 @@ namespace djv
 			}
 
 			delta.push_back(a.back() - y[i]);
-			for (uint64_t j(_layers.size() - 1); j != UINT64_MAX; j--)
+			for (j = _layers.size() - 1; j != UINT64_MAX; j--)
 			{
 				scp::Mat<float> correction(_layers[j]->getOutputSize(), _layers[j]->getInputSize() + 1);
 				_layers[j]->computeCorrection(a[j], delta[j+1], a[j+1], z[j+1], learningRate, delta[j], correction);
+				#pragma omp critical
 				corrections[j] += correction;
 			}
 		}

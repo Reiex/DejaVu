@@ -6,18 +6,16 @@ namespace djv
 	{
 		scp::Mat<float> sobel(const scp::Mat<float>& m)
 		{
-			scp::Mat<float> Sx = scp::convolve(m, kernel::sobel()[0], scp::ConvolveMethod::Continuous);
-			scp::Mat<float> Sy = scp::convolve(m, kernel::sobel()[1], scp::ConvolveMethod::Continuous);
-			scp::Mat<float> S = scp::hadamardProduct(Sx, Sx) + scp::hadamardProduct(Sy, Sy);
+			std::array<scp::Mat<float>, 2> grad = operators::sobel(m);
+			scp::Mat<float> S = scp::hadamardProduct(grad[0], grad[0]) + scp::hadamardProduct(grad[1], grad[1]);
 			
 			return S / scp::maxElement(S);
 		}
 
 		scp::Mat<float> prewitt(const scp::Mat<float>& m)
 		{
-			scp::Mat<float> Px = scp::convolve(m, kernel::prewitt()[0], scp::ConvolveMethod::Continuous);
-			scp::Mat<float> Py = scp::convolve(m, kernel::prewitt()[1], scp::ConvolveMethod::Continuous);
-			scp::Mat<float> P = scp::hadamardProduct(Px, Px) + scp::hadamardProduct(Py, Py);
+			std::array<scp::Mat<float>, 2> grad = operators::prewitt(m);
+			scp::Mat<float> P = scp::hadamardProduct(grad[0], grad[0]) + scp::hadamardProduct(grad[1], grad[1]);
 
 			return P / scp::maxElement(P);
 		}
@@ -25,44 +23,43 @@ namespace djv
 		scp::Mat<float> marrHildreth(const scp::Mat<float>& m, float sigma)
 		{
 			scp::Mat<float> r(m.m, m.n);
-			scp::Mat<float> laplacian = scp::convolve(m, kernel::laplacianOfGaussian(sigma), scp::ConvolveMethod::Continuous);
-			std::array<scp::Mat<float>, 2> grad = {
-				scp::convolve(m, kernel::derivativeOfGaussian(sigma)[0], scp::ConvolveMethod::Continuous),
-				scp::convolve(m, kernel::derivativeOfGaussian(sigma)[1], scp::ConvolveMethod::Continuous)
-			};
-			scp::Mat<float> gradMag = scp::hadamardProduct(grad[0], grad[0]) + scp::hadamardProduct(grad[1], grad[1]);
+			scp::Mat<float> laplacian = operators::laplacianOfGaussian(m, sigma);
+			std::array<scp::Mat<float>, 2> grad = operators::derivativeOfGaussian(m, sigma);
 
-			gradMag /= scp::maxElement(gradMag);
-
-			for (uint64_t i(0); i < laplacian.m - 1; i++)
-				for (uint64_t j(0); j < laplacian.n - 1; j++)
+			int64_t i, j;
+			#pragma omp parallel for private(i, j) shared(laplacian, grad, r)
+			for (i = 0; i < laplacian.m - 1; i++)
+				for (j = 0; j < laplacian.n - 1; j++)
 					if ((laplacian[i][j] * laplacian[i + 1][j] < 0 || laplacian[i][j] * laplacian[i][j + 1] < 0))
-						r[i][j] = gradMag[i][j];
+						r[i][j] = grad[0][i][j]*grad[0][i][j] + grad[1][i][j]*grad[1][i][j];
 
-			return r;
+			return r / scp::maxElement(r);
 		}
 
 		scp::Mat<float> canny(const scp::Mat<float>& m, float sigma)
 		{
-			std::array<scp::Mat<float>, 2> grad = {
-				scp::convolve(m, kernel::derivativeOfGaussian(sigma)[0], scp::ConvolveMethod::Continuous),
-				scp::convolve(m, kernel::derivativeOfGaussian(sigma)[1], scp::ConvolveMethod::Continuous)
-			};
-			scp::Mat<float> gradMag = scp::hadamardProduct(grad[0], grad[0]) + scp::hadamardProduct(grad[1], grad[1]);
-			gradMag /= scp::maxElement(gradMag);
+			std::array<scp::Mat<float>, 2> grad = operators::derivativeOfGaussian(m, sigma);
 
-			scp::Mat<float> gradArg(m.m, m.n);
-			for (uint64_t i(0); i < gradArg.m; i++)
-				for (uint64_t j(0); j < gradArg.n; j++)
-					gradArg[i][j] = std::atan2(grad[1][i][j], grad[0][i][j]);
-			
-			float pi = scp::pi;
-			scp::Mat<float> r = gradMag;
-			for (uint64_t i(0); i < r.m; i++)
+			int64_t i, j;
+			scp::Mat<float> gradMag(m.m, m.n), gradArg(m.m, m.n);
+			#pragma omp parallel for private(i, j) shared(grad, gradMag, gradArg)
+			for (i = 0; i < gradMag.m; i++)
 			{
-				for (uint64_t j(0); j < r.n; j++)
+				for (j = 0; j < gradMag.n; j++)
 				{
-					int64_t x(0), y(0);
+					gradMag[i][j] = grad[0][i][j]*grad[0][i][j] + grad[1][i][j]*grad[1][i][j];
+					gradArg[i][j] = std::atan2(grad[1][i][j], grad[0][i][j]);
+				}
+			}
+
+			float pi = scp::pi;
+			int64_t x, y, xForward, xBackward, yForward, yBackward;
+			scp::Mat<float> r(gradMag);
+			#pragma omp parallel for private(i, j, x, y, xForward, xBackward, yForward, yBackward) shared(r, gradMag, gradArg)
+			for (i = 0; i < r.m; i++)
+			{
+				for (j = 0; j < r.n; j++)
+				{
 					if (gradArg[i][j] >= 7*pi/8 || gradArg[i][j] < -7*pi/8)
 					{
 						x = -1;
@@ -98,17 +95,17 @@ namespace djv
 						x = 0;
 						y = -1;
 					}
-					else if (gradArg[i][j] >= -7*pi/8 && gradArg[i][j] < -5*pi/8)
+					else
 					{
 						x = -1;
 						y = -1;
 					}
 
-					int64_t xForward = std::min(std::max(static_cast<int64_t>(i) + x, static_cast<int64_t>(0)), static_cast<int64_t>(r.m - 1));
-					int64_t yForward = std::min(std::max(static_cast<int64_t>(j) + y, static_cast<int64_t>(0)), static_cast<int64_t>(r.n - 1));
+					xForward = std::min(std::max(static_cast<int64_t>(i) + x, static_cast<int64_t>(0)), static_cast<int64_t>(r.m - 1));
+					yForward = std::min(std::max(static_cast<int64_t>(j) + y, static_cast<int64_t>(0)), static_cast<int64_t>(r.n - 1));
 
-					int64_t xBackward = std::min(std::max(static_cast<int64_t>(i) - x, static_cast<int64_t>(0)), static_cast<int64_t>(r.m - 1));
-					int64_t yBackward = std::min(std::max(static_cast<int64_t>(j) - y, static_cast<int64_t>(0)), static_cast<int64_t>(r.n - 1));
+					xBackward = std::min(std::max(static_cast<int64_t>(i) - x, static_cast<int64_t>(0)), static_cast<int64_t>(r.m - 1));
+					yBackward = std::min(std::max(static_cast<int64_t>(j) - y, static_cast<int64_t>(0)), static_cast<int64_t>(r.n - 1));
 
 					if (gradMag[xForward][yForward] > gradMag[i][j] || gradMag[xBackward][yBackward] > gradMag[i][j])
 						r[i][j] = 0.f;
@@ -198,51 +195,41 @@ namespace djv
 		{
 			scp::Mat<float> h(static_cast<uint64_t>(scp::pi / dTheta), static_cast<uint64_t>(2 * std::sqrt(m.m*m.m + m.n*m.n)/dRho + 3));
 
-			for (uint64_t i(0); i < m.m; i++)
+			int64_t i, j, k, rho;
+			float theta;
+
+			#pragma omp parallel for private(i, j, k, theta, rho) shared(h, m, dRho, dTheta)
+			for (i = 0; i < m.m; i++)
 			{
-				for (uint64_t j(0); j < m.n; j++)
+				for (j = 0; j < m.n; j++)
 				{
-					for (uint64_t k(0); k < h.m; k++)
+					for (k = 0; k < h.m; k++)
 					{
-						double theta = static_cast<double>(dTheta) * k;
-						int64_t rho = static_cast<int64_t>((static_cast<double>(std::cos(theta))*i + static_cast<double>(std::sin(theta))*j) / dRho);
+						theta = dTheta * k;
+						rho = static_cast<int64_t>((std::cos(theta)*i + std::sin(theta)*j) / dRho);
 						if (rho != 0)
 							h[k][rho + h.n/2 + 1] += m[i][j];
 					}
 				}
 			}
 
-			float hMax = h[0][0];
-
-			for (uint64_t i(0); i < h.m; i++)
-				for (uint64_t j(0); j < h.n; j++)
-					if (h[i][j] > hMax)
-						hMax = h[i][j];
-
-			h /= hMax;
+			h /= scp::maxElement(h);
 
 			std::vector<Line> result;
-			for (uint64_t i(0); i < h.m; i++)
+			Line line;
+			#pragma omp parallel for private(i, j, line) shared(h, m, threshold, result, dTheta, dRho)
+			for (i = 0; i < h.m; i++)
 			{
-				for (uint64_t j(0); j < h.n; j++)
+				for (j = 0; j < h.n; j++)
 				{
 					if (h[i][j] >= threshold)
 					{
-						float theta = i * dTheta;
-						float rho = (static_cast<float>(j) - h.n/2 - 1) * dRho;
-
-						result.push_back(extractLine(m.m, m.n, theta, rho));
+						line = extractLine(m.m, m.n, i*dTheta, (static_cast<float>(j) - h.n/2 - 1) * dRho);
+						#pragma omp critical
+						result.push_back(line);
 					}
 				}
 			}
-
-			/*
-
-			TODO:
-				- Filtre gaussien et recherche de maximum local
-				- Découpage segment (histogramme)
-
-			*/
 
 			return result;
 		}
