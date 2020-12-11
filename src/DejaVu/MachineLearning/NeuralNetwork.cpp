@@ -107,7 +107,8 @@ namespace djv
 			}
 		}
 
-		for (uint64_t i(0); i < _layers.size(); i++)
+		#pragma omp parallel for private(i) shared(corrections, x)
+		for (i = 0; i < _layers.size(); i++)
 			_layers[i]->applyCorrection(corrections[i] / static_cast<float>(x.size()));
 	}
 }

@@ -85,7 +85,7 @@ int main()
 	for (uint64_t i(0); true; i++)
 	{
 		std::vector<scp::Vec<float>> x, y;
-		for (uint64_t j(0); j < 8; j++)
+		for (uint64_t j(0); j < 10; j++)
 		{
 			uint64_t n = std::rand() % 10;
 			uint64_t k = std::rand() % mnist_training[0].size();
@@ -97,7 +97,7 @@ int main()
 
 		net.batchTrain(x, y, 0.1f);
 
-		if (i % 10000 == 0)
+		if (i % 5000 == 0)
 		{
 			float count[10];
 			for (uint64_t m(0); m < 10; m++)
