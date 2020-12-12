@@ -49,78 +49,74 @@ int main()
 
 	// Neural network
 
-	std::vector<std::vector<scp::Vec<float>>> mnist_training(10), mnist_testing(10);
-	for (uint64_t n(0); n < 10; n++)
+	scp::Mat<float> face(28, 28);
+	std::vector<std::vector<scp::Vec<float>>> training(2), testing(2);
+	for (uint64_t i(0); i < 4500; i++)
 	{
-		std::cout << "Loading number " << n << " of MNIST." << std::endl;
-		mnist_training[n].resize(5000, scp::Vec<float>(784));
-		int64_t i, k, l;
-		djv::Img nImg;
+		training[0].push_back(scp::Vec<float>(784));
+		face = djv::Img("datasets/FDDB/positive/" + std::to_string(i) + ".png").grayScale();
+		for (uint64_t j(0); j < 28; j++)
+			for (uint64_t k(0); k < 28; k++)
+				training[0][i][j*28 + k] = face[j][k];
 
-		#pragma omp parallel for private(i, k, l, nImg) shared(mnist_training)
-		for (i = 0; i < mnist_training[n].size(); i++)
-		{
-			nImg = djv::Img("examples/assets/MNIST/training/" + std::to_string(n) + "/" + std::to_string(i) + ".png");
-			for (k = 0; k < 28; k++)
-				for (l = 0; l < 28; l++)
-					mnist_training[n][i][28*k + l] = nImg(k, l, 0);
-		}
-
-		mnist_testing[n].resize(500, scp::Vec<float>(784));
-
-		#pragma omp parallel for private(i, k, l, nImg) shared(mnist_testing)
-		for (int64_t i = 0; i < mnist_testing[n].size(); i++)
-		{
-			nImg = djv::Img("examples/assets/MNIST/testing/" + std::to_string(n) + "/" + std::to_string(i) + ".png");
-			for (k = 0; k < 28; k++)
-				for (l = 0; l < 28; l++)
-					mnist_testing[n][i][28*k + l] = nImg(k, l, 0);
-		}
+		training[1].push_back(scp::Vec<float>(784));
+		face = djv::Img("datasets/FDDB/negative/" + std::to_string(i) + ".png").grayScale();
+		for (uint64_t j(0); j < 28; j++)
+			for (uint64_t k(0); k < 28; k++)
+				training[1][i][j*28 + k] = face[j][k];
 	}
 
+	for (uint64_t i(4500); i < 5171; i++)
+	{
+		testing[0].push_back(scp::Vec<float>(784));
+		face = djv::Img("datasets/FDDB/positive/" + std::to_string(i) + ".png").grayScale();
+		for (uint64_t j(0); j < 28; j++)
+			for (uint64_t k(0); k < 28; k++)
+				testing[0][i - 4500][j*28 + k] = face[j][k];
+
+		testing[1].push_back(scp::Vec<float>(784));
+		face = djv::Img("datasets/FDDB/negative/" + std::to_string(i) + ".png").grayScale();
+		for (uint64_t j(0); j < 28; j++)
+			for (uint64_t k(0); k < 28; k++)
+				testing[1][i - 4500][j*28 + k] = face[j][k];
+	}
+
+
 	djv::NeuralNetwork net;
-	net.setInputLayer(784, 16);
-	net.appendLayer(10);
+	net.setInputLayer(784, 8);
+	net.appendLayer(1);
 
 	for (uint64_t i(0); true; i++)
 	{
 		std::vector<scp::Vec<float>> x, y;
 		for (uint64_t j(0); j < 10; j++)
 		{
-			uint64_t n = std::rand() % 10;
-			uint64_t k = std::rand() % mnist_training[0].size();
-			x.push_back(mnist_training[n][k]);
+			uint64_t n = std::rand() % 2;
+			uint64_t k = std::rand() % training[0].size();
+			x.push_back(training[n][k]);
 
-			y.push_back(scp::Vec<float>(10));
-			y.back()[n] = 1.f;
+			y.push_back(scp::Vec<float>(1, static_cast<float>(n)));
 		}
 
 		net.batchTrain(x, y, 0.1f);
 
 		if (i % 5000 == 0)
 		{
-			float count[10];
-			for (uint64_t m(0); m < 10; m++)
-				count[m] = 0;
+			float count[2] = { 0, 0 };
 
-			#pragma omp parallel for shared(count, mnist_testing)
-			for (int64_t m = 0; m < 10; m++)
+			#pragma omp parallel for shared(count, testing)
+			for (int64_t m = 0; m < 2; m++)
 			{
-				for (int64_t l = 0; l < 500; l++)
+				for (int64_t l = 0; l < 671; l++)
 				{
-					scp::Vec<float> prediction = net(mnist_testing[m][l]);
-					if (scp::maxElement(prediction) == prediction[m])
+					scp::Vec<float> prediction = net(testing[m][l]);
+					if (prediction[0] > 0.5 && m || prediction[0] < 0.5 && !m)
 						#pragma omp atomic
 						count[m]++;
 				}
 			}
 
-			for (uint64_t m(0); m < 10; m++)
-				std::cout << count[m] << " ";
-			float total(0);
-			for (uint64_t m(0); m < 10; m++)
-				total += count[m];
-			std::cout << total / 5000.f << std::endl;
+			std::cout << count[0] << " " << count[1] << " " << (count[0] + count[1]) / 1342.f << std::endl;
 		}
 	}
 
