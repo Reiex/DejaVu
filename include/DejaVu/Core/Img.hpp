@@ -1,20 +1,22 @@
 #pragma once
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// \file
+/// \brief Functions and classes for simple image manipulations.
+/// \author Reiex
+/// 
+/// For more complex image manipulations, see the image processing module.
+/// For a more detailed description, see class Img.
+/// 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #include <DejaVu/types.hpp>
 
 namespace djv
 {
-	enum class ColorChannels
-	{
-		R = 1,
-		G = 2,
-		B = 4,
-		A = 8
-	};
-
-	ColorChannels operator|(ColorChannels a, ColorChannels b);
-	ColorChannels operator&(ColorChannels a, ColorChannels b);
-
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/// \brief Permits selection a single color component from an RGBA image.
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	enum class ColorComponent
 	{
 		R = 0,
@@ -23,33 +25,64 @@ namespace djv
 		A = 3
 	};
 
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/// \brief Class representing an RGBA image that can then be manipulated globally component per component.
+	/// 
+	/// A pixel component in class Img should always be between 0.0 and 1.0. However, values over a larger range can be
+	/// needed for certain image processing algorithms. Thus, any value is accepted.
+	/// 
+	/// The position `(0, 0)` refer to the pixel at the top-left corner of the image.
+	/// x is greater when going to the right and y is greater when going bottom.
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	class Img
 	{
 		public:
 
-			Img(uint64_t width = 1, uint64_t height = 1);
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////
+			/// \brief Init the image from a file.
+			/// 
+			/// DejaVu internally uses STB to load and save images, thus supported formats are formats supported by the
+			/// STB. For more informations, see https://github.com/nothings/stb.
+			/// 
+			/// Depending on the format, you may need to use `transpose`, `flipHorizontally` and `flipVertically`.
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////
 			Img(const std::string& filename, bool transpose = false, bool flipHorizontally = false, bool flipVertically = false);
-			Img(const scp::Mat<float>& grayScale);
+			Img(uint64_t width = 1, uint64_t height = 1);  ///< Default constructor. Init the image at the defined size and black `(0.0, 0.0, 0.0, 1.0)`.
+			Img(const scp::Mat<float>& grayScale);         ///< Init the red, green and blue components with grayScale and the alpha component with 1.0.
 			Img(const Img& image);
 			Img(Img&& image) = default;
 
 			Img& operator=(const Img& image);
 			Img& operator=(Img&& image) = default;
 
-			float& operator()(uint64_t x, uint64_t y, ColorComponent component);
-			const float& operator()(uint64_t x, uint64_t y, ColorComponent component) const;
-			float& operator()(uint64_t x, uint64_t y, uint8_t component);
-			const float& operator()(uint64_t x, uint64_t y, uint8_t component) const;
+			float& operator()(uint64_t x, uint64_t y, ColorComponent component);              ///< Get the desired component of the pixel at position `(x, y)`.
+			const float& operator()(uint64_t x, uint64_t y, ColorComponent component) const;  ///< Get the desired component of the pixel at position `(x, y)`.
+			float& operator()(uint64_t x, uint64_t y, uint8_t component);                     ///< Get the desired component of the pixel at position `(x, y)`.
+			const float& operator()(uint64_t x, uint64_t y, uint8_t component) const;         ///< Get the desired component of the pixel at position `(x, y)`.
 
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////
+			/// \brief Save the image with the desired format (specified as the extension of the filename)
+			/// 
+			/// Pixel components with values higher than 1.0 or lower than 0.0 are clamped.
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////
 			void saveToFile(const std::string& filename) const;
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////
+			/// \brief Crop the image to the specified rectangular area.
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////
 			Img subRect(uint64_t left, uint64_t top, uint64_t width, uint64_t height) const;
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////
+			/// \brief Draw a shape on the image. For more information, see class Shape and it's derivatives.
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////
 			void draw(const Shape& shape);
-
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////
+			/// \brief Returns a grayscale matrix of the image computed using the specified factors.
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////
 			scp::Mat<float> grayScale(float redFactor = 0.2126f, float greenFactor = 0.7152f, float blueFactor = 0.0722f) const;
-			scp::Mat<float>& getComponent(ColorComponent component);
-			const scp::Mat<float>& getComponent(ColorComponent component) const;
-			uint64_t width() const;
-			uint64_t height() const;
+
+			scp::Mat<float>& getComponent(ColorComponent component);              ///< Returns a reference to the matrix containing the desired component.
+			const scp::Mat<float>& getComponent(ColorComponent component) const;  ///< Returns a reference to the matrix containing the desired component.
+			uint64_t width() const;   ///< Returns the image width in pixels.
+			uint64_t height() const;  ///< Returns the image height in pixels.
 
 			~Img() = default;
 

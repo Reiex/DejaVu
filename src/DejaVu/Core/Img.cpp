@@ -2,28 +2,6 @@
 
 namespace djv
 {
-	ColorChannels operator|(ColorChannels a, ColorChannels b)
-	{
-		return static_cast<ColorChannels>(static_cast<int>(a) | static_cast<int>(b));
-	}
-
-	ColorChannels operator&(ColorChannels a, ColorChannels b)
-	{
-		return static_cast<ColorChannels>(static_cast<int>(a) & static_cast<int>(b));
-	}
-
-
-	Img::Img(uint64_t width, uint64_t height) :
-		_width(width),
-		_height(height),
-		_r(std::make_unique<scp::Mat<float>>(width, height)),
-		_g(std::make_unique<scp::Mat<float>>(width, height)),
-		_b(std::make_unique<scp::Mat<float>>(width, height)),
-		_a(std::make_unique<scp::Mat<float>>(width, height))
-	{
-		assert(width != 0 && height != 0);
-	}
-
 	Img::Img(const std::string& filename, bool transpose, bool flipHorizontally, bool flipVertically)
 	{
 		int w, h;
@@ -51,28 +29,39 @@ namespace djv
 		{
 			for (uint64_t j(0); j < h; j++)
 			{
-				uint64_t x = flipHorizontally && !transpose || flipVertically && transpose ? w - i - 1: i;
-				uint64_t y = flipVertically && !transpose || flipHorizontally && transpose ? h - j - 1: j;
-				uint64_t coord = 4*(x + w*y);
+				uint64_t x = flipHorizontally && !transpose || flipVertically && transpose ? w - i - 1 : i;
+				uint64_t y = flipVertically && !transpose || flipHorizontally && transpose ? h - j - 1 : j;
+				uint64_t coord = 4 * (x + w * y);
 
 				if (transpose)
 				{
-					(*_r)[j][i] = static_cast<float>(image[coord])/255.f;
-					(*_g)[j][i] = static_cast<float>(image[coord + 1])/255.f;
-					(*_b)[j][i] = static_cast<float>(image[coord + 2])/255.f;
-					(*_a)[j][j] = static_cast<float>(image[coord + 3])/255.f;
+					(*_r)[j][i] = static_cast<float>(image[coord]) / 255.f;
+					(*_g)[j][i] = static_cast<float>(image[coord + 1]) / 255.f;
+					(*_b)[j][i] = static_cast<float>(image[coord + 2]) / 255.f;
+					(*_a)[j][j] = static_cast<float>(image[coord + 3]) / 255.f;
 				}
 				else
 				{
-					(*_r)[i][j] = static_cast<float>(image[coord])/255.f;
-					(*_g)[i][j] = static_cast<float>(image[coord + 1])/255.f;
-					(*_b)[i][j] = static_cast<float>(image[coord + 2])/255.f;
-					(*_a)[i][j] = static_cast<float>(image[coord + 3])/255.f;
+					(*_r)[i][j] = static_cast<float>(image[coord]) / 255.f;
+					(*_g)[i][j] = static_cast<float>(image[coord + 1]) / 255.f;
+					(*_b)[i][j] = static_cast<float>(image[coord + 2]) / 255.f;
+					(*_a)[i][j] = static_cast<float>(image[coord + 3]) / 255.f;
 				}
 			}
 		}
 
 		stbi_image_free(image);
+	}
+
+	Img::Img(uint64_t width, uint64_t height) :
+		_width(width),
+		_height(height),
+		_r(std::make_unique<scp::Mat<float>>(width, height)),
+		_g(std::make_unique<scp::Mat<float>>(width, height)),
+		_b(std::make_unique<scp::Mat<float>>(width, height)),
+		_a(std::make_unique<scp::Mat<float>>(width, height, 1.f))
+	{
+		assert(width != 0 && height != 0);
 	}
 
 	Img::Img(const scp::Mat<float>& grayScale) :

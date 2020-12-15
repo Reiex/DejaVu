@@ -9,7 +9,7 @@ int main()
 
 	// Processings
 
-	/*
+	
 	djv::Img(djv::operators::sobel(grayScaleImage)[0]).saveToFile("build/SobelX.png");
 	djv::Img(djv::operators::sobel(grayScaleImage)[1]).saveToFile("build/SobelY.png");
 	djv::Img(djv::operators::prewitt(grayScaleImage)[0]).saveToFile("build/PrewittX.png");
@@ -20,20 +20,20 @@ int main()
 	djv::Img(djv::operators::laplacianOfGaussian(grayScaleImage)).saveToFile("build/LaplacianOfGaussian.png");
 
 	djv::Img(djv::operators::gaussianBlur(grayScaleImage, 10.f)).saveToFile("build/GaussianBlur.png");
-	*/
+	
 
 	// Edge detectors
 
-	/*
+	
 	djv::Img(djv::edgeDetector::sobel(grayScaleImage)).saveToFile("build/sobelEdgeDetector.png");
 	djv::Img(djv::edgeDetector::prewitt(grayScaleImage)).saveToFile("build/prewittEdgeDetector.png");
 	djv::Img(djv::edgeDetector::marrHildreth(grayScaleImage)).saveToFile("build/marrHildrethEdgeDetector.png");
 	djv::Img(djv::edgeDetector::canny(grayScaleImage)).saveToFile("build/cannyEdgeDetector.png");
-	*/
+	
 
 	// Line extractors
 
-	/*
+	
 	{
 		scp::Mat<float> edges = djv::edgeDetector::marrHildreth(grayScaleImage);
 		std::vector<djv::Line> lines = djv::lineExtractor::hough(edges, 0.4);
@@ -45,10 +45,11 @@ int main()
 		}
 		result.saveToFile("build/houghLineExtractor.png");
 	}
-	*/
+	
 
 	// Neural network
 
+	/*
 	scp::Mat<float> face(28, 28);
 	std::vector<std::vector<scp::Vec<float>>> training(2), testing(2);
 	for (uint64_t i(0); i < 4500; i++)
@@ -119,6 +120,7 @@ int main()
 			std::cout << count[0] << " " << count[1] << " " << (count[0] + count[1]) / 1342.f << std::endl;
 		}
 	}
+	*/
 
 	return 0;
 }
