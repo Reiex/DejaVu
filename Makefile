@@ -53,6 +53,9 @@ EXAMPLES_LDLIBS = -lDejaVu -lgomp
 
 all: folders DejaVu examples
 
+docs:
+	doxygen doc/doxyfilerc
+
 clean:
 	find $(OBJ_DIR) -type f -exec rm -rf \{\} \;
 	find $(BUILD_DIR) -type f -exec rm -rf \{\} \;
