@@ -2,7 +2,7 @@
 
 namespace djv
 {
-	namespace edgeDetector
+	namespace edgeDetectors
 	{
 		scp::Mat<float> sobel(const scp::Mat<float>& m)
 		{
@@ -116,7 +116,7 @@ namespace djv
 		}
 	}
 
-	namespace lineExtractor
+	namespace lineExtractors
 	{
 		namespace
 		{

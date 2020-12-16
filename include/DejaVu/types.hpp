@@ -21,7 +21,7 @@ namespace djv
 {
 	struct Color;
 	struct Point;
-	struct Shape;
+	class Shape;
 	class Line;
 	class Rect;
 

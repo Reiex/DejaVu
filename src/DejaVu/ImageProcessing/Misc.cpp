@@ -2,7 +2,7 @@
 
 namespace djv
 {
-	namespace kernel
+	namespace kernels
 	{
 		const std::array<scp::Mat<float>, 2>& sobel()
 		{
@@ -161,9 +161,9 @@ namespace djv
 			return { Px / scp::maxElement(Px), Py / scp::maxElement(Py) };
 		}
 
-		std::array<scp::Mat<float>, 2> derivativeOfGaussian(const scp::Mat<float>& m, float sigma, uint64_t patchSize)
+		std::array<scp::Mat<float>, 2> derivativeOfGaussian(const scp::Mat<float>& m, float sigma)
 		{
-			scp::Mat<float> g = gaussianBlur(m, sigma, patchSize);
+			scp::Mat<float> g = gaussianBlur(m, sigma);
 			scp::Mat<float> gx(m.m, m.n), gy(m.m, m.n);
 
 			int64_t iPreced, iNext, jPreced, jNext;
@@ -187,9 +187,9 @@ namespace djv
 		}
 
 
-		scp::Mat<float> laplacianOfGaussian(const scp::Mat<float>& m, float sigma, uint64_t patchSize)
+		scp::Mat<float> laplacianOfGaussian(const scp::Mat<float>& m, float sigma)
 		{
-			scp::Mat<float> g = gaussianBlur(m, sigma, patchSize);
+			scp::Mat<float> g = gaussianBlur(m, sigma);
 			scp::Mat<float> r(m.m, m.n);
 
 			int64_t iPreced, iNext, jPreced, jNext;
@@ -212,36 +212,39 @@ namespace djv
 		}
 
 
-		scp::Mat<float> gaussianBlur(const scp::Mat<float>& m, float sigma, uint64_t patchSize)
+		scp::Mat<float> gaussianBlur(const scp::Mat<float>& m, float sigma)
 		{
-			if (patchSize == 0)
-				patchSize = 3 * (static_cast<uint64_t>(sigma) + 1);
-
-			scp::Mat<float> r(m.m, m.n);
-
-			scp::Vec<float> g(2*patchSize + 1);
+			scp::Mat<float> rx(m.m, m.n), r(m.m, m.n);
+			scp::Vec<float> g(std::min(std::max(2*m.m - 1, 2*m.n - 1), 2*static_cast<uint64_t>(sigma*4) + 1));
 			float sigmaSq = sigma * sigma;
 			for (uint64_t i(0); i < g.n; i++)
 			{
-				float x = static_cast<float>(i) - patchSize;
+				float x = static_cast<float>(i) - g.n/2;
 				g[i] = std::exp(-x*x / (2*sigmaSq))/(2.506628275f*sigma);
 			}
 
 			int64_t i, j, k;
-			#pragma omp parallel for private(i, j, k) shared(m, g, r, patchSize)
+			#pragma omp parallel for private(i, j, k) shared(m, g, rx)
 			for (i = 0; i < m.m; i++)
 				for (j = 0; j < m.n; j++)
 					for (k = 0; k < g.n; k++)
-						if (i + k >= patchSize && i + k - patchSize < m.m)
-							r[i][j] += g[k] * m[i + k - patchSize][j];
-						else if (i + k < patchSize)
-							r[i][j] += g[k] * m[0][j];
+						if (i + k >= g.n/2 && i + k - g.n/2 < m.m)
+							rx[i][j] += g[k] * m[i + k - g.n/2][j];
+						else if (i + k < g.n/2)
+							rx[i][j] += g[k] * m[0][j];
 						else
-							r[i][j] += g[k] * m[m.m - 1][j];
+							rx[i][j] += g[k] * m[m.m - 1][j];
 
-			#pragma omp parallel for private(i) shared(m, g, r)
+			#pragma omp parallel for private(i, j, k) shared(m, g, r)
 			for (i = 0; i < m.m; i++)
-				r[i] = scp::convolve(r[i], g, scp::ConvolveMethod::Continuous);
+				for (j = 0; j < m.n; j++)
+					for (k = 0; k < g.n; k++)
+						if (j + k >= g.n/2 && j + k - g.n/2 < m.n)
+							r[i][j] += g[k] * rx[i][j + k - g.n/2];
+						else if (j + k < g.n/2)
+							r[i][j] += g[k] * rx[i][0];
+						else
+							r[i][j] += g[k] * rx[i][m.n - 1];
 
 			return r;
 		}

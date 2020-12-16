@@ -25,18 +25,18 @@ int main()
 	// Edge detectors
 
 	
-	djv::Img(djv::edgeDetector::sobel(grayScaleImage)).saveToFile("build/sobelEdgeDetector.png");
-	djv::Img(djv::edgeDetector::prewitt(grayScaleImage)).saveToFile("build/prewittEdgeDetector.png");
-	djv::Img(djv::edgeDetector::marrHildreth(grayScaleImage)).saveToFile("build/marrHildrethEdgeDetector.png");
-	djv::Img(djv::edgeDetector::canny(grayScaleImage)).saveToFile("build/cannyEdgeDetector.png");
+	djv::Img(djv::edgeDetectors::sobel(grayScaleImage)).saveToFile("build/sobelEdgeDetector.png");
+	djv::Img(djv::edgeDetectors::prewitt(grayScaleImage)).saveToFile("build/prewittEdgeDetector.png");
+	djv::Img(djv::edgeDetectors::marrHildreth(grayScaleImage)).saveToFile("build/marrHildrethEdgeDetector.png");
+	djv::Img(djv::edgeDetectors::canny(grayScaleImage)).saveToFile("build/cannyEdgeDetector.png");
 	
 
 	// Line extractors
 
 	
 	{
-		scp::Mat<float> edges = djv::edgeDetector::marrHildreth(grayScaleImage);
-		std::vector<djv::Line> lines = djv::lineExtractor::hough(edges, 0.4);
+		scp::Mat<float> edges = djv::edgeDetectors::marrHildreth(grayScaleImage);
+		std::vector<djv::Line> lines = djv::lineExtractors::hough(edges, 0.4);
 		djv::Img result = image;
 		for (uint64_t i(0); i < lines.size(); i++)
 		{
