@@ -2,7 +2,7 @@
 
 namespace djv
 {
-	namespace layer
+	namespace layers
 	{
 		LayerBase::LayerBase(uint64_t inputSize, uint64_t outputSize) :
 			_inputSize(inputSize),

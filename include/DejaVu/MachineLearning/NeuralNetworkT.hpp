@@ -4,7 +4,7 @@
 
 namespace djv
 {
-	namespace layer
+	namespace layers
 	{
 		template<typename TPerceptron>
 		Perceptrons<TPerceptron>::Perceptrons(uint64_t inputSize, uint64_t outputSize) :
@@ -57,13 +57,13 @@ namespace djv
 	void NeuralNetwork::setInputLayer(uint64_t inputSize, uint64_t outputSize)
 	{
 		assert(_layers.size() == 0);
-		_layers.push_back(std::unique_ptr<layer::LayerBase>(new TLayer(inputSize, outputSize)));
+		_layers.push_back(std::unique_ptr<layers::LayerBase>(new TLayer(inputSize, outputSize)));
 	}
 
 	template<typename TLayer>
 	void NeuralNetwork::appendLayer(uint64_t outputSize)
 	{
 		assert(_layers.size() != 0);
-		_layers.push_back(std::unique_ptr<layer::LayerBase>(new TLayer(_layers.back()->getOutputSize(), outputSize)));
+		_layers.push_back(std::unique_ptr<layers::LayerBase>(new TLayer(_layers.back()->getOutputSize(), outputSize)));
 	}
 }

@@ -2,7 +2,7 @@
 
 namespace djv
 {
-	namespace perceptron
+	namespace perceptrons
 	{
 		PerceptronBase::PerceptronBase(uint64_t inputSize) :
 			_weights(inputSize),
