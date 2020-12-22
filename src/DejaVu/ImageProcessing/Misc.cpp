@@ -71,6 +71,30 @@ namespace djv
 		}
 
 
+		std::array<scp::Mat<float>, 3> simpleHessian(const scp::Mat<float>& m)
+		{
+			scp::Mat<float> Hxx(m.m, m.n), Hxy(m.m, m.n), Hyy(m.m, m.n);
+
+			#pragma omp parallel for
+			for (int64_t i = 0; i < m.m; i++)
+			{
+				for (int64_t j = 0; j < m.n; j++)
+				{
+					int64_t iPreced = std::max(i - 1, static_cast<int64_t>(0));
+					int64_t iNext = std::min(i + 1, static_cast<int64_t>(m.m - 1));
+					int64_t jPreced = std::max(j - 1, static_cast<int64_t>(0));
+					int64_t jNext = std::min(j + 1, static_cast<int64_t>(m.n - 1));
+
+					Hxx[i][j] = m[iNext][j] - 2*m[i][j] + m[iPreced][j];
+					Hxy[i][j] = m[iNext][jNext] + m[iPreced][jPreced] - m[iNext][jPreced] - m[iPreced][jNext];
+					Hyy[i][j] = m[i][jNext] - 2*m[i][j] + m[i][jPreced];
+				}
+			}
+
+			return { Hxx, Hxy, Hyy };
+		}
+
+
 		scp::Mat<float> simpleLaplacian(const scp::Mat<float>& m)
 		{
 			scp::Mat<float> r(m.m, m.n);

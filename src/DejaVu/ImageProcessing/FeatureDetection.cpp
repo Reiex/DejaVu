@@ -13,7 +13,7 @@ namespace djv
 			#pragma omp parallel for
 			for (int64_t i = 0; i < laplacian.m - 1; i++)
 				for (int64_t j = 0; j < laplacian.n - 1; j++)
-					if ((laplacian[i][j] * laplacian[i + 1][j] < 0 || laplacian[i][j] * laplacian[i][j + 1] < 0))
+					if (laplacian[i][j]*laplacian[i+1][j] < 0 || laplacian[i][j]*laplacian[i][j+1] < 0)
 						r[i][j] = grad[0][i][j]*grad[0][i][j] + grad[1][i][j]*grad[1][i][j];
 
 			return r;

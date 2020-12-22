@@ -17,6 +17,10 @@ int main()
 	djv::Img(djv::operators::simpleGradient(grayScaleImage)[0]).saveToFile("build/SimpleGradientX.png");
 	djv::Img(djv::operators::simpleGradient(grayScaleImage)[1]).saveToFile("build/SimpleGradientY.png");
 
+	djv::Img(djv::operators::simpleHessian(grayScaleImage)[0]).saveToFile("build/SimpleHessianXX.png");
+	djv::Img(djv::operators::simpleHessian(grayScaleImage)[1]).saveToFile("build/SimpleHessianXY.png");
+	djv::Img(djv::operators::simpleHessian(grayScaleImage)[2]).saveToFile("build/SimpleHessianYY.png");
+
 	djv::Img(djv::operators::simpleLaplacian(grayScaleImage)).saveToFile("build/SimpleLaplacian.png");
 
 	djv::Img(djv::operators::gaussianBlur(grayScaleImage, 10.f)).saveToFile("build/GaussianBlur.png");
