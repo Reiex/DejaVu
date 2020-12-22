@@ -30,7 +30,7 @@ int main()
 
 
 	{
-		djv::segmentation::ImageSegmentation seg = djv::segmentation::kMeans(image, 500);
+		djv::segmentation::ImageSegmentation seg = djv::segmentation::kMeans(image, 10);
 		djv::Img segmented(image.width(), image.height());
 		for (uint64_t i(0); i < image.width(); i++)
 		{
