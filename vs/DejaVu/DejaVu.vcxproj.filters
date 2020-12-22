@@ -72,6 +72,9 @@
     <ClInclude Include="..\..\include\DejaVu\MachineLearning\NeuralNetworkT.hpp">
       <Filter>Header Files\MachineLearning</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\DejaVu\ImageProcessing\Segmentation.hpp">
+      <Filter>Header Files\ImageProcessing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\DejaVu\Core\Img.cpp">
@@ -97,6 +100,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\DejaVu\MachineLearning\NeuralNetwork.cpp">
       <Filter>Source Files\MachineLearning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\DejaVu\ImageProcessing\Segmentation.cpp">
+      <Filter>Source Files\ImageProcessing</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

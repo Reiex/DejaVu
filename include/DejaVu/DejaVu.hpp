@@ -10,6 +10,7 @@
 #include <DejaVu/Core/Img.hpp>
 
 #include <DejaVu/ImageProcessing/Misc.hpp>
+#include <DejaVu/ImageProcessing/Segmentation.hpp>
 #include <DejaVu/ImageProcessing/FeatureDetection.hpp>
 
 #include <DejaVu/MachineLearning/Perceptron.hpp>

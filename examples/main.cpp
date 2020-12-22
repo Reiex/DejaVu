@@ -4,12 +4,12 @@
 
 int main()
 {
-	djv::Img image("examples/assets/Cathedrale.jpg");
+	djv::Img image("examples/assets/Marius.jpg");
 	scp::Mat<float> grayScaleImage = image.grayScale();
 
 	// Processings
 
-	
+	/*
 	djv::Img(djv::operators::sobel(grayScaleImage)[0]).saveToFile("build/SobelX.png");
 	djv::Img(djv::operators::sobel(grayScaleImage)[1]).saveToFile("build/SobelY.png");
 	djv::Img(djv::operators::prewitt(grayScaleImage)[0]).saveToFile("build/PrewittX.png");
@@ -24,18 +24,39 @@ int main()
 	djv::Img(djv::operators::simpleLaplacian(grayScaleImage)).saveToFile("build/SimpleLaplacian.png");
 
 	djv::Img(djv::operators::gaussianBlur(grayScaleImage, 10.f)).saveToFile("build/GaussianBlur.png");
-	
+	*/
+
+	// Image segmentation
+
+
+	{
+		djv::segmentation::ImageSegmentation seg = djv::segmentation::kMeans(image, 500);
+		djv::Img segmented(image.width(), image.height());
+		for (uint64_t i(0); i < image.width(); i++)
+		{
+			for (uint64_t j(0); j < image.height(); j++)
+			{
+				segmented(i, j, 0) = seg.groupColors[seg.groups[i][j]].r;
+				segmented(i, j, 1) = seg.groupColors[seg.groups[i][j]].g;
+				segmented(i, j, 2) = seg.groupColors[seg.groups[i][j]].b;
+				segmented(i, j, 3) = 1.f;
+			}
+		}
+
+		segmented.saveToFile("build/kMeans.png");
+	}
+
 
 	// Edge detectors
 
-
+	/*
 	djv::Img(djv::edgeDetectors::marrHildreth(grayScaleImage)).saveToFile("build/marrHildrethEdgeDetector.png");
 	djv::Img(djv::edgeDetectors::canny(grayScaleImage)).saveToFile("build/cannyEdgeDetector.png");
-	
+	*/
 
 	// Line extractors
 
-	
+	/*
 	{
 		scp::Mat<float> edges = djv::edgeDetectors::marrHildreth(grayScaleImage);
 		std::vector<djv::Line> lines = djv::lineExtractors::hough(edges, 0.4);
@@ -47,7 +68,7 @@ int main()
 		}
 		result.saveToFile("build/houghLineExtractor.png");
 	}
-	
+	*/
 
 	// Neural network
 

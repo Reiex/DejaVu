@@ -28,6 +28,12 @@ namespace djv
 	class Img;
 
 
+	namespace segmentation
+	{
+		struct ImageSegmentation;
+	}
+
+
 	namespace perceptron
 	{
 		class PerceptronBase;
