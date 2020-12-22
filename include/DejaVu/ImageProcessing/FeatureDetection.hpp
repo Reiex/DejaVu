@@ -23,25 +23,24 @@ namespace djv
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// \brief Returns the square of the magnitude of the Sobel gradient.
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		scp::Mat<float> sobel(const scp::Mat<float>& m);
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// \brief Returns the square of the magnitude of the Prewitt gradient.
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		scp::Mat<float> prewitt(const scp::Mat<float>& m);
-
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// \brief Returns the result of the Marr-Hildreth edge detection algorithm.
 		/// 
-		/// The laplacian computation method used is the laplacian of gaussian (LoG).
-		/// The gradient computation method used it the derivative of gaussian.
+		/// The Marr-Hildreth edge detection algorithm is a simple evaluation of whether the laplacian changes sign or
+		/// not at proximity of a pixel. If the sign changes, then the pixel is part of an edge, and its strength is
+		/// the square of the magnitude of the gradient at that pixel.
+		/// 
+		/// The gradient computation method used is djv::operators::simpleGradient.
+		/// The laplacian computation method used is djv::operators::simpleLaplacian.
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		scp::Mat<float> marrHildreth(const scp::Mat<float>& m, float sigma = 1.5f);
+		scp::Mat<float> marrHildreth(const scp::Mat<float>& m);
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// \brief Returns the result of the Canny edge detection algorithm.
 		/// 
-		/// The gradient computation method used it the derivative of gaussian.
+		/// The Canny edge detection algorithm is a simple evaluation of whether the magnitude of the gradient is at a
+		/// local maximum or not at a pixel. If it is, then the pixel is part of an edge, and its strength is the
+		/// square of the magnitude of the gradient at that pixel.
+		/// 
+		/// The gradient computation method used is djv::operators::simpleGradient.
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		scp::Mat<float> canny(const scp::Mat<float>& m, float sigma = 1.5f);
 

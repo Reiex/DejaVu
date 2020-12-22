@@ -4,48 +4,30 @@ namespace djv
 {
 	namespace edgeDetectors
 	{
-		scp::Mat<float> sobel(const scp::Mat<float>& m)
-		{
-			std::array<scp::Mat<float>, 2> grad = operators::sobel(m);
-			scp::Mat<float> S = scp::hadamardProduct(grad[0], grad[0]) + scp::hadamardProduct(grad[1], grad[1]);
-			
-			return S / scp::maxElement(S);
-		}
-
-		scp::Mat<float> prewitt(const scp::Mat<float>& m)
-		{
-			std::array<scp::Mat<float>, 2> grad = operators::prewitt(m);
-			scp::Mat<float> P = scp::hadamardProduct(grad[0], grad[0]) + scp::hadamardProduct(grad[1], grad[1]);
-
-			return P / scp::maxElement(P);
-		}
-
-		scp::Mat<float> marrHildreth(const scp::Mat<float>& m, float sigma)
+		scp::Mat<float> marrHildreth(const scp::Mat<float>& m)
 		{
 			scp::Mat<float> r(m.m, m.n);
-			scp::Mat<float> laplacian = operators::laplacianOfGaussian(m, sigma);
-			std::array<scp::Mat<float>, 2> grad = operators::derivativeOfGaussian(m, sigma);
+			std::array<scp::Mat<float>, 2> grad = operators::simpleGradient(m);
+			scp::Mat<float> laplacian = operators::simpleLaplacian(m);
 
-			int64_t i, j;
-			#pragma omp parallel for private(i, j) shared(laplacian, grad, r)
-			for (i = 0; i < laplacian.m - 1; i++)
-				for (j = 0; j < laplacian.n - 1; j++)
+			#pragma omp parallel for
+			for (int64_t i = 0; i < laplacian.m - 1; i++)
+				for (int64_t j = 0; j < laplacian.n - 1; j++)
 					if ((laplacian[i][j] * laplacian[i + 1][j] < 0 || laplacian[i][j] * laplacian[i][j + 1] < 0))
 						r[i][j] = grad[0][i][j]*grad[0][i][j] + grad[1][i][j]*grad[1][i][j];
 
-			return r / scp::maxElement(r);
+			return r;
 		}
 
 		scp::Mat<float> canny(const scp::Mat<float>& m, float sigma)
 		{
-			std::array<scp::Mat<float>, 2> grad = operators::derivativeOfGaussian(m, sigma);
-
-			int64_t i, j;
+			std::array<scp::Mat<float>, 2> grad = operators::simpleGradient(m);
 			scp::Mat<float> gradMag(m.m, m.n), gradArg(m.m, m.n);
-			#pragma omp parallel for private(i, j) shared(grad, gradMag, gradArg)
-			for (i = 0; i < gradMag.m; i++)
+
+			#pragma omp parallel for
+			for (int64_t i = 0; i < gradMag.m; i++)
 			{
-				for (j = 0; j < gradMag.n; j++)
+				for (int64_t j = 0; j < gradMag.n; j++)
 				{
 					gradMag[i][j] = grad[0][i][j]*grad[0][i][j] + grad[1][i][j]*grad[1][i][j];
 					gradArg[i][j] = std::atan2(grad[1][i][j], grad[0][i][j]);
@@ -53,13 +35,14 @@ namespace djv
 			}
 
 			float pi = scp::pi;
-			int64_t x, y, xForward, xBackward, yForward, yBackward;
 			scp::Mat<float> r(gradMag);
-			#pragma omp parallel for private(i, j, x, y, xForward, xBackward, yForward, yBackward) shared(r, gradMag, gradArg)
-			for (i = 0; i < r.m; i++)
+			#pragma omp parallel for
+			for (int64_t i = 0; i < r.m; i++)
 			{
-				for (j = 0; j < r.n; j++)
+				for (int64_t j = 0; j < r.n; j++)
 				{
+					int64_t x, y;
+
 					if (gradArg[i][j] >= 7*pi/8 || gradArg[i][j] < -7*pi/8)
 					{
 						x = -1;
@@ -100,6 +83,8 @@ namespace djv
 						x = -1;
 						y = -1;
 					}
+
+					int64_t xForward, xBackward, yForward, yBackward;
 
 					xForward = std::min(std::max(static_cast<int64_t>(i) + x, static_cast<int64_t>(0)), static_cast<int64_t>(r.m - 1));
 					yForward = std::min(std::max(static_cast<int64_t>(j) + y, static_cast<int64_t>(0)), static_cast<int64_t>(r.n - 1));
@@ -195,18 +180,15 @@ namespace djv
 		{
 			scp::Mat<float> h(static_cast<uint64_t>(scp::pi / dTheta), static_cast<uint64_t>(2 * std::sqrt(m.m*m.m + m.n*m.n)/dRho + 3));
 
-			int64_t i, j, k, rho;
-			float theta;
-
-			#pragma omp parallel for private(i, j, k, theta, rho) shared(h, m, dRho, dTheta)
-			for (i = 0; i < m.m; i++)
+			#pragma omp parallel for
+			for (int64_t i = 0; i < m.m; i++)
 			{
-				for (j = 0; j < m.n; j++)
+				for (int64_t j = 0; j < m.n; j++)
 				{
-					for (k = 0; k < h.m; k++)
+					for (int64_t k = 0; k < h.m; k++)
 					{
-						theta = dTheta * k;
-						rho = static_cast<int64_t>((std::cos(theta)*i + std::sin(theta)*j) / dRho);
+						float theta = dTheta * k;
+						int64_t rho = static_cast<int64_t>((std::cos(theta)*i + std::sin(theta)*j) / dRho);
 						if (rho != 0)
 							h[k][rho + h.n/2 + 1] += m[i][j];
 					}
@@ -216,15 +198,14 @@ namespace djv
 			h /= scp::maxElement(h);
 
 			std::vector<Line> result;
-			Line line;
-			#pragma omp parallel for private(i, j, line) shared(h, m, threshold, result, dTheta, dRho)
-			for (i = 0; i < h.m; i++)
+			#pragma omp parallel for
+			for (int64_t i = 0; i < h.m; i++)
 			{
-				for (j = 0; j < h.n; j++)
+				for (int64_t j = 0; j < h.n; j++)
 				{
 					if (h[i][j] >= threshold)
 					{
-						line = extractLine(m.m, m.n, i*dTheta, (static_cast<float>(j) - h.n/2 - 1) * dRho);
+						Line line = extractLine(m.m, m.n, i*dTheta, (static_cast<float>(j) - h.n/2 - 1) * dRho);
 						#pragma omp critical
 						result.push_back(line);
 					}
