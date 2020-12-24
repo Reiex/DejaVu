@@ -4,12 +4,13 @@
 
 int main()
 {
-	djv::Img image("examples/assets/Marius.jpg");
+	djv::Img image("examples/assets/Lena.jpg");
 	scp::Mat<float> grayScaleImage = image.grayScale();
+	image.saveToFile("build/Original.png");
 
 	// Processings
 
-	/*
+	
 	djv::Img(djv::operators::sobel(grayScaleImage)[0]).saveToFile("build/SobelX.png");
 	djv::Img(djv::operators::sobel(grayScaleImage)[1]).saveToFile("build/SobelY.png");
 	djv::Img(djv::operators::prewitt(grayScaleImage)[0]).saveToFile("build/PrewittX.png");
@@ -24,11 +25,11 @@ int main()
 	djv::Img(djv::operators::simpleLaplacian(grayScaleImage)).saveToFile("build/SimpleLaplacian.png");
 
 	djv::Img(djv::operators::gaussianBlur(grayScaleImage, 10.f)).saveToFile("build/GaussianBlur.png");
-	*/
+	
 
 	// Image segmentation
 
-	/*
+	
 	{
 		djv::segmentation::ImageSegmentation seg = djv::segmentation::kMeans(image, 5);
 		djv::Img segmented(image.width(), image.height());
@@ -37,8 +38,9 @@ int main()
 				segmented.setPixel(i, j, seg.groupColors[seg.groups[i][j]]);
 		segmented.saveToFile("build/kMeans.png");
 	}
-	*/
+	
 
+	
 	{
 		djv::segmentation::ImageSegmentation seg = djv::segmentation::slic(image, 400);
 		djv::Img segmented(image.width(), image.height());
@@ -47,18 +49,18 @@ int main()
 				segmented.setPixel(i, j, seg.groupColors[seg.groups[i][j]]);
 		segmented.saveToFile("build/SLIC.png");
 	}
-
+	
 
 	// Edge detectors
 
-	/*
+	
 	djv::Img(djv::edgeDetectors::marrHildreth(grayScaleImage)).saveToFile("build/marrHildrethEdgeDetector.png");
 	djv::Img(djv::edgeDetectors::canny(grayScaleImage)).saveToFile("build/cannyEdgeDetector.png");
-	*/
+	
 
 	// Line extractors
 
-	/*
+	
 	{
 		scp::Mat<float> edges = djv::edgeDetectors::marrHildreth(grayScaleImage);
 		std::vector<djv::Line> lines = djv::lineExtractors::hough(edges, 0.4);
@@ -70,7 +72,7 @@ int main()
 		}
 		result.saveToFile("build/houghLineExtractor.png");
 	}
-	*/
+	
 
 	// Neural network
 

@@ -38,14 +38,17 @@ namespace djv
 		};
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// \brief K-Means segmentation algorithm. Regroups pixels based on their color.
+		/// \brief K-Means segmentation algorithm. Regroups pixels in `k` groups based on their color.
 		/// 
 		/// The `groupPos` member in the segmentation returned contains only `(0, 0)` positions.
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		ImageSegmentation kMeans(const Img& m, uint64_t k, float epsilon = 0.f);
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// \brief SLIC segmentation algorithm. Regroups pixels based on their color and position.
+		/// \brief SLIC segmentation algorithm. Regroups pixels in `k` groups based on their color and position.
+		/// 
+		/// The importance of position in the belonging to a group is indicated by `m`: The higher `m`, the nearer two
+		/// pixels of similar but different colors must be to be in the same group.
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		ImageSegmentation slic(const Img& im, uint64_t k, float m = 40.f, float epsilon = 0.f);
 
