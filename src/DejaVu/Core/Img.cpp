@@ -110,7 +110,6 @@ namespace djv
 		return getComponent(component)[x][y];
 	}
 
-
 	float& Img::operator()(uint64_t x, uint64_t y, uint8_t component)
 	{
 		return (*this)(x, y, static_cast<ColorComponent>(component));
@@ -119,6 +118,11 @@ namespace djv
 	const float& Img::operator()(uint64_t x, uint64_t y, uint8_t component) const
 	{
 		return (*this)(x, y, static_cast<ColorComponent>(component));
+	}
+
+	Color Img::operator()(uint64_t x, uint64_t y) const
+	{
+		return { (*_r)[x][y], (*_g)[x][y], (*_b)[x][y], (*_a)[x][y] };
 	}
 
 
@@ -233,6 +237,14 @@ namespace djv
 			default:
 				throw std::runtime_error("Cannot get component " + std::to_string(static_cast<int>(component)) + " of Img.");
 		}
+	}
+
+	void Img::setPixel(uint64_t x, uint64_t y, const Color& color)
+	{
+		(*_r)[x][y] = color.r;
+		(*_g)[x][y] = color.g;
+		(*_b)[x][y] = color.b;
+		(*_a)[x][y] = color.a;
 	}
 
 	uint64_t Img::width() const

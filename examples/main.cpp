@@ -30,18 +30,11 @@ int main()
 
 
 	{
-		djv::segmentation::ImageSegmentation seg = djv::segmentation::kMeans(image, 10);
+		djv::segmentation::ImageSegmentation seg = djv::segmentation::kMeans(image, 20);
 		djv::Img segmented(image.width(), image.height());
 		for (uint64_t i(0); i < image.width(); i++)
-		{
 			for (uint64_t j(0); j < image.height(); j++)
-			{
-				segmented(i, j, 0) = seg.groupColors[seg.groups[i][j]].r;
-				segmented(i, j, 1) = seg.groupColors[seg.groups[i][j]].g;
-				segmented(i, j, 2) = seg.groupColors[seg.groups[i][j]].b;
-				segmented(i, j, 3) = 1.f;
-			}
-		}
+				segmented.setPixel(i, j, seg.groupColors[seg.groups[i][j]]);
 
 		segmented.saveToFile("build/kMeans.png");
 	}

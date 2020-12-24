@@ -59,6 +59,17 @@ namespace djv
 		}
 	}
 
+
+	namespace
+	{
+		void flattenedMatrix(const scp::Mat<float>& m, scp::Vec<float>& v)
+		{
+			for (uint64_t i(0); i < m.m; i++)
+				for (uint64_t j(0); j < m.n; j++)
+					v[i*m.n + j] = m[i][j];
+		}
+	}
+
 	scp::Vec<float> NeuralNetwork::operator()(const scp::Vec<float>& x) const
 	{
 		std::vector<scp::Vec<float>> a;
@@ -69,13 +80,29 @@ namespace djv
 		return a.back();
 	}
 
+	scp::Vec<float> NeuralNetwork::operator()(const scp::Mat<float>& m) const
+	{
+		scp::Vec<float> x(m.m * m.n);
+		flattenedMatrix(m, x);
+		return (*this)(x);
+	}
+
+
 	void NeuralNetwork::train(const scp::Vec<float>& x, const scp::Vec<float>& y, float learningRate)
 	{
 		batchTrain({ x }, { y }, learningRate);
 	}
 
+	void NeuralNetwork::train(const scp::Mat<float>& m, const scp::Vec<float>& y, float learningRate)
+	{
+		scp::Vec<float> x(m.m * m.n);
+		flattenedMatrix(m, x);
+		return train(x, y, learningRate);
+	}
+
 	void NeuralNetwork::batchTrain(const std::vector<scp::Vec<float>>& x, const std::vector<scp::Vec<float>>& y, float learningRate)
 	{
+		assert(x.size() != 0);
 		assert(x.size() == y.size());
 
 		std::vector<scp::Mat<float>> corrections;
@@ -110,5 +137,16 @@ namespace djv
 		#pragma omp parallel for private(i) shared(corrections, x)
 		for (i = 0; i < _layers.size(); i++)
 			_layers[i]->applyCorrection(corrections[i] / static_cast<float>(x.size()));
+	}
+
+	void NeuralNetwork::batchTrain(const std::vector<scp::Mat<float>>& m, const std::vector<scp::Vec<float>>& y, float learningRate)
+	{
+		assert(m.size() != 0);
+
+		std::vector<scp::Vec<float>> x(m.size(), scp::Vec<float>(m[0].m*m[0].n));
+		for (uint64_t i(0); i < m.size(); i++)
+			flattenedMatrix(m[i], x[i]);
+
+		return batchTrain(x, y, learningRate);
 	}
 }

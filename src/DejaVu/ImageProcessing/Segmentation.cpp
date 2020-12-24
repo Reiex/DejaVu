@@ -12,7 +12,7 @@ namespace djv
 
 		namespace
 		{
-			float distanceSq(const Color& x, const Color& y)
+			float colorDistanceSq(const Color& x, const Color& y)
 			{
 				return (x.r - y.r)*(x.r - y.r) + (x.g - y.g)*(x.g - y.g) + (x.b - y.b)*(x.b - y.b) + (x.a - y.a)*(x.a - y.a);
 			}
@@ -27,15 +27,7 @@ namespace djv
 			ImageSegmentation seg(w, h, k);
 
 			for (uint64_t i(0); i < k; i++)
-			{
-				uint64_t x = std::rand() % w;
-				uint64_t y = std::rand() % h;
-
-				seg.groupColors[i].r = m(x, y, 0);
-				seg.groupColors[i].g = m(x, y, 1);
-				seg.groupColors[i].b = m(x, y, 2);
-				seg.groupColors[i].a = m(x, y, 3);
-			}
+				seg.groupColors[i] = m(std::rand() % w, std::rand() % h);
 
 			float colorDiff(2 * epsilon);
 			#pragma omp parallel
@@ -46,11 +38,11 @@ namespace djv
 				{
 					for (int64_t j(0); j < h; j++)
 					{
-						float minDistance = distanceSq(seg.groupColors[0], { m(i, j, 0), m(i, j, 1), m(i, j, 2), m(i, j, 3) });
+						float minDistance = colorDistanceSq(seg.groupColors[0], m(i, j));
 						uint64_t group = 0;
 						for (int64_t p(1); p < k; p++)
 						{
-							float d = distanceSq(seg.groupColors[p], { m(i, j, 0), m(i, j, 1), m(i, j, 2), m(i, j, 3) });
+							float d = colorDistanceSq(seg.groupColors[p], m(i, j));
 							if (d < minDistance)
 							{
 								minDistance = d;
@@ -95,7 +87,7 @@ namespace djv
 						seg.groupColors[p].a /= groupCount;
 					}
 
-					float d = distanceSq(oldColor, seg.groupColors[p]);
+					float d = colorDistanceSq(oldColor, seg.groupColors[p]);
 
 					#pragma omp atomic
 					colorDiff += d;
