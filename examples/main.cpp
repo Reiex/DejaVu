@@ -4,7 +4,7 @@
 
 int main()
 {
-	djv::Img image("examples/assets/Marius.jpg");
+	djv::Img image("examples/assets/Cathedrale.jpg");
 	scp::Mat<float> grayScaleImage = image.grayScale();
 
 	// Processings
@@ -30,13 +30,21 @@ int main()
 
 
 	{
-		djv::segmentation::ImageSegmentation seg = djv::segmentation::kMeans(image, 20);
+		djv::segmentation::ImageSegmentation seg = djv::segmentation::kMeans(image, 5);
 		djv::Img segmented(image.width(), image.height());
 		for (uint64_t i(0); i < image.width(); i++)
 			for (uint64_t j(0); j < image.height(); j++)
 				segmented.setPixel(i, j, seg.groupColors[seg.groups[i][j]]);
-
 		segmented.saveToFile("build/kMeans.png");
+	}
+
+	{
+		djv::segmentation::ImageSegmentation seg = djv::segmentation::slic(image, 400);
+		djv::Img segmented(image.width(), image.height());
+		for (uint64_t i(0); i < image.width(); i++)
+			for (uint64_t j(0); j < image.height(); j++)
+				segmented.setPixel(i, j, seg.groupColors[seg.groups[i][j]]);
+		segmented.saveToFile("build/SLIC.png");
 	}
 
 
