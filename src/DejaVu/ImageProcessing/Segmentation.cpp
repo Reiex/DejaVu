@@ -124,6 +124,7 @@ namespace djv
 				epsilon = k * 1e-4f;
 
 			uint64_t w = im.width(), h = im.height();
+			uint64_t l = std::max(w, h);
 			ImageSegmentation seg(w, h, k);
 
 			for (uint64_t i(0); i < k; i++)
@@ -141,19 +142,17 @@ namespace djv
 				{
 					for (int64_t j(0); j < h; j++)
 					{
-						float minDistance = pixelDistanceSq(seg.groupPos[0], seg.groupColors[0], {static_cast<uint64_t>(i), static_cast<uint64_t>(j)}, im(i, j), w, m);
-						uint64_t group = 0;
+						float minDistance = pixelDistanceSq(seg.groupPos[0], seg.groupColors[0], {static_cast<uint64_t>(i), static_cast<uint64_t>(j)}, im(i, j), l, m);
+						seg.groups[i][j] = 0;
 						for (int64_t p(1); p < k; p++)
 						{
-							float d = pixelDistanceSq(seg.groupPos[p], seg.groupColors[p], {static_cast<uint64_t>(i), static_cast<uint64_t>(j)}, im(i, j), w, m);
+							float d = pixelDistanceSq(seg.groupPos[p], seg.groupColors[p], { static_cast<uint64_t>(i), static_cast<uint64_t>(j) }, im(i, j), l, m);
 							if (d < minDistance)
 							{
 								minDistance = d;
-								group = p;
+								seg.groups[i][j] = p;
 							}
 						}
-
-						seg.groups[i][j] = group;
 					}
 				}
 
@@ -196,11 +195,14 @@ namespace djv
 						seg.groupPos[p].y /= groupCount;
 					}
 
-					float d = pixelDistanceSq(oldPos, oldColor, seg.groupPos[p], seg.groupColors[p], w, 1.f);
+					float d = pixelDistanceSq(oldPos, oldColor, seg.groupPos[p], seg.groupColors[p], l, 1.f);
 
 					#pragma omp atomic
 					colorDiff += d;
 				}
+
+				#pragma omp single
+				std::cout << colorDiff << std::endl;
 			}
 
 			return seg;
