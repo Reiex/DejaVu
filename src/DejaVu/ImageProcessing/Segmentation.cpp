@@ -200,9 +200,6 @@ namespace djv
 					#pragma omp atomic
 					colorDiff += d;
 				}
-
-				#pragma omp single
-				std::cout << colorDiff << std::endl;
 			}
 
 			return seg;
