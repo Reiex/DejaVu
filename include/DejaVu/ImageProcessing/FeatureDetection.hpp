@@ -37,12 +37,40 @@ namespace djv
 		/// \brief Returns the result of the Canny edge detection algorithm.
 		/// 
 		/// The Canny edge detection algorithm is a simple evaluation of whether the magnitude of the gradient is at a
-		/// local maximum or not at a pixel. If it is, then the pixel is part of an edge, and its strength is the
-		/// square of the magnitude of the gradient at that pixel.
+		/// local maximum in the direction of the gradient or not at a pixel. If it is, then the pixel is part of an
+		/// edge, and its strength is the square of the magnitude of the gradient at that pixel.
 		/// 
 		/// The gradient computation method used is djv::operators::simpleGradient.
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		scp::Mat<float> canny(const scp::Mat<float>& m, float sigma = 1.5f);
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// \}
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	}
+
+	namespace cornerDetectors
+	{
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// \addtogroup cornerDetectors
+		/// \ingroup ImageProcessing
+		/// \{
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// \brief Returns the result of the Harris corner detection algorithm.
+		/// 
+		/// The Harris corner detection algorithm is a simple evaluation of whether the Harris response computed from
+		/// the eigenvalues of the auto-correlation matrix of the gradient on a window around a pixel is at a local
+		/// positive maximum or not at the pixel. If it is, then the pixel is part of a corner, and its strength is the
+		/// Harris response.
+		/// 
+		/// The Harris response is computed as \f$R = det(M) - \alpha \cdot tr(M)^2\f$ with \f$M\f$ the auto-correlation
+		/// matrix.
+		/// 
+		/// The gradient computation method used is djv::operators::simpleGradient.
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		scp::Mat<float> harris(const scp::Mat<float>& m, float alpha = 0.05f, const scp::Mat<float>& window = { 3, 3, 1.f });
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// \}

@@ -125,6 +125,71 @@ namespace djv
 		return { (*_r)[x][y], (*_g)[x][y], (*_b)[x][y], (*_a)[x][y] };
 	}
 
+	void Img::setPixel(uint64_t x, uint64_t y, const Color& color)
+	{
+		(*_r)[x][y] = color.r;
+		(*_g)[x][y] = color.g;
+		(*_b)[x][y] = color.b;
+		(*_a)[x][y] = color.a;
+	}
+
+	const scp::Mat<float>& Img::getComponent(ColorComponent component) const
+	{
+		switch (component)
+		{
+		case ColorComponent::R:
+			return *_r;
+		case ColorComponent::G:
+			return *_g;
+		case ColorComponent::B:
+			return *_b;
+		case ColorComponent::A:
+			return *_a;
+		default:
+			throw std::runtime_error("Cannot get component " + std::to_string(static_cast<int>(component)) + " of Img.");
+		}
+	}
+
+	scp::Mat<float>& Img::getComponent(ColorComponent component)
+	{
+		switch (component)
+		{
+		case ColorComponent::R:
+			return *_r;
+		case ColorComponent::G:
+			return *_g;
+		case ColorComponent::B:
+			return *_b;
+		case ColorComponent::A:
+			return *_a;
+		default:
+			throw std::runtime_error("Cannot get component " + std::to_string(static_cast<int>(component)) + " of Img.");
+		}
+	}
+
+	void Img::setComponent(ColorComponent component, const scp::Mat<float> m)
+	{
+		std::cout << static_cast<int>(component) << std::endl;
+
+		switch (component)
+		{
+			case ColorComponent::R:
+				*_r = m;
+				break;
+			case ColorComponent::G:
+				*_g = m;
+				break;
+			case ColorComponent::B:
+				*_b = m;
+				break;
+			case ColorComponent::A:
+				*_a = m;
+				break;
+			default:
+				throw std::runtime_error("Cannot set component " + std::to_string(static_cast<int>(component)) + " of Img.");
+		}
+	}
+
 
 	void Img::saveToFile(const std::string& filename) const
 	{
@@ -221,48 +286,6 @@ namespace djv
 		return redFactor*(*_r) + greenFactor*(*_g) + blueFactor*(*_b);
 	}
 
-
-	scp::Mat<float>& Img::getComponent(ColorComponent component)
-	{
-		switch (component)
-		{
-		case ColorComponent::R:
-			return *_r;
-		case ColorComponent::G:
-			return *_g;
-		case ColorComponent::B:
-			return *_b;
-		case ColorComponent::A:
-			return *_a;
-		default:
-			throw std::runtime_error("Cannot get component " + std::to_string(static_cast<int>(component)) + " of Img.");
-		}
-	}
-
-	const scp::Mat<float>& Img::getComponent(ColorComponent component) const
-	{
-		switch (component)
-		{
-			case ColorComponent::R:
-				return *_r;
-			case ColorComponent::G:
-				return *_g;
-			case ColorComponent::B:
-				return *_b;
-			case ColorComponent::A:
-				return *_a;
-			default:
-				throw std::runtime_error("Cannot get component " + std::to_string(static_cast<int>(component)) + " of Img.");
-		}
-	}
-
-	void Img::setPixel(uint64_t x, uint64_t y, const Color& color)
-	{
-		(*_r)[x][y] = color.r;
-		(*_g)[x][y] = color.g;
-		(*_b)[x][y] = color.b;
-		(*_a)[x][y] = color.a;
-	}
 
 	uint64_t Img::width() const
 	{

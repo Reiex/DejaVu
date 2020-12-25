@@ -101,6 +101,80 @@ namespace djv
 		}
 	}
 
+	namespace cornerDetectors
+	{
+		scp::Mat<float> harris(const scp::Mat<float>& m, float alpha, const scp::Mat<float>& window)
+		{
+			std::array<scp::Mat<float>, 2> grad = operators::simpleGradient(m);
+			std::array<scp::Mat<float>, 3> gradSq = { scp::Mat<float>(m.m, m.n), scp::Mat<float>(m.m, m.n), scp::Mat<float>(m.m, m.n) };
+			scp::Mat<float> R(m.m, m.n), result(m.m, m.n);
+			int64_t ox = window.m / 2, oy = window.n / 2;
+
+			#pragma omp parallel
+			{
+				#pragma omp for
+				for (int64_t i = 0; i < m.m; i++)
+				{
+					for (int64_t j = 0; j < m.n; j++)
+					{
+						gradSq[0][i][j] = grad[0][i][j] * grad[0][i][j];
+						gradSq[1][i][j] = grad[0][i][j] * grad[1][i][j];
+						gradSq[2][i][j] = grad[1][i][j] * grad[1][i][j];
+					}
+				}
+
+				#pragma omp for
+				for (int64_t i = 0; i < m.m; i++)
+				{
+					for (int64_t j = 0; j < m.n; j++)
+					{
+						scp::Mat<float> M(2, 2);
+						float a(0), b(0), d(0);
+						for (int64_t p = 0; p < window.m; p++)
+						{
+							for (int64_t q = 0; q < window.n; q++)
+							{
+								int64_t x = std::max(std::min(i + p - ox, static_cast<int64_t>(m.m - 1)), 0LL);
+								int64_t y = std::max(std::min(j + q - oy, static_cast<int64_t>(m.n - 1)), 0LL);
+								a += gradSq[0][x][y] * window[p][q];
+								b += gradSq[1][x][y] * window[p][q];
+								d += gradSq[2][x][y] * window[p][q];
+							}
+						}
+
+						R[i][j] = a*d - b*b - alpha*(a + d)*(a + d);
+					}
+				}
+
+				#pragma omp for
+				for (int64_t i = 0; i < m.m; i++)
+				{
+					for (int64_t j = 0; j < m.n; j++)
+					{
+						bool localMaximum(R[i][j] > 0);
+						if (localMaximum)
+						{
+							for (int64_t p = -1; p < 2; p++)
+							{
+								for (int64_t q = -1; q < 2; q++)
+								{
+									int64_t x = std::max(std::min(i + p, static_cast<int64_t>(m.m - 1)), 0LL);
+									int64_t y = std::max(std::min(j + q, static_cast<int64_t>(m.n - 1)), 0LL);
+									localMaximum = localMaximum && R[i][j] >= R[x][y];
+								}
+							}
+						}
+
+						if (localMaximum)
+							result[i][j] = R[i][j];
+					}
+				}
+			}
+
+			return result;
+		}
+	}
+
 	namespace lineExtractors
 	{
 		namespace

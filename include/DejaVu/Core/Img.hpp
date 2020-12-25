@@ -60,6 +60,10 @@ namespace djv
 			float& operator()(uint64_t x, uint64_t y, uint8_t component);                     ///< Returns the desired component of the pixel at position `(x, y)`.
 			const float& operator()(uint64_t x, uint64_t y, uint8_t component) const;         ///< Returns the desired component of the pixel at position `(x, y)`.
 			Color operator()(uint64_t x, uint64_t y) const;									  ///< Returns the color of the pixel at position `(x, y)`.
+			void setPixel(uint64_t x, uint64_t y, const Color& color);						  ///< Sets the color of the pixel at position `(x, y)`.
+			const scp::Mat<float>& getComponent(ColorComponent component) const;			  ///< Returns a constant reference to the desired component of the image.
+			scp::Mat<float>& getComponent(ColorComponent component);						  ///< Returns a reference the desired component of the image.
+			void setComponent(ColorComponent component, const scp::Mat<float> m);			  ///< Sets the desired component of the image.
 
 			///////////////////////////////////////////////////////////////////////////////////////////////////////////
 			/// \brief Save the image with the desired format (specified as the extension of the filename)
@@ -84,11 +88,8 @@ namespace djv
 			///////////////////////////////////////////////////////////////////////////////////////////////////////////
 			scp::Mat<float> grayScale(float redFactor = 0.2126f, float greenFactor = 0.7152f, float blueFactor = 0.0722f) const;
 
-			scp::Mat<float>& getComponent(ColorComponent component);              ///< Returns a reference to the matrix containing the desired component.
-			const scp::Mat<float>& getComponent(ColorComponent component) const;  ///< Returns a reference to the matrix containing the desired component.
-			void setPixel(uint64_t x, uint64_t y, const Color& color);			  ///< Sets the color of the pixel at position `(x, y)`.
-			uint64_t width() const;												  ///< Returns the image width in pixels.
-			uint64_t height() const;											  ///< Returns the image height in pixels.
+			uint64_t width() const;												   ///< Returns the image width in pixels.
+			uint64_t height() const;											   ///< Returns the image height in pixels.
 
 			~Img() = default;
 
