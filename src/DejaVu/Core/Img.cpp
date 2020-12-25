@@ -199,11 +199,28 @@ namespace djv
 		shape.draw(*this);
 	}
 
+	void Img::applySegmentationColor(const segmentation::ImageSegmentation& seg)
+	{
+		assert(seg.groups.m == _width && seg.groups.n == _height);
+
+		#pragma omp parallel for
+		for (int64_t i = 0; i < _width; i++)
+		{
+			for (int64_t j = 0; j < _height; j++)
+			{
+				(*_r)[i][j] = seg.groupColors[seg.groups[i][j]].r;
+				(*_g)[i][j] = seg.groupColors[seg.groups[i][j]].g;
+				(*_b)[i][j] = seg.groupColors[seg.groups[i][j]].b;
+				(*_a)[i][j] = seg.groupColors[seg.groups[i][j]].a;
+			}
+		}
+	}
 
 	scp::Mat<float> Img::grayScale(float redFactor, float greenFactor, float blueFactor) const
 	{
 		return redFactor*(*_r) + greenFactor*(*_g) + blueFactor*(*_b);
 	}
+
 
 	scp::Mat<float>& Img::getComponent(ColorComponent component)
 	{
