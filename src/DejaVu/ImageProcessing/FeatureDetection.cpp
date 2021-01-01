@@ -134,8 +134,8 @@ namespace djv
 						{
 							for (int64_t q = 0; q < window.n; q++)
 							{
-								int64_t x = std::max(std::min(i + p - ox, static_cast<int64_t>(m.m - 1)), 0LL);
-								int64_t y = std::max(std::min(j + q - oy, static_cast<int64_t>(m.n - 1)), 0LL);
+								int64_t x = std::max(std::min(i + p - ox, static_cast<int64_t>(m.m - 1)), int64_t(0));
+								int64_t y = std::max(std::min(j + q - oy, static_cast<int64_t>(m.n - 1)), int64_t(0));
 								a += gradSq[0][x][y] * window[p][q];
 								b += gradSq[1][x][y] * window[p][q];
 								d += gradSq[2][x][y] * window[p][q];
@@ -158,8 +158,8 @@ namespace djv
 							{
 								for (int64_t q = -1; q < 2; q++)
 								{
-									int64_t x = std::max(std::min(i + p, static_cast<int64_t>(m.m - 1)), 0LL);
-									int64_t y = std::max(std::min(j + q, static_cast<int64_t>(m.n - 1)), 0LL);
+									int64_t x = std::max(std::min(i + p, static_cast<int64_t>(m.m - 1)), int64_t(0));
+									int64_t y = std::max(std::min(j + q, static_cast<int64_t>(m.n - 1)), int64_t(0));
 									localMaximum = localMaximum && R[i][j] >= R[x][y];
 								}
 							}

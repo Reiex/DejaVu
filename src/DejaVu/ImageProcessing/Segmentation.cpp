@@ -40,7 +40,7 @@ namespace djv
 			while (colorDiff > epsilon)
 			{
 				#pragma omp for
-				for (int64_t i(0); i < w; i++)
+				for (int64_t i = 0; i < w; i++)
 				{
 					for (int64_t j(0); j < h; j++)
 					{
@@ -64,7 +64,7 @@ namespace djv
 				colorDiff = 0;
 
 				#pragma omp for
-				for (int64_t p(0); p < k; p++)
+				for (int64_t p = 0; p < k; p++)
 				{
 					Color oldColor = seg.groupColors[p];
 					seg.groupColors[p] = { 0, 0, 0, 0 };
@@ -138,7 +138,7 @@ namespace djv
 			while (colorDiff > epsilon)
 			{
 				#pragma omp for
-				for (int64_t i(0); i < w; i++)
+				for (int64_t i = 0; i < w; i++)
 				{
 					for (int64_t j(0); j < h; j++)
 					{
@@ -160,7 +160,7 @@ namespace djv
 				colorDiff = 0;
 
 				#pragma omp for
-				for (int64_t p(0); p < k; p++)
+				for (int64_t p = 0; p < k; p++)
 				{
 					Color oldColor = seg.groupColors[p];
 					Point oldPos = seg.groupPos[p];

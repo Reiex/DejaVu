@@ -29,6 +29,7 @@ LIBRARY_OBJS = $(OBJ_LIBRARY_DIR)/Core/Shape.o \
 			   $(OBJ_LIBRARY_DIR)/Core/stb/stb_image_write.o \
 			   $(OBJ_LIBRARY_DIR)/ImageProcessing/Misc.o \
 			   $(OBJ_LIBRARY_DIR)/ImageProcessing/FeatureDetection.o \
+			   $(OBJ_LIBRARY_DIR)/ImageProcessing/Segmentation.o \
 			   $(OBJ_LIBRARY_DIR)/MachineLearning/Perceptron.o \
 			   $(OBJ_LIBRARY_DIR)/MachineLearning/NeuralNetwork.o
 EXAMPLES_OBJS = $(OBJ_EXAMPLES_DIR)/main.o
@@ -37,7 +38,7 @@ EXAMPLES_OBJS = $(OBJ_EXAMPLES_DIR)/main.o
 # Compiler
 CC = g++
 # Compiler options
-LIBRARY_CFLAGS = -I$(INCLUDE_DIR) -Iexternal/include -fpic
+LIBRARY_CFLAGS = -I$(INCLUDE_DIR) -Iexternal/include -fpic -fopenmp
 EXAMPLES_CFLAGS = -I$(INCLUDE_DIR) -Iexternal/include
 # Linker options
 LDFLAGS = -L$(LIB_DIR) -Lexternal/lib -Wl,-rpath=$(LIB_DIR):external/lib

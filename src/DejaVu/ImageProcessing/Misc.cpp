@@ -127,7 +127,7 @@ namespace djv
 			#pragma omp parallel
 			{
 				#pragma omp for
-				for (int64_t i(0); i < g.n; i++)
+				for (int64_t i = 0; i < g.n; i++)
 				{
 					float x = static_cast<float>(i) - g.n/2;
 					g[i] = std::exp(-x*x / (2*sigmaSq))/(2.506628275f*sigma);
