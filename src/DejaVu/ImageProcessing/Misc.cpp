@@ -115,13 +115,16 @@ namespace djv
 
 			return r;
 		}
+	}
 
-
-		scp::Mat<float> gaussianBlur(const scp::Mat<float>& m, float sigma)
+	namespace blur
+	{
+		scp::Mat<float> gaussian(const scp::Mat<float>& m, float sigma)
 		{
 			scp::Mat<float> rx(m.m, m.n), r(m.m, m.n);
 			scp::Vec<float> g(std::min(std::max(2*m.m - 1, 2*m.n - 1), 2*static_cast<uint64_t>(sigma*4) + 1));
-			float sigmaSq = sigma * sigma;
+			float twoSigmaSq = 2 * sigma * sigma;
+			float sigmaSqrtTwoPi = 2.506628275f * sigma;
 			
 
 			#pragma omp parallel
@@ -130,7 +133,7 @@ namespace djv
 				for (int64_t i = 0; i < g.n; i++)
 				{
 					float x = static_cast<float>(i) - g.n/2;
-					g[i] = std::exp(-x*x / (2*sigmaSq))/(2.506628275f*sigma);
+					g[i] = std::exp(-x*x / twoSigmaSq)/sigmaSqrtTwoPi;
 				}
 
 				#pragma omp for
@@ -154,6 +157,40 @@ namespace djv
 								r[i][j] += g[k] * rx[i][0];
 							else
 								r[i][j] += g[k] * rx[i][m.n - 1];
+			}
+
+			return r;
+		}
+	
+		scp::Mat<float> gaussianBilateral(const scp::Mat<float>& m, float sigmaSpace, float sigmaIntensity)
+		{
+			scp::Mat<float> r(m.m, m.n);
+			int64_t patchSize = 2 * static_cast<int64_t>(sigmaSpace * 3) + 1;
+			float twoSigmaSpaceSq = 2 * sigmaSpace * sigmaSpace;
+			float twoSigmaIntensitySq = 2 * sigmaIntensity * sigmaIntensity;
+
+			#pragma omp parallel for
+			for (int64_t i = 0; i < m.m; i++)
+			{
+				for (int64_t j = 0; j < m.n; j++)
+				{
+					float s = 0.f;
+
+					for (int64_t p = -patchSize; p < patchSize; p++)
+					{
+						for (int64_t q = -patchSize; q < patchSize; q++)
+						{
+							int64_t x = std::max(std::min(i + p, static_cast<int64_t>(m.m - 1)), int64_t(0));
+							int64_t y = std::max(std::min(j + q, static_cast<int64_t>(m.n - 1)), int64_t(0));
+							float intensityDiff = m[x][y] - m[i][j];
+							float coeff = std::exp(-(p * p + q * q) / twoSigmaSpaceSq - intensityDiff * intensityDiff / twoSigmaIntensitySq);
+							s += coeff;
+							r[i][j] += m[x][y] * coeff;
+						}
+					}
+
+					r[i][j] /= s;
+				}
 			}
 
 			return r;

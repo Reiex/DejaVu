@@ -7,8 +7,9 @@ int main()
 	djv::Img image("examples/assets/Lena.jpg"), result(image.width(), image.height());
 	scp::Mat<float> grayScaleImage = image.grayScale();
 	image.saveToFile("build/Original.png");
+	djv::Img(grayScaleImage).saveToFile("build/GrayScaleOriginal.png");
 
-	// Processings
+	// Operators
 
 	
 	djv::Img(djv::operators::sobel(grayScaleImage)[0]).saveToFile("build/SobelX.png");
@@ -24,7 +25,12 @@ int main()
 
 	djv::Img(djv::operators::simpleLaplacian(grayScaleImage)).saveToFile("build/SimpleLaplacian.png");
 
-	djv::Img(djv::operators::gaussianBlur(grayScaleImage, 10.f)).saveToFile("build/GaussianBlur.png");
+
+	// Blurs
+
+
+	djv::Img(djv::blur::gaussian(grayScaleImage, 10.f)).saveToFile("build/GaussianBlur.png");
+	djv::Img(djv::blur::gaussianBilateral(grayScaleImage, 2.f)).saveToFile("build/GaussianBilateralBlur.png");
 	
 
 	// Image segmentation
