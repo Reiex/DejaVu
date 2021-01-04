@@ -32,6 +32,7 @@ int main()
 	djv::Img(djv::blur::gaussian(grayScaleImage, 10.f)).saveToFile("build/GaussianBlur.png");
 	djv::Img(djv::blur::gaussianBilateral(grayScaleImage, 2.f)).saveToFile("build/GaussianBilateralBlur.png");
 	djv::Img(djv::blur::median(grayScaleImage, 2)).saveToFile("build/MedianBlur.png");
+	djv::Img(djv::blur::mean(grayScaleImage, 10)).saveToFile("build/MeanBlur.png");
 	
 
 	// Image segmentation

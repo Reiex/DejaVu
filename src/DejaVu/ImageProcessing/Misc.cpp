@@ -225,5 +225,39 @@ namespace djv
 
 			return r;
 		}
+	
+		scp::Mat<float> mean(const scp::Mat<float>& m, uint64_t n)
+		{
+			scp::Mat<float> rx(m.m, m.n), r(m.m, m.n);
+			int64_t meanCount = (2*n + 1)*(2*n + 1);
+
+			#pragma omp parallel
+			{
+
+				#pragma omp for
+				for (int64_t i = 0; i < m.m; i++)
+					for (int64_t j = 0; j < m.n; j++)
+						for (int64_t k = -static_cast<int64_t>(n); k < static_cast<int64_t>(n); k++)
+							if (i + k >= 0 && i + k < m.m)
+								rx[i][j] += m[i + k][j] / meanCount;
+							else if (i + k < 0)
+								rx[i][j] += m[0][j] / meanCount;
+							else
+								rx[i][j] += m[m.m - 1][j] / meanCount;
+
+				#pragma omp for
+				for (int64_t i = 0; i < m.m; i++)
+					for (int64_t j = 0; j < m.n; j++)
+						for (int64_t k = -static_cast<int64_t>(n); k < static_cast<int64_t>(n); k++)
+							if (j + k >= 0 && j + k < m.n)
+								r[i][j] += rx[i][j + k];
+							else if (j + k < 0)
+								r[i][j] += rx[i][0];
+							else
+								r[i][j] += rx[i][m.n - 1];
+			}
+
+			return r;
+		}
 	}
 }
