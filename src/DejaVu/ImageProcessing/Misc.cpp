@@ -176,9 +176,9 @@ namespace djv
 				{
 					float s = 0.f;
 
-					for (int64_t p = -patchSize; p < patchSize; p++)
+					for (int64_t p = -patchSize; p <= patchSize; p++)
 					{
-						for (int64_t q = -patchSize; q < patchSize; q++)
+						for (int64_t q = -patchSize; q <= patchSize; q++)
 						{
 							int64_t x = std::max(std::min(i + p, static_cast<int64_t>(m.m - 1)), int64_t(0));
 							int64_t y = std::max(std::min(j + q, static_cast<int64_t>(m.n - 1)), int64_t(0));
@@ -190,6 +190,36 @@ namespace djv
 					}
 
 					r[i][j] /= s;
+				}
+			}
+
+			return r;
+		}
+
+		scp::Mat<float> median(const scp::Mat<float>& m, uint64_t n)
+		{
+			scp::Mat<float> r(m.m, m.n);
+			uint64_t histSize = (2*n + 1)*(2*n + 1);
+			uint64_t histMiddle = histSize / 2;
+
+			#pragma omp parallel for
+			for (int64_t i = 0; i < m.m; i++)
+			{
+				for (int64_t j = 0; j < m.n; j++)
+				{
+					std::vector<float> h;
+					for (int64_t p = -static_cast<int64_t>(n); p <= static_cast<int64_t>(n); p++)
+					{
+						for (int64_t q = -static_cast<int64_t>(n); q <= static_cast<int64_t>(n); q++)
+						{
+							int64_t x = std::max(std::min(i + p, static_cast<int64_t>(m.m - 1)), int64_t(0));
+							int64_t y = std::max(std::min(j + q, static_cast<int64_t>(m.n - 1)), int64_t(0));
+							h.push_back(m[x][y]);
+						}
+					}
+
+					std::sort(h.begin(), h.end());
+					r[i][j] = h[histMiddle];
 				}
 			}
 

@@ -24,27 +24,21 @@ int main()
 	djv::Img(djv::operators::simpleHessian(grayScaleImage)[2]).saveToFile("build/SimpleHessianYY.png");
 
 	djv::Img(djv::operators::simpleLaplacian(grayScaleImage)).saveToFile("build/SimpleLaplacian.png");
-
+	
 
 	// Blurs
 
-
+	
 	djv::Img(djv::blur::gaussian(grayScaleImage, 10.f)).saveToFile("build/GaussianBlur.png");
 	djv::Img(djv::blur::gaussianBilateral(grayScaleImage, 2.f)).saveToFile("build/GaussianBilateralBlur.png");
+	djv::Img(djv::blur::median(grayScaleImage, 2)).saveToFile("build/MedianBlur.png");
 	
 
 	// Image segmentation
 
 	
-	{
-		result.applySegmentationColor(djv::segmentation::kMeans(image, 5));
-		result.saveToFile("build/kMeans.png");
-	}
-
-	{
-		result.applySegmentationColor(djv::segmentation::slic(image, 400));
-		result.saveToFile("build/SLIC.png");
-	}
+	result.applySegmentationColor(djv::segmentation::kMeans(image, 5)); result.saveToFile("build/kMeans.png");
+	result.applySegmentationColor(djv::segmentation::slic(image, 400)); result.saveToFile("build/SLIC.png");
 	
 
 	// Edge detectors
@@ -65,7 +59,7 @@ int main()
 	
 	{
 		scp::Mat<float> edges = djv::edgeDetectors::marrHildreth(grayScaleImage);
-		std::vector<djv::Line> lines = djv::lineExtractors::hough(edges, 0.4);
+		std::vector<djv::Line> lines = djv::lineExtractors::hough(edges);
 		djv::Img result = image;
 		for (uint64_t i(0); i < lines.size(); i++)
 		{
