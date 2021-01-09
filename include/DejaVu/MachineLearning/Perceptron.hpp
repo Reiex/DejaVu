@@ -23,10 +23,13 @@ namespace djv
 		{
 			public:
 
-				///////////////////////////////////////////////////////////////////////////////////////////////////////
-				/// \brief Common constructor for every perceptron.
-				///////////////////////////////////////////////////////////////////////////////////////////////////////
-				PerceptronBase(uint64_t inputSize);
+				PerceptronBase() = delete;
+				PerceptronBase(uint64_t inputSize);  ///< Common constructor for every perceptron.
+				PerceptronBase(const PerceptronBase& p) = default;
+				PerceptronBase(PerceptronBase&& p) = default;
+
+				PerceptronBase& operator=(const PerceptronBase& p) = default;
+				PerceptronBase& operator=(PerceptronBase&& p) = default;
 
 				///////////////////////////////////////////////////////////////////////////////////////////////////////
 				/// \brief Applies the perceptron to a feature.
@@ -78,6 +81,8 @@ namespace djv
 				float getBias() const;                            ///< Returns the bias of the perceptron.
 				void setBias(float bias);                         ///< Sets the bias of the perceptron.
 
+				~PerceptronBase() = default;
+
 			protected:
 
 				scp::Vec<float> _weights;
@@ -93,10 +98,18 @@ namespace djv
 		{
 			public:
 
+				BinaryStep() = delete;
 				BinaryStep(uint64_t inputSize);
+				BinaryStep(const BinaryStep& p) = default;
+				BinaryStep(BinaryStep&& p) = default;
+
+				BinaryStep& operator=(const BinaryStep& p) = default;
+				BinaryStep& operator=(BinaryStep&& p) = default;
 
 				float f(float z) const;
 				float df(float a, float z) const;
+
+				~BinaryStep() = default;
 		};
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -108,10 +121,18 @@ namespace djv
 		{
 			public:
 
+				LeakyReLU() = delete;
 				LeakyReLU(uint64_t inputSize);
+				LeakyReLU(const LeakyReLU& p) = default;
+				LeakyReLU(LeakyReLU&& p) = default;
+
+				LeakyReLU& operator=(const LeakyReLU& p) = default;
+				LeakyReLU& operator=(LeakyReLU&& p) = default;
 
 				float f(float z) const;
 				float df(float a, float z) const;
+
+				~LeakyReLU() = default;
 		};
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -123,10 +144,18 @@ namespace djv
 		{
 			public:
 
+				Linear() = delete;
 				Linear(uint64_t inputSize);
+				Linear(const Linear& p) = default;
+				Linear(Linear&& p) = default;
+
+				Linear& operator=(const Linear& p) = default;
+				Linear& operator=(Linear&& p) = default;
 
 				float f(float z) const;
 				float df(float a, float z) const;
+
+				~Linear() = default;
 		};
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -138,10 +167,18 @@ namespace djv
 		{
 			public:
 
+				ReLU() = delete;
 				ReLU(uint64_t inputSize);
+				ReLU(const ReLU& p) = default;
+				ReLU(ReLU&& p) = default;
+
+				ReLU& operator=(const ReLU& p) = default;
+				ReLU& operator=(ReLU&& p) = default;
 
 				float f(float z) const;
 				float df(float a, float z) const;
+
+				~ReLU() = default;
 		};
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -153,10 +190,18 @@ namespace djv
 		{
 			public:
 
+				Sigmoid() = delete;
 				Sigmoid(uint64_t inputSize);
+				Sigmoid(const Sigmoid& p) = default;
+				Sigmoid(Sigmoid&& p) = default;
+
+				Sigmoid& operator=(const Sigmoid& p) = default;
+				Sigmoid& operator=(Sigmoid&& p) = default;
 
 				float f(float z) const;
 				float df(float a, float z) const;
+
+				~Sigmoid() = default;
 		};
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -168,10 +213,18 @@ namespace djv
 		{
 			public:
 
+				Tanh() = delete;
 				Tanh(uint64_t inputSize);
+				Tanh(const Tanh& p) = default;
+				Tanh(Tanh&& p) = default;
+
+				Tanh& operator=(const Tanh& p) = default;
+				Tanh& operator=(Tanh&& p) = default;
 
 				float f(float z) const;
 				float df(float a, float z) const;
+
+				~Tanh() = default;
 		};
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////

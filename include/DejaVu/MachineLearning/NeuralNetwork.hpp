@@ -31,6 +31,7 @@ namespace djv
 		{
 			public:
 
+				LayerBase() = delete;
 				///////////////////////////////////////////////////////////////////////////////////////////////////////
 				/// \brief Common constructor to every layer
 				/// 
@@ -38,6 +39,11 @@ namespace djv
 				/// characterize a layer by its input and output vector sizes.
 				///////////////////////////////////////////////////////////////////////////////////////////////////////
 				LayerBase(uint64_t inputSize, uint64_t outputSize);
+				LayerBase(const LayerBase& layer) = default;
+				LayerBase(LayerBase&& layer) = default;
+
+				LayerBase& operator=(const LayerBase& layer) = default;
+				LayerBase& operator=(LayerBase&& layer) = default;
 
 				///////////////////////////////////////////////////////////////////////////////////////////////////////
 				/// \brief Applies the layer to a feature.
@@ -72,6 +78,8 @@ namespace djv
 				uint64_t getInputSize() const;   ///< Returns the layer's input size.
 				uint64_t getOutputSize() const;  ///< Returns the layer's output size.
 
+				~LayerBase() = default;
+
 			protected:
 
 				uint64_t _inputSize;
@@ -88,13 +96,21 @@ namespace djv
 		{
 			public:
 
+				Perceptrons() = delete;
 				Perceptrons(uint64_t inputSize, uint64_t outputSize);
+				Perceptrons(const Perceptrons& layer) = default;
+				Perceptrons(Perceptrons&& layer) = default;
+
+				Perceptrons& operator=(const Perceptrons& layer) = default;
+				Perceptrons& operator=(Perceptrons&& layer) = default;
 
 				scp::Vec<float> operator()(const scp::Vec<float>& x) const;
 
 				void goThrough(const scp::Vec<float>& x, scp::Vec<float>& a, scp::Vec<float>& z) const;
 				void computeCorrection(const scp::Vec<float>& x, const scp::Vec<float>& err, const scp::Vec<float>& a, const scp::Vec<float>& z, float learningRate, scp::Vec<float>& nextErr, scp::Mat<float>& correction) const;
 				void applyCorrection(const scp::Mat<float>& correction);
+
+				~Perceptrons() = default;
 
 			private:
 
@@ -108,13 +124,21 @@ namespace djv
 		{
 			public:
 
+				SoftMax() = delete;
 				SoftMax(uint64_t inputSize, uint64_t outputSize);
+				SoftMax(const SoftMax& layer) = default;
+				SoftMax(SoftMax&& layer) = default;
+
+				SoftMax& operator=(const SoftMax& layer) = default;
+				SoftMax& operator=(SoftMax&& layer) = default;
 
 				scp::Vec<float> operator()(const scp::Vec<float>& x) const;
 
 				void goThrough(const scp::Vec<float>& x, scp::Vec<float>& a, scp::Vec<float>& z) const;
 				void computeCorrection(const scp::Vec<float>& x, const scp::Vec<float>& err, const scp::Vec<float>& a, const scp::Vec<float>& z, float learningRate, scp::Vec<float>& nextErr, scp::Mat<float>& correction) const;
 				void applyCorrection(const scp::Mat<float>& correction);
+
+				~SoftMax() = default;
 		};
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -134,6 +158,20 @@ namespace djv
 	{
 		public:
 
+			NeuralNetwork() = default;
+			NeuralNetwork(const NeuralNetwork& net) = delete;
+			NeuralNetwork(NeuralNetwork&& net) = default;
+
+			NeuralNetwork& operator=(const NeuralNetwork& net) = delete;
+			NeuralNetwork& operator=(NeuralNetwork&& net) = default;
+
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////
+			/// \brief Add a layer to the NeuralNetwork.
+			/// 
+			/// The layer class must be derived from layers::LayerBase.
+			/// The layer instance is copied, thus a unique instance of layer can be added multiple times to the neural
+			/// network (if the input and output are compatible).
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////
 			template<typename TLayer>
 			void addLayer(const TLayer& layer);
 
@@ -168,6 +206,8 @@ namespace djv
 			/// This function simply flatten the matrices to vectors and train the neural network on these vectors.
 			///////////////////////////////////////////////////////////////////////////////////////////////////////////
 			void batchTrain(const std::vector<scp::Mat<float>>& m, const std::vector<scp::Vec<float>>& y, float learningRate = 0.01f);
+
+			~NeuralNetwork() = default;
 
 		private:
 

@@ -1,6 +1,6 @@
 #include <DejaVu/DejaVu.hpp>
 
-#include <time.h>
+#include <ctime>
 
 int main()
 {
@@ -77,7 +77,7 @@ int main()
 	// MACHINE LEARNING
 
 
-	std::srand(time(nullptr));
+	std::srand(std::time(nullptr));
 
 	
 	scp::Mat<float> face(28, 28);
