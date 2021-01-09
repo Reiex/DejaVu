@@ -76,6 +76,9 @@ int main()
 
 	// MACHINE LEARNING
 
+
+	std::srand(time(nullptr));
+
 	
 	scp::Mat<float> face(28, 28);
 	std::vector<std::vector<scp::Vec<float>>> training(2), testing(2);
@@ -111,8 +114,10 @@ int main()
 
 
 	djv::NeuralNetwork net;
-	net.setInputLayer(784, 8);
-	net.appendLayer(1);
+	djv::layers::Perceptrons<> inputLayer(784, 8);
+	djv::layers::Perceptrons<> outputLayer(8, 1);
+	net.addLayer(inputLayer);
+	net.addLayer(outputLayer);
 
 	for (uint64_t i(0); true; i++)
 	{

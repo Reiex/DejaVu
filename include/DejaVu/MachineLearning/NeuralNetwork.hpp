@@ -23,6 +23,9 @@ namespace djv
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// \brief Abstract class, base model for a NeuralNetwork layer.
+		/// 
+		/// The data that pass from a layer to another is always a vector. For convolutionnal layers, the data is
+		/// flattened in row major order.
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		class LayerBase
 		{
@@ -66,8 +69,8 @@ namespace djv
 				///////////////////////////////////////////////////////////////////////////////////////////////////////
 				virtual void applyCorrection(const scp::Mat<float>& correction) = 0;
 
-				virtual uint64_t getInputSize() const;   ///< Returns the layer's input size.
-				virtual uint64_t getOutputSize() const;  ///< Returns the layer's output size.
+				uint64_t getInputSize() const;   ///< Returns the layer's input size.
+				uint64_t getOutputSize() const;  ///< Returns the layer's output size.
 
 			protected:
 
@@ -131,21 +134,8 @@ namespace djv
 	{
 		public:
 
-			///////////////////////////////////////////////////////////////////////////////////////////////////////////
-			/// \brief Sets an input layer to the neural network.
-			/// 
-			/// This method has to be called once for the first layer. Then NeuralNetwork::appendLayer must be used.
-			///////////////////////////////////////////////////////////////////////////////////////////////////////////
-			template<typename TLayer = layers::Perceptrons<perceptrons::Sigmoid>>
-			void setInputLayer(uint64_t inputSize, uint64_t outputSize);
-			///////////////////////////////////////////////////////////////////////////////////////////////////////////
-			/// \brief Appends a layer to the neural network.
-			/// 
-			/// The layer's input size is fixed as the precedent layer's output size. This is why to be called, a first
-			/// input layer must have been set using NeuralNetwork::setInputLayer.
-			///////////////////////////////////////////////////////////////////////////////////////////////////////////
-			template<typename TLayer = layers::Perceptrons<perceptrons::Sigmoid>>
-			void appendLayer(uint64_t outputSize);
+			template<typename TLayer>
+			void addLayer(const TLayer& layer);
 
 			///////////////////////////////////////////////////////////////////////////////////////////////////////////
 			/// \brief Compute the output of the neural network for an input vector `x`.
