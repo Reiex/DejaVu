@@ -32,13 +32,7 @@ namespace djv
 			public:
 
 				LayerBase() = delete;
-				///////////////////////////////////////////////////////////////////////////////////////////////////////
-				/// \brief Common constructor to every layer
-				/// 
-				/// As all kind of layers do not have separated internal units (like perceptrons), we have chosen to
-				/// characterize a layer by its input and output vector sizes.
-				///////////////////////////////////////////////////////////////////////////////////////////////////////
-				LayerBase(uint64_t inputSize, uint64_t outputSize);
+				LayerBase(uint64_t inputSize, uint64_t outputSize);  ///< Specify the input and output vector sizes.
 				LayerBase(const LayerBase& layer) = default;
 				LayerBase(LayerBase&& layer) = default;
 
