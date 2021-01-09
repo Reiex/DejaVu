@@ -4,6 +4,9 @@
 
 int main()
 {
+	// IMAGE PROCESSING
+
+	/*
 	djv::Img image("examples/assets/Lena.jpg"), result(image.width(), image.height());
 	scp::Mat<float> grayScaleImage = image.grayScale();
 	image.saveToFile("build/Original.png");
@@ -69,11 +72,11 @@ int main()
 		}
 		result.saveToFile("build/houghLineExtractor.png");
 	}
+	*/
+
+	// MACHINE LEARNING
+
 	
-
-	// Neural network
-
-	/*
 	scp::Mat<float> face(28, 28);
 	std::vector<std::vector<scp::Vec<float>>> training(2), testing(2);
 	for (uint64_t i(0); i < 4500; i++)
@@ -144,7 +147,6 @@ int main()
 			std::cout << count[0] << " " << count[1] << " " << (count[0] + count[1]) / 1342.f << std::endl;
 		}
 	}
-	*/
 
 	return 0;
 }
