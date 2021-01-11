@@ -196,7 +196,7 @@ namespace djv
 								{
 									int64_t r = std::min(std::max(i + p - static_cast<int64_t>(_kernelWidth/2), int64_t(0)), static_cast<int64_t>(_inputWidth) - 1);
 									int64_t s = std::min(std::max(j + q - static_cast<int64_t>(_kernelHeight/2), int64_t(0)), static_cast<int64_t>(_inputHeight) - 1);
-									correction[kernelIndex][p*_kernelHeight + q] += x[k*(_inputWidth*_inputHeight) + r*(_inputHeight) + s]*err[kernelIndex*(_inputWidth*_inputHeight) + i*(_inputHeight) + j]*learningRate;
+									correction[kernelIndex][p*_kernelHeight + q] += x[k*(_inputWidth*_inputHeight) + r*(_inputHeight) + s]*err[kernelIndex*(_inputWidth*_inputHeight) + i*(_inputHeight) + j]*learningRate/(_inputWidth*_inputHeight);
 								}
 							}
 						}
