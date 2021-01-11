@@ -20,10 +20,10 @@ namespace djv
 			return _outputSize;
 		}
 	
-		SoftMax::SoftMax(uint64_t inputSize, uint64_t outputSize) :
-			LayerBase(inputSize, outputSize)
+
+		SoftMax::SoftMax(uint64_t size) :
+			LayerBase(size, size)
 		{
-			assert(inputSize == outputSize);
 		}
 
 		scp::Vec<float> SoftMax::operator()(const scp::Vec<float>& x) const
@@ -56,6 +56,175 @@ namespace djv
 
 		void SoftMax::applyCorrection(const scp::Mat<float>& correction)
 		{
+		}
+	
+	
+		Convolution2D::Convolution2D(uint64_t inputWidth, uint64_t inputHeight, uint64_t inputCount, uint64_t kernelWidth, uint64_t kernelHeight, const std::vector<uint64_t>& kernelCount) :
+			_inputWidth(inputWidth),
+			_inputHeight(inputHeight),
+			_inputCount(inputCount),
+			_kernelWidth(kernelWidth),
+			_kernelHeight(kernelHeight),
+			_kernelCount(kernelCount)
+		{
+			_inputSize = _inputWidth * _inputHeight * _inputCount;
+
+			uint64_t outputCount = 0;
+			for (uint64_t i(0); i < _kernelCount.size(); i++)
+				outputCount += _kernelCount[i];
+
+			_outputSize = _inputWidth * _inputHeight * outputCount;
+
+			assert(kernelWidth & 1 == 1 && kernelHeight & 1 == 1);
+			_kernels.resize(outputCount, scp::Mat<float>(_kernelWidth, _kernelHeight));
+
+			for (uint64_t k(0); k < outputCount; k++)
+				for (uint64_t i(0); i < _kernelWidth; i++)
+					for (uint64_t j(0); j < kernelHeight; j++)
+						_kernels[k][i][j] = (static_cast<float>(std::rand()) / RAND_MAX)/10.f - 0.05f;
+		}
+
+		scp::Vec<float> Convolution2D::operator()(const scp::Vec<float>& x) const
+		{
+			scp::Vec<float> result(_outputSize);
+
+			uint64_t kernelIndex(0);
+			for (int64_t k = 0; k < _inputCount; k++)
+			{
+				for (int64_t l = 0; l < _kernelCount[k]; l++)
+				{
+					for (int64_t i = 0; i < _inputWidth; i++)
+					{
+						for (int64_t j = 0; j < _inputHeight; j++)
+						{
+							uint64_t outputIndex = kernelIndex*(_inputWidth*_inputHeight) + i*(_inputHeight) + j;
+
+							for (int64_t p = 0; p < _kernelWidth; p++)
+							{
+								for (int64_t q = 0; q < _kernelHeight; q++)
+								{
+									int64_t r = std::min(std::max(i + p - static_cast<int64_t>(_kernelWidth/2), int64_t(0)), static_cast<int64_t>(_inputWidth) - 1);
+									int64_t s = std::min(std::max(j + q - static_cast<int64_t>(_kernelHeight/2), int64_t(0)), static_cast<int64_t>(_inputHeight) - 1);
+									int64_t inputIndex = k*(_inputWidth*_inputHeight) + r*(_inputHeight) + s;
+
+									result[outputIndex] += x[inputIndex] * _kernels[kernelIndex][p][q];
+								}
+							}
+						}
+					}
+
+					kernelIndex++;
+				}
+			}
+
+			return result;
+		}
+
+		void Convolution2D::goThrough(const scp::Vec<float>& x, scp::Vec<float>& a, scp::Vec<float>& z) const
+		{
+			uint64_t kernelIndex(0);
+			for (int64_t k = 0; k < _inputCount; k++)
+			{
+				for (int64_t l = 0; l < _kernelCount[k]; l++)
+				{
+					for (int64_t i = 0; i < _inputWidth; i++)
+					{
+						for (int64_t j = 0; j < _inputHeight; j++)
+						{
+							uint64_t outputIndex = kernelIndex*(_inputWidth*_inputHeight) + i*(_inputHeight) + j;
+
+							for (int64_t p = 0; p < _kernelWidth; p++)
+							{
+								for (int64_t q = 0; q < _kernelHeight; q++)
+								{
+									int64_t r = std::min(std::max(i + p - static_cast<int64_t>(_kernelWidth/2), int64_t(0)), static_cast<int64_t>(_inputWidth) - 1);
+									int64_t s = std::min(std::max(j + q - static_cast<int64_t>(_kernelHeight/2), int64_t(0)), static_cast<int64_t>(_inputHeight) - 1);
+									int64_t inputIndex = k*(_inputWidth*_inputHeight) + r*(_inputHeight) + s;
+
+									a[outputIndex] += x[inputIndex] * _kernels[kernelIndex][p][q];
+								}
+							}
+						}
+					}
+
+					kernelIndex++;
+				}
+			}
+		}
+
+		void Convolution2D::computeCorrection(const scp::Vec<float>& x, const scp::Vec<float>& err, const scp::Vec<float>& a, const scp::Vec<float>& z, float learningRate, scp::Vec<float>& nextErr, scp::Mat<float>& correction) const
+		{
+			uint64_t kernelIndex(0);
+			for (int64_t k = 0; k < _inputCount; k++)
+			{
+				for (int64_t l = 0; l < _kernelCount[k]; l++)
+				{
+					for (int64_t i = 0; i < _inputWidth; i++)
+					{
+						for (int64_t j = 0; j < _inputHeight; j++)
+						{
+							for (int64_t p = 0; p < _kernelWidth; p++)
+							{
+								for (int64_t q = 0; q < _kernelHeight; q++)
+								{
+									int64_t r = std::min(std::max(i - p + static_cast<int64_t>(_kernelWidth/2), int64_t(0)), static_cast<int64_t>(_inputWidth) - 1);
+									int64_t s = std::min(std::max(j - q + static_cast<int64_t>(_kernelHeight/2), int64_t(0)), static_cast<int64_t>(_inputHeight) - 1);
+									_kernels[kernelIndex][p][q];
+									err[kernelIndex*(_inputWidth*_inputHeight) + r*(_inputHeight) + s];
+									nextErr[k*(_inputWidth*_inputHeight) + i*(_inputHeight) + j] += _kernels[kernelIndex][p][q] * err[kernelIndex*(_inputWidth*_inputHeight) + r*(_inputHeight) + s];
+								}
+							}
+						}
+					}
+
+					kernelIndex++;
+				}
+			}
+
+			kernelIndex = 0;
+			for (int64_t k = 0; k < _inputCount; k++)
+			{
+				for (int64_t l = 0; l < _kernelCount[k]; l++)
+				{
+					for (int64_t p = 0; p < _kernelWidth; p++)
+					{
+						for (int64_t q = 0; q < _kernelHeight; q++)
+						{
+							for (int64_t i = 0; i < _inputWidth; i++)
+							{
+								for (int64_t j = 0; j < _inputHeight; j++)
+								{
+									int64_t r = std::min(std::max(i + p - static_cast<int64_t>(_kernelWidth/2), int64_t(0)), static_cast<int64_t>(_inputWidth) - 1);
+									int64_t s = std::min(std::max(j + q - static_cast<int64_t>(_kernelHeight/2), int64_t(0)), static_cast<int64_t>(_inputHeight) - 1);
+									correction[kernelIndex][p*_kernelHeight + q] += x[k*(_inputWidth*_inputHeight) + r*(_inputHeight) + s]*err[kernelIndex*(_inputWidth*_inputHeight) + i*(_inputHeight) + j]*learningRate;
+								}
+							}
+						}
+					}
+
+					kernelIndex++;
+				}
+			}
+		}
+
+		void Convolution2D::applyCorrection(const scp::Mat<float>& correction)
+		{
+			uint64_t kernelIndex = 0;
+			for (int64_t k = 0; k < _inputCount; k++)
+			{
+				for (int64_t l = 0; l < _kernelCount[k]; l++)
+				{
+					for (int64_t p = 0; p < _kernelWidth; p++)
+					{
+						for (int64_t q = 0; q < _kernelHeight; q++)
+						{
+							_kernels[kernelIndex][p][q] -= correction[kernelIndex][p*_kernelHeight + q];
+						}
+					}
+
+					kernelIndex++;
+				}
+			}
 		}
 	}
 

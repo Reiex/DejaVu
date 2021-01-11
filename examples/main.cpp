@@ -112,9 +112,16 @@ int main()
 				testing[1][i - 4500][j*28 + k] = face[j][k];
 	}
 
+	/*djv::NeuralNetwork net;
+	djv::layers::Convolution2D inputLayer(28, 28, 1, 5, 5, { 3 });
+	djv::layers::Perceptrons<> midLayer(28*28*3, 8);
+	djv::layers::Perceptrons<> outputLayer(8, 1);
+	net.addLayer(inputLayer);
+	net.addLayer(midLayer);
+	net.addLayer(outputLayer);*/
 
 	djv::NeuralNetwork net;
-	djv::layers::Perceptrons<> inputLayer(784, 8);
+	djv::layers::Perceptrons<> inputLayer(28 * 28, 8);
 	djv::layers::Perceptrons<> outputLayer(8, 1);
 	net.addLayer(inputLayer);
 	net.addLayer(outputLayer);

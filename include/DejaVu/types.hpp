@@ -34,7 +34,7 @@ namespace djv
 	}
 
 
-	namespace perceptron
+	namespace perceptrons
 	{
 		class PerceptronBase;
 
@@ -46,7 +46,7 @@ namespace djv
 		class Tanh;
 	}
 
-	namespace layer
+	namespace layers
 	{
 		class LayerBase;
 		

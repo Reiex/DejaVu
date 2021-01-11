@@ -25,14 +25,13 @@ namespace djv
 		/// \brief Abstract class, base model for a NeuralNetwork layer.
 		/// 
 		/// The data that pass from a layer to another is always a vector. For convolutionnal layers, the data is
-		/// flattened in row major order.
+		/// flattened in column major order.
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		class LayerBase
 		{
 			public:
 
-				LayerBase() = delete;
-				LayerBase(uint64_t inputSize, uint64_t outputSize);  ///< Specify the input and output vector sizes.
+				LayerBase(uint64_t inputSize = 0, uint64_t outputSize = 0);  ///< Specify the input and output vector sizes.
 				LayerBase(const LayerBase& layer) = default;
 				LayerBase(LayerBase&& layer) = default;
 
@@ -90,6 +89,7 @@ namespace djv
 		{
 			public:
 
+
 				Perceptrons() = delete;
 				Perceptrons(uint64_t inputSize, uint64_t outputSize);
 				Perceptrons(const Perceptrons& layer) = default;
@@ -119,7 +119,7 @@ namespace djv
 			public:
 
 				SoftMax() = delete;
-				SoftMax(uint64_t inputSize, uint64_t outputSize);
+				SoftMax(uint64_t size);
 				SoftMax(const SoftMax& layer) = default;
 				SoftMax(SoftMax&& layer) = default;
 
@@ -133,6 +133,29 @@ namespace djv
 				void applyCorrection(const scp::Mat<float>& correction);
 
 				~SoftMax() = default;
+		};
+
+		class Convolution2D : public LayerBase
+		{
+			public:
+
+				Convolution2D(uint64_t inputWidth, uint64_t inputHeight, uint64_t inputCount, uint64_t kernelWidth, uint64_t kernelHeight, const std::vector<uint64_t>& kernelCount);
+
+				scp::Vec<float> operator()(const scp::Vec<float>& x) const;
+
+				void goThrough(const scp::Vec<float>& x, scp::Vec<float>& a, scp::Vec<float>& z) const;
+				void computeCorrection(const scp::Vec<float>& x, const scp::Vec<float>& err, const scp::Vec<float>& a, const scp::Vec<float>& z, float learningRate, scp::Vec<float>& nextErr, scp::Mat<float>& correction) const;
+				void applyCorrection(const scp::Mat<float>& correction);
+
+			private:
+
+				uint64_t _inputWidth;
+				uint64_t _inputHeight;
+				uint64_t _inputCount;
+				uint64_t _kernelWidth;
+				uint64_t _kernelHeight;
+				std::vector<uint64_t> _kernelCount;
+				std::vector<scp::Mat<float>> _kernels;
 		};
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
