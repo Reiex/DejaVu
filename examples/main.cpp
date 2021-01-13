@@ -6,7 +6,6 @@ int main()
 {
 	// IMAGE PROCESSING
 
-	/*
 	djv::Img image("examples/assets/Lena.jpg"), result(image.width(), image.height());
 	scp::Mat<float> grayScaleImage = image.grayScale();
 	image.saveToFile("build/Original.png");
@@ -71,93 +70,6 @@ int main()
 			result.draw(lines[i]);
 		}
 		result.saveToFile("build/houghLineExtractor.png");
-	}
-	*/
-
-	// MACHINE LEARNING
-
-
-	std::srand(std::time(nullptr));
-
-	
-	scp::Mat<float> face(28, 28);
-	std::vector<std::vector<scp::Vec<float>>> training(2), testing(2);
-	for (uint64_t i(0); i < 4500; i++)
-	{
-		training[0].push_back(scp::Vec<float>(784));
-		face = djv::Img("datasets/FDDB/positive/" + std::to_string(i) + ".png").grayScale();
-		for (uint64_t j(0); j < 28; j++)
-			for (uint64_t k(0); k < 28; k++)
-				training[0][i][j*28 + k] = face[j][k];
-
-		training[1].push_back(scp::Vec<float>(784));
-		face = djv::Img("datasets/FDDB/negative/" + std::to_string(i) + ".png").grayScale();
-		for (uint64_t j(0); j < 28; j++)
-			for (uint64_t k(0); k < 28; k++)
-				training[1][i][j*28 + k] = face[j][k];
-	}
-
-	for (uint64_t i(4500); i < 5171; i++)
-	{
-		testing[0].push_back(scp::Vec<float>(784));
-		face = djv::Img("datasets/FDDB/positive/" + std::to_string(i) + ".png").grayScale();
-		for (uint64_t j(0); j < 28; j++)
-			for (uint64_t k(0); k < 28; k++)
-				testing[0][i - 4500][j*28 + k] = face[j][k];
-
-		testing[1].push_back(scp::Vec<float>(784));
-		face = djv::Img("datasets/FDDB/negative/" + std::to_string(i) + ".png").grayScale();
-		for (uint64_t j(0); j < 28; j++)
-			for (uint64_t k(0); k < 28; k++)
-				testing[1][i - 4500][j*28 + k] = face[j][k];
-	}
-
-	/*djv::NeuralNetwork net;
-	djv::layers::Convolution2D inputLayer(28, 28, 1, 5, 5, { 3 });
-	djv::layers::Perceptrons<> midLayer(28*28*3, 8);
-	djv::layers::Perceptrons<> outputLayer(8, 1);
-	net.addLayer(inputLayer);
-	net.addLayer(midLayer);
-	net.addLayer(outputLayer);*/
-
-	djv::NeuralNetwork net;
-	djv::layers::Perceptrons<> inputLayer(28 * 28, 8);
-	djv::layers::Perceptrons<> outputLayer(8, 1);
-	net.addLayer(inputLayer);
-	net.addLayer(outputLayer);
-
-	for (uint64_t i(0); true; i++)
-	{
-		std::vector<scp::Vec<float>> x, y;
-		for (uint64_t j(0); j < 10; j++)
-		{
-			uint64_t n = std::rand() % 2;
-			uint64_t k = std::rand() % training[0].size();
-			x.push_back(training[n][k]);
-
-			y.push_back(scp::Vec<float>(1, static_cast<float>(n)));
-		}
-
-		net.batchTrain(x, y, 0.1f);
-
-		if (i % 5000 == 0)
-		{
-			float count[2] = { 0, 0 };
-
-			#pragma omp parallel for shared(count, testing)
-			for (int64_t m = 0; m < 2; m++)
-			{
-				for (int64_t l = 0; l < 671; l++)
-				{
-					scp::Vec<float> prediction = net(testing[m][l]);
-					if (prediction[0] > 0.5 && m || prediction[0] < 0.5 && !m)
-						#pragma omp atomic
-						count[m]++;
-				}
-			}
-
-			std::cout << count[0] << " " << count[1] << " " << (count[0] + count[1]) / 1342.f << std::endl;
-		}
 	}
 
 	return 0;

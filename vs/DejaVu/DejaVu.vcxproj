@@ -27,9 +27,6 @@
     <ClInclude Include="..\..\include\DejaVu\ImageProcessing\FeatureDetection.hpp" />
     <ClInclude Include="..\..\include\DejaVu\ImageProcessing\Misc.hpp" />
     <ClInclude Include="..\..\include\DejaVu\ImageProcessing\Segmentation.hpp" />
-    <ClInclude Include="..\..\include\DejaVu\MachineLearning\NeuralNetwork.hpp" />
-    <ClInclude Include="..\..\include\DejaVu\MachineLearning\NeuralNetworkT.hpp" />
-    <ClInclude Include="..\..\include\DejaVu\MachineLearning\Perceptron.hpp" />
     <ClInclude Include="..\..\include\DejaVu\types.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -40,8 +37,6 @@
     <ClCompile Include="..\..\src\DejaVu\ImageProcessing\FeatureDetection.cpp" />
     <ClCompile Include="..\..\src\DejaVu\ImageProcessing\Misc.cpp" />
     <ClCompile Include="..\..\src\DejaVu\ImageProcessing\Segmentation.cpp" />
-    <ClCompile Include="..\..\src\DejaVu\MachineLearning\NeuralNetwork.cpp" />
-    <ClCompile Include="..\..\src\DejaVu\MachineLearning\Perceptron.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

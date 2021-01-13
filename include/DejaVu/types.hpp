@@ -32,27 +32,4 @@ namespace djv
 	{
 		struct ImageSegmentation;
 	}
-
-
-	namespace perceptrons
-	{
-		class PerceptronBase;
-
-		class BinaryStep;
-		class LeakyReLU;
-		class Linear;
-		class ReLU;
-		class Sigmoid;
-		class Tanh;
-	}
-
-	namespace layers
-	{
-		class LayerBase;
-		
-		template<typename TPerceptron> class Perceptrons;
-		class SoftMax;
-	}
-
-	class NeuralNetwork;
 }

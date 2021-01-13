@@ -31,12 +31,6 @@
     <Filter Include="Source Files\Core\stb">
       <UniqueIdentifier>{6d7f9a86-5c18-461b-8fc7-3c60b69e4514}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\MachineLearning">
-      <UniqueIdentifier>{4e9bdfc9-5dee-493f-9ee9-509f22663ec6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\MachineLearning">
-      <UniqueIdentifier>{27542676-a1c7-4f27-9c09-0fb1615b2e53}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\DejaVu\DejaVu.hpp">
@@ -63,15 +57,6 @@
     <ClInclude Include="..\..\include\DejaVu\ImageProcessing\FeatureDetection.hpp">
       <Filter>Header Files\ImageProcessing</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\DejaVu\MachineLearning\Perceptron.hpp">
-      <Filter>Header Files\MachineLearning</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\DejaVu\MachineLearning\NeuralNetwork.hpp">
-      <Filter>Header Files\MachineLearning</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\DejaVu\MachineLearning\NeuralNetworkT.hpp">
-      <Filter>Header Files\MachineLearning</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\DejaVu\ImageProcessing\Segmentation.hpp">
       <Filter>Header Files\ImageProcessing</Filter>
     </ClInclude>
@@ -94,12 +79,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\DejaVu\ImageProcessing\FeatureDetection.cpp">
       <Filter>Source Files\ImageProcessing</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\DejaVu\MachineLearning\Perceptron.cpp">
-      <Filter>Source Files\MachineLearning</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\DejaVu\MachineLearning\NeuralNetwork.cpp">
-      <Filter>Source Files\MachineLearning</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\DejaVu\ImageProcessing\Segmentation.cpp">
       <Filter>Source Files\ImageProcessing</Filter>

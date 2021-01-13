@@ -1,11 +1,11 @@
-# DejaVu - A simple C++ Image Processing and Machine Learning Library
+# DejaVu - A simple C++ Image Processing Library
 
 
 ## Introduction
 
-DejaVu is a little C++ image processing and machine learning library I coded to help me during my computer science studies.
-This library implements all kind of tools usually needed to do image processing and machine learning - it is a mix between OpenCV and Keras but buggy and messy.
-These tools are, for example: Images, feature detectors (edges, ridges...), Perceptrons, Neural Networks...
+DejaVu is a little C++ image processing library I coded to help me during my computer science studies.
+This library implements all kind of tools usually needed to do image processing - it is a kind of OpenCV but buggy and messy and without the machine learning part.
+These tools are, for example: Images, Edge detectors, Corner detectors...
 
 ---
 

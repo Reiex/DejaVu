@@ -29,9 +29,7 @@ LIBRARY_OBJS = $(OBJ_LIBRARY_DIR)/Core/Shape.o \
 			   $(OBJ_LIBRARY_DIR)/Core/stb/stb_image_write.o \
 			   $(OBJ_LIBRARY_DIR)/ImageProcessing/Misc.o \
 			   $(OBJ_LIBRARY_DIR)/ImageProcessing/FeatureDetection.o \
-			   $(OBJ_LIBRARY_DIR)/ImageProcessing/Segmentation.o \
-			   $(OBJ_LIBRARY_DIR)/MachineLearning/Perceptron.o \
-			   $(OBJ_LIBRARY_DIR)/MachineLearning/NeuralNetwork.o
+			   $(OBJ_LIBRARY_DIR)/ImageProcessing/Segmentation.o
 EXAMPLES_OBJS = $(OBJ_EXAMPLES_DIR)/main.o
 
 
@@ -76,7 +74,7 @@ examples: $(LIB_DIR) $(EXAMPLES_OBJS)
 folders:
 	-rm -rf $(LIB_DIR)/libDejaVu.so $(OBJ_DIR) $(BUILD_DIR)
 	mkdir $(OBJ_DIR) $(OBJ_TESTS_DIR) $(OBJ_EXAMPLES_DIR) $(OBJ_LIBRARY_DIR)
-	mkdir $(OBJ_LIBRARY_DIR)/Core $(OBJ_LIBRARY_DIR)/Core/stb $(OBJ_LIBRARY_DIR)/ImageProcessing $(OBJ_LIBRARY_DIR)/MachineLearning
+	mkdir $(OBJ_LIBRARY_DIR)/Core $(OBJ_LIBRARY_DIR)/Core/stb $(OBJ_LIBRARY_DIR)/ImageProcessing
 	mkdir $(BUILD_DIR)
 
 
