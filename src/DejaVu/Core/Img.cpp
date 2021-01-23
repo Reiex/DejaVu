@@ -169,8 +169,6 @@ namespace djv
 
 	void Img::setComponent(ColorComponent component, const scp::Mat<float> m)
 	{
-		std::cout << static_cast<int>(component) << std::endl;
-
 		switch (component)
 		{
 			case ColorComponent::R:
