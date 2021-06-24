@@ -7,9 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <SciPP/misc.hpp>
+
 #include <SciPP/Int.hpp>
-#include <SciPP/Quaternion.hpp>
 #include <SciPP/Frac.hpp>
-#include <SciPP/Vec.hpp>
+#include <SciPP/Quaternion.hpp>
 #include <SciPP/Polynomial.hpp>
+
+#include <SciPP/Tensor.hpp>
 #include <SciPP/Mat.hpp>
+#include <SciPP/Vec.hpp>

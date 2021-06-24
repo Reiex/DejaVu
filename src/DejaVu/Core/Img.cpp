@@ -65,12 +65,12 @@ namespace djv
 	}
 
 	Img::Img(const scp::Mat<float>& grayScale) :
-		_width(grayScale.m),
-		_height(grayScale.n),
+		_width(grayScale.shape(0)),
+		_height(grayScale.shape(1)),
 		_r(std::make_unique<scp::Mat<float>>(grayScale)),
 		_g(std::make_unique<scp::Mat<float>>(grayScale)),
 		_b(std::make_unique<scp::Mat<float>>(grayScale)),
-		_a(std::make_unique<scp::Mat<float>>(grayScale.m, grayScale.n, 1.f))
+		_a(std::make_unique<scp::Mat<float>>(grayScale.shape(0), grayScale.shape(1), 1.f))
 	{
 	}
 
@@ -264,7 +264,7 @@ namespace djv
 
 	void Img::applySegmentationColor(const segmentation::ImageSegmentation& seg)
 	{
-		assert(seg.groups.m == _width && seg.groups.n == _height);
+		assert(seg.groups.shape(0) == _width && seg.groups.shape(1) == _height);
 
 		#pragma omp parallel for
 		for (int64_t i = 0; i < _width; i++)
