@@ -19,17 +19,9 @@
 
 namespace djv
 {
-	struct Color;
-	struct Point;
-	class Shape;
-	class Line;
-	class Rect;
-
-	class Img;
-
-
-	namespace segmentation
-	{
-		struct ImageSegmentation;
-	}
+	struct PixelBase;
+	struct PixelRGBA;
+	template<typename PixelType> class Img;
+	class ImgGrayscale;
+	class ImgRGBA;
 }

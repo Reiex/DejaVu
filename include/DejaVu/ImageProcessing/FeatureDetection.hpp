@@ -92,7 +92,7 @@ namespace djv
 		/// Then the matrix containing the Hough transform is normalized.
 		/// Finaly, a line is computed for every coefficient of the matrix greater than `threshold`.
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		std::vector<Line> hough(const scp::Mat<float>& m, float threshold = 0.5f, float dTheta = 0.1f, float dRho = 5.f);
+		// std::vector<Line> hough(const scp::Mat<float>& m, float threshold = 0.5f, float dTheta = 0.1f, float dRho = 5.f);
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// \}

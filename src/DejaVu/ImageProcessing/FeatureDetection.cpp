@@ -177,7 +177,7 @@ namespace djv
 
 	namespace lineExtractors
 	{
-		namespace
+		/*namespace
 		{
 			Line extractLine(float w, float h, float theta, float rho)
 			{
@@ -287,6 +287,6 @@ namespace djv
 			}
 
 			return result;
-		}
+		}*/
 	}
 }

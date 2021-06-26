@@ -4,6 +4,7 @@
 
 int main()
 {
+	/*
 	// IMAGE PROCESSING
 
 	djv::Img image("examples/assets/Lena.jpg"), result(image.width(), image.height());
@@ -71,6 +72,7 @@ int main()
 		}
 		result.saveToFile("build/houghLineExtractor.png");
 	}
+	*/
 
 	return 0;
 }
