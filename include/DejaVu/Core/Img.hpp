@@ -4,41 +4,18 @@
 
 namespace djv
 {
-	struct PixelBase
-	{
-		PixelBase() = delete;
-
-		virtual PixelBase& operator+=(const PixelBase& pixel) = 0;
-		virtual PixelBase& operator-=(const PixelBase& pixel) = 0;
-		virtual PixelBase& operator*=(double x) = 0;
-		virtual PixelBase& operator/=(double x) = 0;
-
-		virtual double abs() const = 0;
-		virtual double norm() const = 0;
-	};
-}
-
-namespace std
-{
-	double abs(const djv::PixelBase& pixel);
-	double norm(const djv::PixelBase& pixel);
-}
-
-namespace djv
-{
 	template<typename PixelType>
 	class Img
 	{
 		public:
 
-			Img() = delete;
 			Img(uint64_t width, uint64_t height, PixelType pixelInit = 0);
 			Img(const scp::Mat<PixelType>& mat);
 			Img(scp::Mat<PixelType>&& mat);
-			Img(const Img<PixelType>& image) = default;
+			Img(const Img<PixelType>& image);
 			Img(Img<PixelType>&& image) = default;
 
-			Img<PixelType>& operator=(const Img<PixelType>& image) = default;
+			Img<PixelType>& operator=(const Img<PixelType>& image);
 			Img<PixelType>& operator=(Img<PixelType>&& image) = default;
 
 			scp::Vec<PixelType>& operator[](uint64_t i);
@@ -56,9 +33,11 @@ namespace djv
 
 			~Img() = default;
 
-		private:
+		protected:
 
-			scp::Mat<PixelType> _data;
+			Img();
+
+			std::unique_ptr<scp::Mat<PixelType>> _data;
 	};
 
 	class ImgGrayscale : public Img<float>
@@ -78,15 +57,47 @@ namespace djv
 
 			~ImgGrayscale() = default;
 	};
-	
+
 	struct PixelRGBA
 	{
+		PixelRGBA& operator+=(const PixelRGBA& p);
+		PixelRGBA& operator-=(const PixelRGBA& p);
+		PixelRGBA& operator*=(float x);
+		PixelRGBA& operator/=(float x);
+
 		float r;
 		float g;
 		float b;
 		float a;
 	};
 
+	PixelRGBA operator+(const PixelRGBA& p, const PixelRGBA& q);
+	PixelRGBA&& operator+(PixelRGBA&& p, const PixelRGBA& q);
+	PixelRGBA&& operator+(const PixelRGBA& p, PixelRGBA&& q);
+	PixelRGBA&& operator+(PixelRGBA&& p, PixelRGBA&& q);
+
+	PixelRGBA operator-(const PixelRGBA& p, const PixelRGBA& q);
+	PixelRGBA&& operator-(PixelRGBA&& p, const PixelRGBA& q);
+	PixelRGBA&& operator-(const PixelRGBA& p, PixelRGBA&& q);
+	PixelRGBA&& operator-(PixelRGBA&& p, PixelRGBA&& q);
+
+	PixelRGBA operator*(const PixelRGBA& p, float x);
+	PixelRGBA&& operator*(PixelRGBA&& p, float x);
+	PixelRGBA operator*(float x, const PixelRGBA& p);
+	PixelRGBA&& operator*(float x, PixelRGBA&& p);
+
+	PixelRGBA operator/(const PixelRGBA& p, float x);
+	PixelRGBA&& operator/(PixelRGBA&& p, float x);
+}
+
+namespace std
+{
+	float norm(const djv::PixelRGBA& p);
+	float abs(const djv::PixelRGBA& p);
+}
+
+namespace djv
+{
 	class ImgRGBA : public Img<PixelRGBA>
 	{
 		public:

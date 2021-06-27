@@ -19,9 +19,8 @@
 
 namespace djv
 {
-	struct PixelBase;
-	struct PixelRGBA;
 	template<typename PixelType> class Img;
 	class ImgGrayscale;
+	struct PixelRGBA;
 	class ImgRGBA;
 }
