@@ -49,7 +49,7 @@ namespace djv
 			ImgGrayscale() = delete;
 			ImgGrayscale(const Img<float>& image);
 			ImgGrayscale(Img<float>&& image);
-			ImgGrayscale(const std::string& filename, bool transpose = false, bool flipHorizontally = false, bool flipVertically = false);
+			ImgGrayscale(const std::string& filename, bool transpose = false, bool flipHorizontally = false, bool flipVertically = false, float redWeight = 0.299f, float greenWeight = 0.587f, float blueWeight = 0.114f);
 			ImgGrayscale(const ImgGrayscale& image) = default;
 			ImgGrayscale(ImgGrayscale&& image) = default;
 
@@ -60,6 +60,8 @@ namespace djv
 
 	struct PixelRGBA
 	{
+		PixelRGBA(float x = 0.f);
+
 		PixelRGBA& operator+=(const PixelRGBA& p);
 		PixelRGBA& operator-=(const PixelRGBA& p);
 		PixelRGBA& operator*=(float x);
@@ -78,8 +80,6 @@ namespace djv
 
 	PixelRGBA operator-(const PixelRGBA& p, const PixelRGBA& q);
 	PixelRGBA&& operator-(PixelRGBA&& p, const PixelRGBA& q);
-	PixelRGBA&& operator-(const PixelRGBA& p, PixelRGBA&& q);
-	PixelRGBA&& operator-(PixelRGBA&& p, PixelRGBA&& q);
 
 	PixelRGBA operator*(const PixelRGBA& p, float x);
 	PixelRGBA&& operator*(PixelRGBA&& p, float x);
@@ -105,8 +105,8 @@ namespace djv
 			using Img<PixelRGBA>::Img;
 
 			ImgRGBA() = delete;
-			ImgRGBA(const Img<float>& image);
-			ImgRGBA(Img<float>&& image);
+			ImgRGBA(const Img<PixelRGBA>& image);
+			ImgRGBA(Img<PixelRGBA>&& image);
 			ImgRGBA(const std::string& filename, bool transpose = false, bool flipHorizontally = false, bool flipVertically = false);
 			ImgRGBA(const ImgRGBA& image) = default;
 			ImgRGBA(ImgRGBA&& image) = default;
