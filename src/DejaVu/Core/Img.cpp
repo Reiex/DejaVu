@@ -68,6 +68,48 @@ namespace djv
 		return *_data;
 	}
 
+	template<typename PixelType>
+	void Img<PixelType>::saveRawToFile(const std::string& filename, std::vector<uint8_t>& rawData) const
+	{
+		assert(filename.size() > 4);
+
+		uint64_t w = _data->shape(0), h = _data->shape(1);
+
+		if (filename.substr(filename.size() - 4, 4) == ".bmp")
+		{
+			stbi_write_bmp(filename.c_str(), w, h, 4, rawData.data());
+			return;
+		}
+		else if (filename.substr(filename.size() - 4, 4) == ".jpg")
+		{
+			stbi_write_jpg(filename.c_str(), w, h, 4, rawData.data(), 95);
+			return;
+		}
+		else if (filename.substr(filename.size() - 4, 4) == ".png")
+		{
+			stbi_write_png(filename.c_str(), w, h, 4, rawData.data(), 4 * w);
+			return;
+		}
+		else if (filename.substr(filename.size() - 4, 4) == ".tga")
+		{
+			stbi_write_tga(filename.c_str(), w, h, 4, rawData.data());
+			return;
+		}
+
+		assert(filename.size() > 5);
+
+		if (filename.substr(filename.size() - 5, 5) == ".jpeg")
+		{
+			stbi_write_jpg(filename.c_str(), w, h, 4, rawData.data(), 95);
+			return;
+		}
+		else
+		{
+			throw std::runtime_error("File extension '" + filename + "' unrecognized.");
+		}
+	}
+
+
 	ImgGrayscale::ImgGrayscale(const Img<float>& image) : Img<float>(image)
 	{
 	}
@@ -123,52 +165,22 @@ namespace djv
 	void ImgGrayscale::saveToFile(const std::string& filename) const
 	{
 		uint64_t w = _data->shape(0), h = _data->shape(1);
-		std::vector<uint8_t> image(3 * _data->globalLength());
-		for (uint64_t i(0); i < w; i++)
+		std::vector<uint8_t> image(4 * _data->globalLength());
+		std::vector<uint8_t>::iterator it = --image.begin();
+
+		for (uint64_t j(0); j < h; j++)
 		{
-			for (uint64_t j(0); j < h; j++)
+			for (uint64_t i(0); i < w; i++)
 			{
 				uint8_t color = 255.f * std::min(std::max((*_data)[i][j], 0.f), 1.f);
-				image[3 * (i + w * j)] = color;
-				image[3 * (i + w * j) + 1] = color;
-				image[3 * (i + w * j) + 2] = color;
+				*(++it) = color;
+				*(++it) = color;
+				*(++it) = color;
+				*(++it) = 255;
 			}
 		}
 
-		assert(filename.size() > 4);
-
-		if (filename.substr(filename.size() - 4, 4) == ".bmp")
-		{
-			stbi_write_bmp(filename.c_str(), w, h, 3, image.data());
-			return;
-		}
-		else if (filename.substr(filename.size() - 4, 4) == ".jpg")
-		{
-			stbi_write_jpg(filename.c_str(), w, h, 3, image.data(), 95);
-			return;
-		}
-		else if (filename.substr(filename.size() - 4, 4) == ".png")
-		{
-			stbi_write_png(filename.c_str(), w, h, 3, image.data(), 3 * w);
-			return;
-		}
-		else if (filename.substr(filename.size() - 4, 4) == ".tga")
-		{
-			stbi_write_tga(filename.c_str(), w, h, 3, image.data());
-			return;
-		}
-
-		assert(filename.size() > 5);
-
-		if (filename.substr(filename.size() - 5, 5) == ".jpeg")
-		{
-			stbi_write_jpg(filename.c_str(), w, h, 3, image.data(), 95);
-			return;
-		}
-		else
-		{
-			throw std::runtime_error("File extension '" + filename + "' unrecognized.");
-		}
+		saveRawToFile(filename, image);
 	}
 
 
@@ -178,6 +190,47 @@ namespace djv
 		b(x),
 		a(x)
 	{
+	}
+
+	PixelRGBA::PixelRGBA(float red, float green, float blue, float alpha) :
+		r(red),
+		g(green),
+		b(blue),
+		a(alpha)
+
+	{
+	}
+
+	float& PixelRGBA::operator[](uint8_t i)
+	{
+		assert(i < 4);
+		switch (i)
+		{
+		case 0:
+			return r;
+		case 1:
+			return g;
+		case 2:
+			return b;
+		default:
+			return a;
+		}
+	}
+
+	const float& PixelRGBA::operator[](uint8_t i) const
+	{
+		assert(i < 4);
+		switch (i)
+		{
+		case 0:
+			return r;
+		case 1:
+			return g;
+		case 2:
+			return b;
+		default:
+			return a;
+		}
 	}
 
 	PixelRGBA& PixelRGBA::operator+=(const PixelRGBA& p)
@@ -375,50 +428,19 @@ namespace djv
 	{
 		uint64_t w = _data->shape(0), h = _data->shape(1);
 		std::vector<uint8_t> image(4 * _data->globalLength());
-		for (uint64_t i(0); i < w; i++)
+		std::vector<uint8_t>::iterator it = --image.begin();
+
+		for (uint64_t j(0); j < h; j++)
 		{
-			for (uint64_t j(0); j < h; j++)
+			for (uint64_t i(0); i < w; i++)
 			{
-				image[4 * (i + w * j)] = 255.f * std::min(std::max((*_data)[i][j].r, 0.f), 1.f);
-				image[4 * (i + w * j) + 1] = 255.f * std::min(std::max((*_data)[i][j].g, 0.f), 1.f);
-				image[4 * (i + w * j) + 2] = 255.f * std::min(std::max((*_data)[i][j].b, 0.f), 1.f);
-				image[4 * (i + w * j) + 3] = 255.f * std::min(std::max((*_data)[i][j].a, 0.f), 1.f);
+				*(++it) = 255.f * std::min(std::max((*_data)[i][j].r, 0.f), 1.f);
+				*(++it) = 255.f * std::min(std::max((*_data)[i][j].g, 0.f), 1.f);
+				*(++it) = 255.f * std::min(std::max((*_data)[i][j].b, 0.f), 1.f);
+				*(++it) = 255.f * std::min(std::max((*_data)[i][j].a, 0.f), 1.f);
 			}
 		}
 
-		assert(filename.size() > 4);
-
-		if (filename.substr(filename.size() - 4, 4) == ".bmp")
-		{
-			stbi_write_bmp(filename.c_str(), w, h, 4, image.data());
-			return;
-		}
-		else if (filename.substr(filename.size() - 4, 4) == ".jpg")
-		{
-			stbi_write_jpg(filename.c_str(), w, h, 4, image.data(), 95);
-			return;
-		}
-		else if (filename.substr(filename.size() - 4, 4) == ".png")
-		{
-			stbi_write_png(filename.c_str(), w, h, 4, image.data(), 4 * w);
-			return;
-		}
-		else if (filename.substr(filename.size() - 4, 4) == ".tga")
-		{
-			stbi_write_tga(filename.c_str(), w, h, 4, image.data());
-			return;
-		}
-
-		assert(filename.size() > 5);
-
-		if (filename.substr(filename.size() - 5, 5) == ".jpeg")
-		{
-			stbi_write_jpg(filename.c_str(), w, h, 4, image.data(), 95);
-			return;
-		}
-		else
-		{
-			throw std::runtime_error("File extension '" + filename + "' unrecognized.");
-		}
+		saveRawToFile(filename, image);
 	}
 }

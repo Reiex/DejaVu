@@ -4,6 +4,11 @@
 
 int main()
 {
+	djv::ImgRGBA imColor("examples/assets/Lena.jpg");
+	djv::ImgGrayscale imGray("examples/assets/Lena.jpg");
+	imColor.saveToFile("build/testCol.png");
+	imGray.saveToFile("build/testGray.png");
+
 	/*
 	// IMAGE PROCESSING
 

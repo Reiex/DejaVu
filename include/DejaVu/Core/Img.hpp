@@ -37,6 +37,8 @@ namespace djv
 
 			Img();
 
+			void saveRawToFile(const std::string& filename, std::vector<uint8_t>& rawData) const;
+
 			std::unique_ptr<scp::Mat<PixelType>> _data;
 	};
 
@@ -61,6 +63,15 @@ namespace djv
 	struct PixelRGBA
 	{
 		PixelRGBA(float x = 0.f);
+		PixelRGBA(float red, float green, float blue, float alpha);
+		PixelRGBA(const PixelRGBA& p) = default;
+		PixelRGBA(PixelRGBA&& p) = default;
+
+		PixelRGBA& operator=(const PixelRGBA& p) = default;
+		PixelRGBA& operator=(PixelRGBA&& p) = default;
+
+		float& operator[](uint8_t i);
+		const float& operator[](uint8_t i) const;
 
 		PixelRGBA& operator+=(const PixelRGBA& p);
 		PixelRGBA& operator-=(const PixelRGBA& p);
