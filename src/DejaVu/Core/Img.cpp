@@ -2,61 +2,118 @@
 
 namespace djv
 {
-	ImgGrayscale::ImgGrayscale(const Img<float>& image) : Img<float>(image)
+	GrayScalePixel::GrayScalePixel(float x) :
+		value(x)
 	{
 	}
 
-	ImgGrayscale::ImgGrayscale(Img<float>&& image) : Img<float>(std::move(image))
+	GrayScalePixel::GrayScalePixel(float r, float g, float b, float a) :
+		value(r * 0.299f + g * 0.587f + b * 0.114f)
 	{
 	}
 
-	ImgGrayscale::ImgGrayscale(const std::string& filename, bool transpose, bool flipHorizontally, bool flipVertically, float redWeight, float greenWeight, float blueWeight)
+	GrayScalePixel& GrayScalePixel::operator+=(const GrayScalePixel & pixel)
 	{
-		int w, h;
-		uint8_t* image = stbi_load(filename.c_str(), &w, &h, nullptr, STBI_rgb);
-		if (image == nullptr)
-		{
-			throw std::runtime_error("Couldn't open '" + filename + "'.");
-		}
-
-		uint64_t imageWidth = w, imageHeight = h;
-		if (transpose)
-		{
-			std::swap(w, h);
-		}
-
-		_data = std::make_unique<scp::Mat<float>>(imageWidth, imageHeight);
-
-		for (uint64_t i = 0; i < w; ++i)
-		{
-			for (uint64_t j = 0; j < h; ++j)
-			{
-				uint64_t x = flipHorizontally && !transpose || flipVertically && transpose ? w - i - 1 : i;
-				uint64_t y = flipVertically && !transpose || flipHorizontally && transpose ? h - j - 1 : j;
-				uint8_t* it = image + 3 * (x + w * y);
-
-				float s = redWeight * *it;
-				s += greenWeight * *(++it);
-				s += blueWeight * *(++it);
-				s /= 255.f;
-
-				if (transpose)
-				{
-					(*_data)[j][i] = s;
-				}
-				else
-				{
-					(*_data)[i][j] = s;
-				}
-			}
-		}
-
-		stbi_image_free(image);
+		value += pixel.value;
+		return *this;
 	}
 
-	ImgGrayscale::ImgGrayscale(const ImgRGBA& image, float redWeight, float greenWeight, float blueWeight)
+	GrayScalePixel& GrayScalePixel::operator-=(const GrayScalePixel & pixel)
 	{
-		_data = std::make_unique<scp::Mat<float>>(image.width(), image.height());
+		value -= pixel.value;
+		return *this;
+	}
+
+	GrayScalePixel& GrayScalePixel::operator*=(float x)
+	{
+		value *= x;
+		return *this;
+	}
+
+	GrayScalePixel& GrayScalePixel::operator/=(float x)
+	{
+		value /= x;
+		return *this;
+	}
+
+	uint64_t GrayScalePixel::componentCount() const
+	{
+		return 1;
+	}
+
+	float GrayScalePixel::getComponent(uint64_t i) const
+	{
+		assert(i == 0);
+		return value;
+	}
+
+	void GrayScalePixel::setComponent(uint64_t i, float x)
+	{
+		assert(i == 0);
+		value = x;
+	}
+
+	void GrayScalePixel::getRGBA(uint8_t& red, uint8_t& green, uint8_t& blue, uint8_t& alpha) const
+	{
+		uint8_t x = 255 * std::min(std::max(value, 0.f), 1.f);
+		red = x;
+		green = x;
+		blue = x;
+		alpha = 255;
+	}
+
+	GrayScalePixel operator+(const GrayScalePixel& p, const GrayScalePixel& q)
+	{
+		return p.value + q.value;
+	}
+
+	GrayScalePixel operator-(const GrayScalePixel& p, const GrayScalePixel& q)
+	{
+		return p.value - q.value;
+	}
+
+	GrayScalePixel operator*(const GrayScalePixel& p, float x)
+	{
+		return p.value * x;
+	}
+
+	GrayScalePixel operator*(float x, const GrayScalePixel& p)
+	{
+		return p.value * x;
+	}
+
+	GrayScalePixel operator/(const GrayScalePixel& p, float x)
+	{
+		return p.value / x;
+	}
+}
+
+namespace std
+{
+	float norm(const djv::GrayScalePixel& pixel)
+	{
+		return std::norm(pixel.value);
+	}
+
+	float abs(const djv::GrayScalePixel& pixel)
+	{
+		return std::abs(pixel.value);
+	}
+}
+
+namespace djv
+{
+	GrayScaleImg::GrayScaleImg(const Img<GrayScalePixel>& image) : Img<GrayScalePixel>(image)
+	{
+	}
+
+	GrayScaleImg::GrayScaleImg(Img<GrayScalePixel>&& image) : Img<GrayScalePixel>(std::move(image))
+	{
+	}
+
+	GrayScaleImg::GrayScaleImg(const ColorImg& image, float redWeight, float greenWeight, float blueWeight)
+	{
+		_data = std::make_unique<scp::Mat<GrayScalePixel>>(image.width(), image.height());
 
 		for (uint64_t i = 0; i < _data->shape(0); ++i)
 		{
@@ -67,29 +124,32 @@ namespace djv
 		}
 	}
 
-	void ImgGrayscale::saveToFile(const std::string& filename) const
+	GrayScaleImg::GrayScaleImg(const scp::Mat<float>& image)
 	{
-		uint64_t w = _data->shape(0), h = _data->shape(1);
-		std::vector<uint8_t> image(4 * _data->globalLength());
-		std::vector<uint8_t>::iterator it = --image.begin();
+		_data = std::make_unique<scp::Mat<GrayScalePixel>>(image.shape(0), image.shape(1));
 
-		for (uint64_t j(0); j < h; j++)
+		for (uint64_t i = 0; i < _data->shape(0); ++i)
 		{
-			for (uint64_t i(0); i < w; i++)
+			for (uint64_t j = 0; j < _data->shape(1); ++j)
 			{
-				uint8_t color = 255.f * std::min(std::max((*_data)[i][j], 0.f), 1.f);
-				*(++it) = color;
-				*(++it) = color;
-				*(++it) = color;
-				*(++it) = 255;
+				(*_data)[i][j].value = image[i][j];
 			}
 		}
-
-		saveRawToFile(filename, image);
 	}
 
+	GrayScaleImg::GrayScaleImg(const GrayScaleImg& image) : Img<GrayScalePixel>(image.getData())
+	{
+	}
 
-	PixelRGBA::PixelRGBA(float x) :
+	GrayScaleImg& GrayScaleImg::operator=(const GrayScaleImg& image)
+	{
+		_data = std::make_unique<scp::Mat<GrayScalePixel>>(image.getData());
+	}
+}
+
+namespace djv
+{
+	ColorPixel::ColorPixel(float x) :
 		r(x),
 		g(x),
 		b(x),
@@ -97,98 +157,35 @@ namespace djv
 	{
 	}
 
-	PixelRGBA::PixelRGBA(float red, float green, float blue, float alpha) :
+	ColorPixel::ColorPixel(float red, float green, float blue, float alpha) :
 		r(red),
 		g(green),
 		b(blue),
 		a(alpha)
-
 	{
 	}
 
-	float& PixelRGBA::operator[](uint8_t i)
+	ColorPixel& ColorPixel::operator+=(const ColorPixel& pixel)
 	{
-		assert(i < 4);
-		switch (i)
-		{
-		case 0:
-			return r;
-		case 1:
-			return g;
-		case 2:
-			return b;
-		default:
-			return a;
-		}
-	}
-
-	const float& PixelRGBA::operator[](uint8_t i) const
-	{
-		assert(i < 4);
-		switch (i)
-		{
-		case 0:
-			return r;
-		case 1:
-			return g;
-		case 2:
-			return b;
-		default:
-			return a;
-		}
-	}
-
-	float& PixelRGBA::getComponent(Component component)
-	{
-		switch (component)
-		{
-		case Component::RED:
-			return r;
-		case Component::GREEN:
-			return g;
-		case Component::BLUE:
-			return b;
-		default:
-			return a;
-		}
-	}
-
-	const float& PixelRGBA::getComponent(Component component) const
-	{
-		switch (component)
-		{
-		case Component::RED:
-			return r;
-		case Component::GREEN:
-			return g;
-		case Component::BLUE:
-			return b;
-		default:
-			return a;
-		}
-	}
-
-	PixelRGBA& PixelRGBA::operator+=(const PixelRGBA& p)
-	{
-		r += p.r;
-		g += p.g;
-		b += p.b;
-		a += p.a;
+		r += pixel.r;
+		g += pixel.g;
+		b += pixel.b;
+		a += pixel.a;
 
 		return *this;
 	}
 
-	PixelRGBA& PixelRGBA::operator-=(const PixelRGBA& p)
+	ColorPixel& ColorPixel::operator-=(const ColorPixel& pixel)
 	{
-		r -= p.r;
-		g -= p.g;
-		b -= p.b;
-		a -= p.a;
+		r -= pixel.r;
+		g -= pixel.g;
+		b -= pixel.b;
+		a -= pixel.a;
 
 		return *this;
 	}
 
-	PixelRGBA& PixelRGBA::operator*=(float x)
+	ColorPixel& ColorPixel::operator*=(float x)
 	{
 		r *= x;
 		g *= x;
@@ -198,7 +195,7 @@ namespace djv
 		return *this;
 	}
 
-	PixelRGBA& PixelRGBA::operator/=(float x)
+	ColorPixel& ColorPixel::operator/=(float x)
 	{
 		r /= x;
 		g /= x;
@@ -208,83 +205,119 @@ namespace djv
 		return *this;
 	}
 
-	PixelRGBA operator+(const PixelRGBA& p, const PixelRGBA& q)
+	uint64_t ColorPixel::componentCount() const
 	{
-		PixelRGBA r(p);
-		r += q;
-
-		return r;
+		return 4;
 	}
 
-	PixelRGBA&& operator+(PixelRGBA&& p, const PixelRGBA& q)
+	float ColorPixel::getComponent(uint64_t i) const
+	{
+		assert(i < 4);
+
+		switch (i)
+		{
+		case 0:
+			return r;
+		case 1:
+			return g;
+		case 2:
+			return b;
+		default:
+			return a;
+		}
+	}
+
+	void ColorPixel::setComponent(uint64_t i, float x)
+	{
+		assert(i < 4);
+
+		switch (i)
+		{
+		case 0:
+			r = x;
+			break;
+		case 1:
+			g = x;
+			break;
+		case 2:
+			b = x;
+			break;
+		default:
+			a = x;
+			break;
+		}
+	}
+
+	void ColorPixel::getRGBA(uint8_t& red, uint8_t& green, uint8_t& blue, uint8_t& alpha) const
+	{
+		red = 255 * std::min(std::max(r, 1.f), 0.f);
+		green = 255 * std::min(std::max(g, 1.f), 0.f);
+		blue = 255 * std::min(std::max(b, 1.f), 0.f);
+		alpha = 255 * std::min(std::max(a, 1.f), 0.f);
+	}
+
+	ColorPixel operator+(const ColorPixel& p, const ColorPixel& q)
+	{
+		return { p.r + q.r, p.g + q.g, p.b + q.b, p.a + q.a };
+	}
+
+	ColorPixel&& operator+(ColorPixel&& p, const ColorPixel& q)
 	{
 		p += q;
 		return std::move(p);
 	}
 
-	PixelRGBA&& operator+(const PixelRGBA& p, PixelRGBA&& q)
+	ColorPixel&& operator+(const ColorPixel& p, ColorPixel&& q)
 	{
 		q += p;
 		return std::move(q);
 	}
 
-	PixelRGBA&& operator+(PixelRGBA&& p, PixelRGBA&& q)
+	ColorPixel&& operator+(ColorPixel&& p, ColorPixel&& q)
 	{
 		p += q;
 		return std::move(p);
 	}
 
-	PixelRGBA operator-(const PixelRGBA& p, const PixelRGBA& q)
+	ColorPixel operator-(const ColorPixel& p, const ColorPixel& q)
 	{
-		PixelRGBA r(p);
-		r -= q;
-
-		return r;
+		return { p.r - q.r, p.g - q.g, p.b - q.b, p.a - q.a };
 	}
 
-	PixelRGBA&& operator-(PixelRGBA&& p, const PixelRGBA& q)
+	ColorPixel&& operator-(ColorPixel&& p, const ColorPixel& q)
 	{
 		p -= q;
 		return std::move(p);
 	}
 
-	PixelRGBA operator*(const PixelRGBA& p, float x)
+	ColorPixel operator*(const ColorPixel& p, float x)
 	{
-		PixelRGBA r(p);
-		r *= x;
-
-		return r;
+		return { p.r * x, p.g * x, p.b * x, p.a * x };
 	}
 
-	PixelRGBA&& operator*(PixelRGBA&& p, float x)
+	ColorPixel&& operator*(ColorPixel&& p, float x)
 	{
 		p *= x;
 		return std::move(p);
 	}
 
-	PixelRGBA operator*(float x, const PixelRGBA& p)
+	ColorPixel operator*(float x, const ColorPixel& p)
 	{
-		PixelRGBA r(p);
-		r *= x;
-
-		return r;
+		return { p.r * x, p.g * x, p.b * x, p.a * x };
 	}
 
-	PixelRGBA&& operator*(float x, PixelRGBA&& p)
+	ColorPixel&& operator*(float x, ColorPixel&& p)
 	{
 		p *= x;
 		return std::move(p);
 	}
 
-	PixelRGBA operator/(const PixelRGBA& p, float x)
+	ColorPixel operator/(const ColorPixel& p, float x)
 	{
-		PixelRGBA r(p);
-		r /= x;
-
-		return r;
+		return { p.r / x, p.g / x, p.b / x, p.a / x };
 	}
 
-	PixelRGBA&& operator/(PixelRGBA&& p, float x)
+	ColorPixel&& operator/(ColorPixel&& p, float x)
 	{
 		p /= x;
 		return std::move(p);
@@ -293,94 +326,49 @@ namespace djv
 
 namespace std
 {
-	float norm(const djv::PixelRGBA& p)
+	float norm(const djv::ColorPixel& pixel)
 	{
-		return p.r*p.r + p.g*p.g + p.b*p.b + p.a*p.a;
+		return pixel.r * pixel.r + pixel.g * pixel.g + pixel.b * pixel.b + pixel.a * pixel.a;
 	}
 
-	float abs(const djv::PixelRGBA& p)
+	float abs(const djv::ColorPixel& pixel)
 	{
-		return sqrt(norm(p));
+		return sqrt(norm(pixel));
 	}
 }
 
 namespace djv
 {
-	ImgRGBA::ImgRGBA(const Img<PixelRGBA>& image) : Img(image)
+	ColorImg::ColorImg(const Img<ColorPixel>& image) : Img<ColorPixel>(image)
 	{
 	}
 
-	ImgRGBA::ImgRGBA(Img<PixelRGBA>&& image) : Img(std::move(image))
+	ColorImg::ColorImg(Img<ColorPixel>&& image) : Img<ColorPixel>(std::move(image))
 	{
 	}
 
-	ImgRGBA::ImgRGBA(const std::string& filename, bool transpose, bool flipHorizontally, bool flipVertically)
+	ColorImg::ColorImg(const GrayScaleImg& image)
 	{
-		int w, h;
-		uint8_t* image = stbi_load(filename.c_str(), &w, &h, nullptr, STBI_rgb_alpha);
-		if (image == nullptr)
-		{
-			throw std::runtime_error("Couldn't open '" + filename + "'.");
-		}
-
-		uint64_t imageWidth = w, imageHeight = h;
-		if (transpose)
-		{
-			std::swap(w, h);
-		}
-
-		_data = std::make_unique<scp::Mat<PixelRGBA>>(imageWidth, imageHeight);
-
-		for (uint64_t i = 0; i < w; ++i)
-		{
-			for (uint64_t j = 0; j < h; ++j)
-			{
-				uint64_t x = flipHorizontally && !transpose || flipVertically && transpose ? w - i - 1 : i;
-				uint64_t y = flipVertically && !transpose || flipHorizontally && transpose ? h - j - 1 : j;
-				uint8_t* it = image + 4 * (x + w * y);
-
-				if (transpose)
-				{
-					(*_data)[j][i].r = *it / 255.f;
-					(*_data)[j][i].g = *++it / 255.f;
-					(*_data)[j][i].b = *++it / 255.f;
-					(*_data)[j][i].a = *++it / 255.f;
-				}
-				else
-				{
-					(*_data)[i][j].r = *it / 255.f;
-					(*_data)[i][j].g = *++it / 255.f;
-					(*_data)[i][j].b = *++it / 255.f;
-					(*_data)[i][j].a = *++it / 255.f;
-				}
-			}
-		}
-
-		stbi_image_free(image);
-	}
-
-	ImgRGBA::ImgRGBA(const ImgGrayscale& image)
-	{
-		_data = std::make_unique<scp::Mat<PixelRGBA>>(image.width(), image.height());
+		_data = std::make_unique<scp::Mat<ColorPixel>>(image.width(), image.height());
 
 		for (uint64_t i = 0; i < _data->shape(0); ++i)
 		{
 			for (uint64_t j = 0; j < _data->shape(1); ++j)
 			{
-				(*_data)[i][j].r = image[i][j];
-				(*_data)[i][j].g = image[i][j];
-				(*_data)[i][j].b = image[i][j];
+				(*_data)[i][j].r = image[i][j].value;
+				(*_data)[i][j].g = image[i][j].value;
+				(*_data)[i][j].b = image[i][j].value;
 				(*_data)[i][j].a = 1.f;
 			}
 		}
 	}
 
-	ImgRGBA::ImgRGBA(const scp::Mat<float>& red, const scp::Mat<float>& green, const scp::Mat<float>& blue, const scp::Mat<float>& alpha)
+	ColorImg::ColorImg(const scp::Mat<float>& red, const scp::Mat<float>& green, const scp::Mat<float>& blue, const scp::Mat<float>& alpha)
 	{
 		assert(red.shape(0) == green.shape(0) && green.shape(0) == blue.shape(0) && blue.shape(0) == alpha.shape(0));
 		assert(red.shape(1) == green.shape(1) && green.shape(1) == blue.shape(1) && blue.shape(1) == alpha.shape(1));
 
-		_data = std::make_unique<scp::Mat<PixelRGBA>>(red.shape(0), red.shape(1));
+		_data = std::make_unique<scp::Mat<ColorPixel>>(red.shape(0), red.shape(1));
 
 		for (uint64_t i = 0; i < _data->shape(0); ++i)
 		{
@@ -394,38 +382,12 @@ namespace djv
 		}
 	}
 
-	scp::Mat<float> ImgRGBA::getComponent(PixelRGBA::Component component) const
+	ColorImg::ColorImg(const ColorImg& image) : Img<ColorPixel>(image.getData())
 	{
-		scp::Mat<float> r(_data->shape(0), _data->shape(1));
-
-		for (uint64_t i = 0; i < r.shape(0); i++)
-		{
-			for (uint64_t j = 0; j < r.shape(1); j++)
-			{
-				r[i][j] = (*_data)[i][j].getComponent(component);
-			}
-		}
-
-		return r;
 	}
 
-	void ImgRGBA::saveToFile(const std::string & filename) const
+	ColorImg& ColorImg::operator=(const ColorImg& image)
 	{
-		uint64_t w = _data->shape(0), h = _data->shape(1);
-		std::vector<uint8_t> image(4 * _data->globalLength());
-		std::vector<uint8_t>::iterator it = --image.begin();
-
-		for (uint64_t j(0); j < h; j++)
-		{
-			for (uint64_t i(0); i < w; i++)
-			{
-				*(++it) = 255.f * std::min(std::max((*_data)[i][j].r, 0.f), 1.f);
-				*(++it) = 255.f * std::min(std::max((*_data)[i][j].g, 0.f), 1.f);
-				*(++it) = 255.f * std::min(std::max((*_data)[i][j].b, 0.f), 1.f);
-				*(++it) = 255.f * std::min(std::max((*_data)[i][j].a, 0.f), 1.f);
-			}
-		}
-
-		saveRawToFile(filename, image);
+		_data = std::make_unique<scp::Mat<ColorPixel>>(image.getData());
 	}
 }
