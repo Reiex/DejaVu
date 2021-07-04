@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\DejaVu\Core\Img.hpp" />
+    <ClInclude Include="..\..\include\DejaVu\Core\ImgT.hpp" />
     <ClInclude Include="..\..\include\DejaVu\Core\Shape.hpp" />
     <ClInclude Include="..\..\include\DejaVu\Core\stb\stb_image.hpp" />
     <ClInclude Include="..\..\include\DejaVu\Core\stb\stb_image_write.hpp" />

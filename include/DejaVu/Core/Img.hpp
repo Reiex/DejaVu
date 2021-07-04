@@ -52,7 +52,7 @@ namespace djv
 			ImgGrayscale(const Img<float>& image);
 			ImgGrayscale(Img<float>&& image);
 			ImgGrayscale(const std::string& filename, bool transpose = false, bool flipHorizontally = false, bool flipVertically = false, float redWeight = 0.299f, float greenWeight = 0.587f, float blueWeight = 0.114f);
-			// ImgGrayscale(const ImgRGBA& image, float redWeight = 0.299f, float greenWeight = 0.587f, float blueWeight = 0.114f);
+			ImgGrayscale(const ImgRGBA& image, float redWeight = 0.299f, float greenWeight = 0.587f, float blueWeight = 0.114f);
 			ImgGrayscale(const ImgGrayscale& image) = default;
 			ImgGrayscale(ImgGrayscale&& image) = default;
 
@@ -82,8 +82,8 @@ namespace djv
 			ALPHA
 		};
 
-		// float& getComponent(Component component);
-		// const float& getComponent(Component component) const;
+		float& getComponent(Component component);
+		const float& getComponent(Component component) const;
 
 		PixelRGBA& operator+=(const PixelRGBA& p);
 		PixelRGBA& operator-=(const PixelRGBA& p);
@@ -131,15 +131,17 @@ namespace djv
 			ImgRGBA(const Img<PixelRGBA>& image);
 			ImgRGBA(Img<PixelRGBA>&& image);
 			ImgRGBA(const std::string& filename, bool transpose = false, bool flipHorizontally = false, bool flipVertically = false);
-			// ImgRGBA(const ImgGrayscale& image);
-			// ImgRGBA(const scp::Mat<float>& red, const scp::Mat<float>& green, const scp::Mat<float>& blue, const scp::Mat<float>& alpha);
+			ImgRGBA(const ImgGrayscale& image);
+			ImgRGBA(const scp::Mat<float>& red, const scp::Mat<float>& green, const scp::Mat<float>& blue, const scp::Mat<float>& alpha);
 			ImgRGBA(const ImgRGBA& image) = default;
 			ImgRGBA(ImgRGBA&& image) = default;
 
-			// scp::Mat<float> getComponent(PixelRGBA::Component component) const;
+			scp::Mat<float> getComponent(PixelRGBA::Component component) const;
 
 			void saveToFile(const std::string& filename) const;
 
 			~ImgRGBA() = default;
 	};
 }
+
+#include <DejaVu/Core/ImgT.hpp>
