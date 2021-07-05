@@ -18,7 +18,7 @@ namespace djv
 		// PixelType& operator*=(float x)
 		// PixelType& operator/=(float x)
 
-		virtual uint64_t componentCount() const = 0;
+		static const uint64_t componentCount = 0;
 		virtual float getComponent(uint64_t i) const = 0;
 		virtual void setComponent(uint64_t i, float x) = 0;
 		virtual void getRGBA(uint8_t& red, uint8_t& green, uint8_t& blue, uint8_t& alpha) const = 0;
@@ -41,7 +41,7 @@ namespace djv
 	{
 		public:
 
-			Img(uint64_t width, uint64_t height, PixelType pixelInit = 0);
+			Img(uint64_t width, uint64_t height, PixelType pixelInit = 0.f);
 			Img(const scp::Mat<PixelType>& mat);
 			Img(scp::Mat<PixelType>&& mat);
 			Img(const std::string& filename, bool transpose = false, bool flipHorizontally = false, bool flipVertically = false);
@@ -93,7 +93,7 @@ namespace djv
 		GrayScalePixel& operator*=(float x);
 		GrayScalePixel& operator/=(float x);
 
-		uint64_t componentCount() const;
+		static const uint64_t componentCount = 1;
 		float getComponent(uint64_t i) const;
 		void setComponent(uint64_t i, float x);
 		void getRGBA(uint8_t& red, uint8_t& green, uint8_t& blue, uint8_t& alpha) const;
@@ -125,7 +125,7 @@ namespace djv
 			GrayScaleImg() = delete;
 			GrayScaleImg(const Img<GrayScalePixel>& image);
 			GrayScaleImg(Img<GrayScalePixel>&& image);
-			GrayScaleImg(const ColorImg& image, float redWeight = 0.299f, float greenWeight = 0.587f, float blueWeight = 0.114f);
+			GrayScaleImg(const RGBAImg& image, float redWeight = 0.299f, float greenWeight = 0.587f, float blueWeight = 0.114f);
 			GrayScaleImg(const scp::Mat<float>& image);
 			GrayScaleImg(const GrayScaleImg& image);
 			GrayScaleImg(GrayScaleImg&& image) = default;
@@ -139,22 +139,22 @@ namespace djv
 
 namespace djv
 {
-	struct ColorPixel : public PixelBase
+	struct RGBAPixel : public PixelBase
 	{
-		ColorPixel(float x = 0.f);
-		ColorPixel(float red, float green, float blue, float alpha);
-		ColorPixel(const ColorPixel& pixel) = default;
-		ColorPixel(ColorPixel&& pixel) = default;
+		RGBAPixel(float x = 0.f);
+		RGBAPixel(float red, float green, float blue, float alpha);
+		RGBAPixel(const RGBAPixel& pixel) = default;
+		RGBAPixel(RGBAPixel&& pixel) = default;
 
-		ColorPixel& operator=(const ColorPixel& pixel) = default;
-		ColorPixel& operator=(ColorPixel&& pixel) = default;
+		RGBAPixel& operator=(const RGBAPixel& pixel) = default;
+		RGBAPixel& operator=(RGBAPixel&& pixel) = default;
 
-		ColorPixel& operator+=(const ColorPixel& pixel);
-		ColorPixel& operator-=(const ColorPixel& pixel);
-		ColorPixel& operator*=(float x);
-		ColorPixel& operator/=(float x);
+		RGBAPixel& operator+=(const RGBAPixel& pixel);
+		RGBAPixel& operator-=(const RGBAPixel& pixel);
+		RGBAPixel& operator*=(float x);
+		RGBAPixel& operator/=(float x);
 
-		uint64_t componentCount() const;
+		static const uint64_t componentCount = 4;
 		float getComponent(uint64_t i) const;
 		void setComponent(uint64_t i, float x);
 		void getRGBA(uint8_t & red, uint8_t & green, uint8_t & blue, uint8_t & alpha) const;
@@ -165,49 +165,49 @@ namespace djv
 		float a;
 	};
 
-	ColorPixel operator+(const ColorPixel& p, const ColorPixel& q);
-	ColorPixel&& operator+(ColorPixel&& p, const ColorPixel& q);
-	ColorPixel&& operator+(const ColorPixel& p, ColorPixel&& q);
-	ColorPixel&& operator+(ColorPixel&& p, ColorPixel&& q);
+	RGBAPixel operator+(const RGBAPixel& p, const RGBAPixel& q);
+	RGBAPixel&& operator+(RGBAPixel&& p, const RGBAPixel& q);
+	RGBAPixel&& operator+(const RGBAPixel& p, RGBAPixel&& q);
+	RGBAPixel&& operator+(RGBAPixel&& p, RGBAPixel&& q);
 
-	ColorPixel operator-(const ColorPixel& p, const ColorPixel& q);
-	ColorPixel&& operator-(ColorPixel&& p, const ColorPixel& q);
+	RGBAPixel operator-(const RGBAPixel& p, const RGBAPixel& q);
+	RGBAPixel&& operator-(RGBAPixel&& p, const RGBAPixel& q);
 
-	ColorPixel operator*(const ColorPixel& p, float x);
-	ColorPixel&& operator*(ColorPixel&& p, float x);
-	ColorPixel operator*(float x, const ColorPixel& p);
-	ColorPixel&& operator*(float x, ColorPixel&& p);
+	RGBAPixel operator*(const RGBAPixel& p, float x);
+	RGBAPixel&& operator*(RGBAPixel&& p, float x);
+	RGBAPixel operator*(float x, const RGBAPixel& p);
+	RGBAPixel&& operator*(float x, RGBAPixel&& p);
 
-	ColorPixel operator/(const ColorPixel& p, float x);
-	ColorPixel&& operator/(ColorPixel&& p, float x);
+	RGBAPixel operator/(const RGBAPixel& p, float x);
+	RGBAPixel&& operator/(RGBAPixel&& p, float x);
 }
 
 namespace std
 {
-	float norm(const djv::ColorPixel& pixel);
-	float abs(const djv::ColorPixel& pixel);
+	float norm(const djv::RGBAPixel& pixel);
+	float abs(const djv::RGBAPixel& pixel);
 }
 
 namespace djv
 {
-	class ColorImg : public Img<ColorPixel>
+	class RGBAImg : public Img<RGBAPixel>
 	{
 		public:
 
-			using Img<ColorPixel>::Img;
+			using Img<RGBAPixel>::Img;
 
-			ColorImg() = delete;
-			ColorImg(const Img<ColorPixel>& image);
-			ColorImg(Img<ColorPixel>&& image);
-			ColorImg(const GrayScaleImg& image);
-			ColorImg(const scp::Mat<float>& red, const scp::Mat<float>& green, const scp::Mat<float>& blue, const scp::Mat<float>& alpha);
-			ColorImg(const ColorImg& image);
-			ColorImg(ColorImg&& image) = default;
+			RGBAImg() = delete;
+			RGBAImg(const Img<RGBAPixel>& image);
+			RGBAImg(Img<RGBAPixel>&& image);
+			RGBAImg(const GrayScaleImg& image);
+			RGBAImg(const scp::Mat<float>& red, const scp::Mat<float>& green, const scp::Mat<float>& blue, const scp::Mat<float>& alpha);
+			RGBAImg(const RGBAImg& image);
+			RGBAImg(RGBAImg&& image) = default;
 
-			ColorImg& operator=(const ColorImg& image);
-			ColorImg& operator=(ColorImg&& image) = default;
+			RGBAImg& operator=(const RGBAImg& image);
+			RGBAImg& operator=(RGBAImg&& image) = default;
 
-			~ColorImg() = default;
+			~RGBAImg() = default;
 	};
 }
 

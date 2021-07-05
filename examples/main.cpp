@@ -4,36 +4,34 @@
 
 int main()
 {
-	djv::ColorImg colorImage("examples/assets/Lena.jpg");
-	colorImage.saveToFile("build/Original.png");
+	djv::RGBAImg rgbaImage("examples/assets/Lena.jpg");
+	rgbaImage.saveToFile("build/Original.png");
 
 	djv::GrayScaleImg grayScaleImage("examples/assets/Lena.jpg"), result(grayScaleImage.width(), grayScaleImage.height());
 	grayScaleImage.saveToFile("build/GrayScaleOriginal.png");
 
-	const scp::Mat<float>& matGrayscale = grayScaleImage.getComponent(0);
-
 	// Operators
 
-	djv::GrayScaleImg(djv::operators::sobel(matGrayscale)[0]).saveToFile("build/SobelX.png");
-	djv::GrayScaleImg(djv::operators::sobel(matGrayscale)[1]).saveToFile("build/SobelY.png");
-	djv::GrayScaleImg(djv::operators::prewitt(matGrayscale)[0]).saveToFile("build/PrewittX.png");
-	djv::GrayScaleImg(djv::operators::prewitt(matGrayscale)[1]).saveToFile("build/PrewittY.png");
-	djv::GrayScaleImg(djv::operators::simpleGradient(matGrayscale)[0]).saveToFile("build/SimpleGradientX.png");
-	djv::GrayScaleImg(djv::operators::simpleGradient(matGrayscale)[1]).saveToFile("build/SimpleGradientY.png");
+	djv::operators::sobel(rgbaImage)[0].saveToFile("build/SobelX.png");
+	djv::operators::sobel(rgbaImage)[1].saveToFile("build/SobelY.png");
+	djv::operators::prewitt(rgbaImage)[0].saveToFile("build/PrewittX.png");
+	djv::operators::prewitt(rgbaImage)[1].saveToFile("build/PrewittY.png");
+	djv::operators::simpleGradient(rgbaImage)[0].saveToFile("build/SimpleGradientX.png");
+	djv::operators::simpleGradient(rgbaImage)[1].saveToFile("build/SimpleGradientY.png");
 
-	djv::GrayScaleImg(djv::operators::simpleHessian(matGrayscale)[0]).saveToFile("build/SimpleHessianXX.png");
-	djv::GrayScaleImg(djv::operators::simpleHessian(matGrayscale)[1]).saveToFile("build/SimpleHessianXY.png");
-	djv::GrayScaleImg(djv::operators::simpleHessian(matGrayscale)[2]).saveToFile("build/SimpleHessianYY.png");
+	djv::operators::simpleHessian(rgbaImage)[0].saveToFile("build/SimpleHessianXX.png");
+	djv::operators::simpleHessian(rgbaImage)[1].saveToFile("build/SimpleHessianXY.png");
+	djv::operators::simpleHessian(rgbaImage)[2].saveToFile("build/SimpleHessianYY.png");
 
-	djv::GrayScaleImg(djv::operators::simpleLaplacian(matGrayscale)).saveToFile("build/SimpleLaplacian.png");
+	djv::operators::simpleLaplacian(rgbaImage).saveToFile("build/SimpleLaplacian.png");
 	
 
 	// Blurs
 
-	djv::GrayScaleImg(djv::blur::gaussian(matGrayscale, 10.f)).saveToFile("build/GaussianBlur.png");
-	djv::GrayScaleImg(djv::blur::gaussianBilateral(matGrayscale, 2.f)).saveToFile("build/GaussianBilateralBlur.png");
-	djv::GrayScaleImg(djv::blur::median(matGrayscale, 2)).saveToFile("build/MedianBlur.png");
-	djv::GrayScaleImg(djv::blur::mean(matGrayscale, 10)).saveToFile("build/MeanBlur.png");
+	djv::blur::gaussian(rgbaImage, 10.f).saveToFile("build/GaussianBlur.png");
+	djv::blur::gaussianBilateral(rgbaImage, 2.f).saveToFile("build/GaussianBilateralBlur.png");
+	djv::blur::median(rgbaImage, 2).saveToFile("build/MedianBlur.png");
+	djv::blur::mean(rgbaImage, 10).saveToFile("build/MeanBlur.png");
 	
 
 	// Image segmentation
@@ -44,19 +42,19 @@ int main()
 
 	// Edge detectors
 	
-	djv::GrayScaleImg(djv::edgeDetectors::marrHildreth(matGrayscale)).saveToFile("build/MarrHildrethEdgeDetector.png");
-	djv::GrayScaleImg(djv::edgeDetectors::canny(matGrayscale)).saveToFile("build/CannyEdgeDetector.png");
+	djv::edgeDetectors::marrHildreth(rgbaImage).saveToFile("build/MarrHildrethEdgeDetector.png");
+	djv::edgeDetectors::canny(rgbaImage).saveToFile("build/CannyEdgeDetector.png");
 	
 
 	// Corner detectors
 
-	djv::GrayScaleImg(djv::cornerDetectors::harris(matGrayscale)).saveToFile("build/HarrisCornerDetector.png");
+	// djv::cornerDetectors::harris(rgbaImage).saveToFile("build/HarrisCornerDetector.png");
 
 
 	// Line extractors
 
 	/*{
-		scp::Mat<float> edges = djv::edgeDetectors::marrHildreth(matGrayscale);
+		scp::Mat<float> edges = djv::edgeDetectors::marrHildreth(rgbaImage);
 		std::vector<djv::Line> lines = djv::lineExtractors::hough(edges);
 		djv::Img result = image;
 		for (uint64_t i(0); i < lines.size(); i++)

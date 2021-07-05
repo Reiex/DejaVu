@@ -23,6 +23,6 @@ namespace djv
 	template<typename PixelType> class Img;
 	struct GrayScalePixel;
 	class GrayScaleImg;
-	struct ColorPixel;
-	class ColorImg;
+	struct RGBAPixel;
+	class RGBAImg;
 }

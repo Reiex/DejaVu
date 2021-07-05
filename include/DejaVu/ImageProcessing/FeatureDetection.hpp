@@ -32,7 +32,8 @@ namespace djv
 		/// The gradient computation method used is djv::operators::simpleGradient.
 		/// The laplacian computation method used is djv::operators::simpleLaplacian.
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		scp::Mat<float> marrHildreth(const scp::Mat<float>& m);
+		template<typename PixelType>
+		Img<PixelType> marrHildreth(const Img<PixelType>& m);
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// \brief Returns the result of the Canny edge detection algorithm.
 		/// 
@@ -42,7 +43,8 @@ namespace djv
 		/// 
 		/// The gradient computation method used is djv::operators::simpleGradient.
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		scp::Mat<float> canny(const scp::Mat<float>& m, float sigma = 1.5f);
+		template<typename PixelType>
+		Img<PixelType> canny(const Img<PixelType>& m, float sigma = 1.5f);
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// \}
@@ -70,7 +72,8 @@ namespace djv
 		/// 
 		/// The gradient computation method used is djv::operators::simpleGradient.
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		scp::Mat<float> harris(const scp::Mat<float>& m, float alpha = 0.05f, const scp::Mat<float>& window = { 3, 3, 1.f });
+		// template<typename PixelType>
+		// Img<PixelType> harris(const Img<PixelType>& m, float alpha = 0.05f, const scp::Mat<float>& window = { 3, 3, 1.f });
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// \}
@@ -100,3 +103,5 @@ namespace djv
 	}
 
 }
+
+#include <DejaVu/ImageProcessing/FeatureDetectionT.hpp>

@@ -82,7 +82,7 @@ namespace djv
 	template<typename PixelType>
 	Img<PixelType>& Img<PixelType>::operator=(const Img<PixelType>& image)
 	{
-		_data = std::make_unique<scp::Mat<float>>(*image._data);
+		_data = std::make_unique<scp::Mat<PixelType>>(*image._data);
 	}
 
 	template<typename PixelType>
@@ -104,7 +104,7 @@ namespace djv
 
 		uint64_t w = _data->shape(0), h = _data->shape(1);
 		std::vector<uint8_t> image(4 * _data->globalLength());
-		std::vector<uint8_t>::iterator it = --image.begin();
+		std::vector<uint8_t>::iterator it = image.begin();
 
 		for (uint64_t j(0); j < h; ++j)
 		{
@@ -112,10 +112,11 @@ namespace djv
 			{
 				uint8_t r, g, b, a;
 				(*_data)[i][j].getRGBA(r, g, b, a);
-				*(++it) = r;
+				*it = r;
 				*(++it) = g;
 				*(++it) = b;
 				*(++it) = a;
+				++it;
 			}
 		}
 

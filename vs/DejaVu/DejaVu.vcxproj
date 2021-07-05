@@ -26,7 +26,9 @@
     <ClInclude Include="..\..\include\DejaVu\Core\stb\stb_image_write.hpp" />
     <ClInclude Include="..\..\include\DejaVu\DejaVu.hpp" />
     <ClInclude Include="..\..\include\DejaVu\ImageProcessing\FeatureDetection.hpp" />
+    <ClInclude Include="..\..\include\DejaVu\ImageProcessing\FeatureDetectionT.hpp" />
     <ClInclude Include="..\..\include\DejaVu\ImageProcessing\Misc.hpp" />
+    <ClInclude Include="..\..\include\DejaVu\ImageProcessing\MiscT.hpp" />
     <ClInclude Include="..\..\include\DejaVu\ImageProcessing\Segmentation.hpp" />
     <ClInclude Include="..\..\include\DejaVu\types.hpp" />
   </ItemGroup>
@@ -35,8 +37,6 @@
     <ClCompile Include="..\..\src\DejaVu\Core\Shape.cpp" />
     <ClCompile Include="..\..\src\DejaVu\Core\stb\stb_image.cpp" />
     <ClCompile Include="..\..\src\DejaVu\Core\stb\stb_image_write.cpp" />
-    <ClCompile Include="..\..\src\DejaVu\ImageProcessing\FeatureDetection.cpp" />
-    <ClCompile Include="..\..\src\DejaVu\ImageProcessing\Misc.cpp" />
     <ClCompile Include="..\..\src\DejaVu\ImageProcessing\Segmentation.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
