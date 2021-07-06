@@ -4,6 +4,448 @@
 
 namespace djv
 {
+	template<uint64_t N>
+	PixelBase<N>::PixelBase(float x)
+	{
+		std::fill<float*, float>(components, components + N, x);
+	}
+
+	template<uint64_t N>
+	PixelBase<N>::PixelBase(float r, float g, float b, float a)
+	{
+		if constexpr (N >= 1)
+		{
+			components[0] = r;
+		}
+		if constexpr (N >= 2)
+		{
+			components[1] = g;
+		}
+		if constexpr (N >= 3)
+		{
+			components[2] = b;
+		}
+		if constexpr (N >= 4)
+		{
+			components[3] = a;
+		}
+		if constexpr (N >= 5)
+		{
+			std::fill<float*, float>(components + 4, components + N, 0.f);
+		}
+	}
+
+	template<uint64_t N>
+	float& PixelBase<N>::operator[](uint64_t i)
+	{
+		assert(i < N);
+		return components[i];
+	}
+
+	template<uint64_t N>
+	const float& PixelBase<N>::operator[](uint64_t i) const
+	{
+		assert(i < N);
+		return components[i];
+	}
+
+	template<uint64_t N>
+	PixelBase<N>& PixelBase<N>::operator+=(const PixelBase<N>& pixel)
+	{
+		for (uint64_t i = 0; i < N; i++)
+		{
+			components[i] += pixel.components[i];
+		}
+
+		return *this;
+	}
+
+	template<uint64_t N>
+	PixelBase<N>& PixelBase<N>::operator-=(const PixelBase<N>& pixel)
+	{
+		for (uint64_t i = 0; i < N; i++)
+		{
+			components[i] -= pixel.components[i];
+		}
+
+		return *this;
+	}
+
+	template<uint64_t N>
+	PixelBase<N>& PixelBase<N>::operator*=(const PixelBase<N>& pixel)
+	{
+
+		for (uint64_t i = 0; i < N; i++)
+		{
+			components[i] *= pixel.components[i];
+		}
+
+		return *this;
+	}
+
+	template<uint64_t N>
+	PixelBase<N>& PixelBase<N>::operator/=(const PixelBase<N>& pixel)
+	{
+
+		for (uint64_t i = 0; i < N; i++)
+		{
+			components[i] /= pixel.components[i];
+		}
+
+		return *this;
+	}
+
+	template<uint64_t N>
+	PixelBase<N>& PixelBase<N>::operator%=(const PixelBase<N>& pixel)
+	{
+
+		for (uint64_t i = 0; i < N; i++)
+		{
+			components[i] %= pixel.components[i];
+		}
+
+		return *this;
+	}
+
+	template<uint64_t N>
+	PixelBase<N>& PixelBase<N>::operator+=(float x)
+	{
+		for (uint64_t i = 0; i < N; i++)
+		{
+			components[i] += x;
+		}
+
+		return *this;
+	}
+
+	template<uint64_t N>
+	PixelBase<N>& PixelBase<N>::operator-=(float x)
+	{
+		for (uint64_t i = 0; i < N; i++)
+		{
+			components[i] -= x;
+		}
+
+		return *this;
+	}
+
+	template<uint64_t N>
+	PixelBase<N>& PixelBase<N>::operator*=(float x)
+	{
+		for (uint64_t i = 0; i < N; i++)
+		{
+			components[i] *= x;
+		}
+
+		return *this;
+	}
+
+	template<uint64_t N>
+	PixelBase<N>& PixelBase<N>::operator/=(float x)
+	{
+		for (uint64_t i = 0; i < N; i++)
+		{
+			components[i] /= x;
+		}
+
+		return *this;
+	}
+
+	template<uint64_t N>
+	PixelBase<N>& PixelBase<N>::operator%=(float x)
+	{
+		for (uint64_t i = 0; i < N; i++)
+		{
+			components[i] %= x;
+		}
+
+		return *this;
+	}
+
+	template<uint64_t N>
+	void PixelBase<N>::getRGBA(uint8_t & red, uint8_t & green, uint8_t & blue, uint8_t & alpha) const
+	{
+		if constexpr (N >= 1)
+		{
+			red = 255 * std::min(std::max(components[0], 0.f), 1.f);
+		}
+		else
+		{
+			red = 0;
+		}
+
+		if constexpr (N >= 2)
+		{
+			green = 255 * std::min(std::max(components[1], 0.f), 1.f);
+		}
+		else
+		{
+			green = red;
+		}
+
+		if constexpr (N >= 3)
+		{
+			blue = 255 * std::min(std::max(components[2], 0.f), 1.f);
+		}
+		else
+		{
+			blue = green;
+		}
+
+		if constexpr (N >= 4)
+		{
+			alpha = 255 * std::min(std::max(components[3], 0.f), 1.f);
+		}
+		else
+		{
+			alpha = 255;
+		}
+	}
+
+	template<uint64_t N>
+	PixelBase<N> operator+(const PixelBase<N>& pixelA, const PixelBase<N>& pixelB)
+	{
+		PixelBase<N> pixelC(pixelA);
+		pixelC += pixelB;
+
+		return pixelC;
+	}
+
+	template<uint64_t N>
+	PixelBase<N>&& operator+(PixelBase<N>&& pixelA, const PixelBase<N>& pixelB)
+	{
+		pixelA += pixelB;
+		return std::move(pixelA);
+	}
+
+	template<uint64_t N>
+	PixelBase<N>&& operator+(const PixelBase<N>& pixelA, PixelBase<N>&& pixelB)
+	{
+		pixelB += pixelA;
+		return std::move(pixelB);
+	}
+
+	template<uint64_t N>
+	PixelBase<N>&& operator+(PixelBase<N>&& pixelA, PixelBase<N>&& pixelB)
+	{
+		pixelA += pixelB;
+		return std::move(pixelA);
+	}
+
+	template<uint64_t N>
+	PixelBase<N> operator-(const PixelBase<N>& pixelA, const PixelBase<N>& pixelB)
+	{
+		PixelBase<N> pixelC(pixelA);
+		pixelC -= pixelB;
+
+		return pixelC;
+	}
+
+	template<uint64_t N>
+	PixelBase<N>&& operator-(PixelBase<N>&& pixelA, const PixelBase<N>& pixelB)
+	{
+		pixelA -= pixelB;
+		return std::move(pixelA);
+	}
+
+	template<uint64_t N>
+	PixelBase<N> operator*(const PixelBase<N>& pixelA, const PixelBase<N>& pixelB)
+	{
+		PixelBase<N> pixelC(pixelA);
+		pixelC *= pixelB;
+
+		return pixelC;
+	}
+
+	template<uint64_t N>
+	PixelBase<N>&& operator*(PixelBase<N>&& pixelA, const PixelBase<N>& pixelB)
+	{
+		pixelA *= pixelB;
+		return std::move(pixelA);
+	}
+
+	template<uint64_t N>
+	PixelBase<N>&& operator*(const PixelBase<N>& pixelA, PixelBase<N>&& pixelB)
+	{
+		pixelB *= pixelA;
+		return std::move(pixelB);
+	}
+
+	template<uint64_t N>
+	PixelBase<N>&& operator*(PixelBase<N>&& pixelA, PixelBase<N>&& pixelB)
+	{
+		pixelA *= pixelB;
+		return std::move(pixelA);
+	}
+
+	template<uint64_t N>
+	PixelBase<N> operator/(const PixelBase<N>& pixelA, const PixelBase<N>& pixelB)
+	{
+		PixelBase<N> pixelC(pixelA);
+		pixelC /= pixelB;
+
+		return pixelC;
+	}
+
+	template<uint64_t N>
+	PixelBase<N>&& operator/(PixelBase<N>&& pixelA, const PixelBase<N>& pixelB)
+	{
+		pixelA /= pixelB;
+		return std::move(pixelA);
+	}
+
+	template<uint64_t N>
+	PixelBase<N> operator%(const PixelBase<N>& pixelA, const PixelBase<N>& pixelB)
+	{
+		PixelBase<N> pixelC(pixelA);
+		pixelC %= pixelB;
+
+		return pixelC;
+	}
+
+	template<uint64_t N>
+	PixelBase<N>&& operator%(PixelBase<N>&& pixelA, const PixelBase<N>& pixelB)
+	{
+		pixelA %= pixelB;
+		return std::move(pixelA);
+	}
+
+	template<uint64_t N>
+	PixelBase<N> operator+(const PixelBase<N>& pixel, float x)
+	{
+		PixelBase<N> result(pixel);
+		result += x;
+
+		return result;
+	}
+
+	template<uint64_t N>
+	PixelBase<N>&& operator+(PixelBase<N>&& pixel, float x)
+	{
+		pixel += x;
+		return std::move(pixel);
+	}
+
+	template<uint64_t N>
+	PixelBase<N> operator+(float x, const PixelBase<N>& pixel)
+	{
+		PixelBase<N> result(pixel);
+		result += x;
+
+		return result;
+	}
+
+	template<uint64_t N>
+	PixelBase<N>&& operator+(float x, PixelBase<N>&& pixel)
+	{
+		pixel += x;
+		return std::move(pixel);
+	}
+
+	template<uint64_t N>
+	PixelBase<N> operator-(const PixelBase<N>& pixel, float x)
+	{
+		PixelBase<N> result(pixel);
+		result -= x;
+
+		return result;
+	}
+
+	template<uint64_t N>
+	PixelBase<N>&& operator-(PixelBase<N>&& pixel, float x)
+	{
+		pixel -= x;
+		return std::move(pixel);
+	}
+
+	template<uint64_t N>
+	PixelBase<N> operator*(const PixelBase<N>& pixel, float x)
+	{
+		PixelBase<N> result(pixel);
+		result *= x;
+
+		return result;
+	}
+
+	template<uint64_t N>
+	PixelBase<N>&& operator*(PixelBase<N>&& pixel, float x)
+	{
+		pixel *= x;
+		return std::move(pixel);
+	}
+
+	template<uint64_t N>
+	PixelBase<N> operator*(float x, const PixelBase<N>& pixel)
+	{
+		PixelBase<N> result(pixel);
+		result *= x;
+
+		return result;
+	}
+
+	template<uint64_t N>
+	PixelBase<N>&& operator*(float x, PixelBase<N>&& pixel)
+	{
+		pixel *= x;
+		return std::move(pixel);
+	}
+
+	template<uint64_t N>
+	PixelBase<N> operator/(const PixelBase<N>& pixel, float x)
+	{
+		PixelBase<N> result(pixel);
+		result /= x;
+
+		return result;
+	}
+
+	template<uint64_t N>
+	PixelBase<N>&& operator/(PixelBase<N>&& pixel, float x)
+	{
+		pixel /= x;
+		return std::move(pixel);
+	}
+
+	template<uint64_t N>
+	PixelBase<N> operator%(const PixelBase<N>& pixel, float x)
+	{
+		PixelBase<N> result(pixel);
+		result %= x;
+
+		return result;
+	}
+
+	template<uint64_t N>
+	PixelBase<N>&& operator%(PixelBase<N>&& pixel, float x)
+	{
+		pixel %= x;
+		return std::move(pixel);
+	}
+}
+
+namespace std
+{
+	template<uint64_t N>
+	float norm(const djv::PixelBase<N>& pixel)
+	{
+		float s = 0.f;
+		for (uint64_t i = 0; i < N; ++i)
+		{
+			s += pixel[i] * pixel[i];
+		}
+
+		return s;
+	}
+
+	template<uint64_t N>
+	float abs(const djv::PixelBase<N>& pixel)
+	{
+		return sqrt(norm(pixel));
+	}
+}
+
+namespace djv
+{
 	template<typename PixelType>
 	Img<PixelType>::Img() :
 		_data(nullptr)
@@ -155,7 +597,7 @@ namespace djv
 	}
 
 	template<typename PixelType>
-	scp::Mat<float> Img<PixelType>::getComponent(uint64_t comp) const
+	scp::Mat<float> Img<PixelType>::getComponent(uint64_t i) const
 	{
 		scp::Mat<float> r(_data->shape(0), _data->shape(1));
 
@@ -163,7 +605,7 @@ namespace djv
 		{
 			for (uint64_t j = 0; j < r.shape(1); ++j)
 			{
-				r[i][j] = (*_data)[i][j].getComponent(comp);
+				r[i][j] = (*_data)[i][j][i];
 			}
 		}
 

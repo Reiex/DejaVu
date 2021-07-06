@@ -4,34 +4,114 @@
 
 namespace djv
 {
-	struct PixelBase
+	template<uint64_t N>
+	class PixelBase
 	{
-		// PixelType()
-		// PixelType(float x)
-		// PixelType(float r, float g, float b, float a)
-		// PixelType(const PixelType& pixel)
+		public:
 
-		// PixelType& operator=(const PixelType& pixel)
+			PixelBase(float x = 0.f);
+			PixelBase(float r, float g, float b, float a);
+			PixelBase(const PixelBase<N>& pixel) = default;
+			PixelBase(PixelBase<N>&& pixel) = default;
 
-		// PixelType& operator+=(const PixelType& pixel)
-		// PixelType& operator-=(const PixelType& pixel)
-		// PixelType& operator*=(float x)
-		// PixelType& operator/=(float x)
+			PixelBase<N>& operator=(const PixelBase<N>& pixel) = default;
+			PixelBase<N>& operator=(PixelBase<N>&& pixel) = default;
 
-		static const uint64_t componentCount = 0;
-		virtual float getComponent(uint64_t i) const = 0;
-		virtual void setComponent(uint64_t i, float x) = 0;
-		virtual void getRGBA(uint8_t& red, uint8_t& green, uint8_t& blue, uint8_t& alpha) const = 0;
+			float& operator[](uint64_t i);
+			const float& operator[](uint64_t i) const;
 
-		// PixelType operator+(const PixelType& pixelA, const PixelType& pixelB)
-		// PixelType operator-(const PixelType& pixelA, const PixelType& pixelB)
-		// PixelType operator*(const PixelType& pixel, float x)
-		// PixelType operator*(float x, const PixelType& pixel)
-		// PixelType operator/(const PixelType& pixelA, float x)
+			PixelBase<N>& operator+=(const PixelBase<N>& pixel);
+			PixelBase<N>& operator-=(const PixelBase<N>& pixel);
+			PixelBase<N>& operator*=(const PixelBase<N>& pixel);
+			PixelBase<N>& operator/=(const PixelBase<N>& pixel);
+			PixelBase<N>& operator%=(const PixelBase<N>& pixel);
+			PixelBase<N>& operator+=(float x);
+			PixelBase<N>& operator-=(float x);
+			PixelBase<N>& operator*=(float x);
+			PixelBase<N>& operator/=(float x);
+			PixelBase<N>& operator%=(float x);
 
-		// float std::norm(const PixelType& pixel)
-		// float std::abs(const PixelType& pixel)
+			static const uint64_t componentCount = N;
+			void getRGBA(uint8_t& red, uint8_t& green, uint8_t& blue, uint8_t& alpha) const;
+
+		protected:
+
+			float components[N];
 	};
+
+	template<uint64_t N>
+	PixelBase<N> operator+(const PixelBase<N>& pixelA, const PixelBase<N>& pixelB);
+	template<uint64_t N>
+	PixelBase<N>&& operator+(PixelBase<N>&& pixelA, const PixelBase<N>& pixelB);
+	template<uint64_t N>
+	PixelBase<N>&& operator+(const PixelBase<N>& pixelA, PixelBase<N>&& pixelB);
+	template<uint64_t N>
+	PixelBase<N>&& operator+(PixelBase<N>&& pixelA, PixelBase<N>&& pixelB);
+
+	template<uint64_t N>
+	PixelBase<N> operator-(const PixelBase<N>& pixelA, const PixelBase<N>& pixelB);
+	template<uint64_t N>
+	PixelBase<N>&& operator-(PixelBase<N>&& pixelA, const PixelBase<N>& pixelB);
+
+	template<uint64_t N>
+	PixelBase<N> operator*(const PixelBase<N>& pixelA, const PixelBase<N>& pixelB);
+	template<uint64_t N>
+	PixelBase<N>&& operator*(PixelBase<N>&& pixelA, const PixelBase<N>& pixelB);
+	template<uint64_t N>
+	PixelBase<N>&& operator*(const PixelBase<N>& pixelA, PixelBase<N>&& pixelB);
+	template<uint64_t N>
+	PixelBase<N>&& operator*(PixelBase<N>&& pixelA, PixelBase<N>&& pixelB);
+
+	template<uint64_t N>
+	PixelBase<N> operator/(const PixelBase<N>& pixelA, const PixelBase<N>& pixelB);
+	template<uint64_t N>
+	PixelBase<N>&& operator/(PixelBase<N>&& pixelA, const PixelBase<N>& pixelB);
+
+	template<uint64_t N>
+	PixelBase<N> operator%(const PixelBase<N>& pixelA, const PixelBase<N>& pixelB);
+	template<uint64_t N>
+	PixelBase<N>&& operator%(PixelBase<N>&& pixelA, const PixelBase<N>& pixelB);
+
+	template<uint64_t N>
+	PixelBase<N> operator+(const PixelBase<N>& pixel, float x);
+	template<uint64_t N>
+	PixelBase<N>&& operator+(PixelBase<N>&& pixel, float x);
+	template<uint64_t N>
+	PixelBase<N> operator+(float x, const PixelBase<N>& pixel);
+	template<uint64_t N>
+	PixelBase<N>&& operator+(float x, PixelBase<N>&& pixel);
+
+	template<uint64_t N>
+	PixelBase<N> operator-(const PixelBase<N>& pixel, float x);
+	template<uint64_t N>
+	PixelBase<N>&& operator-(PixelBase<N>&& pixel, float x);
+
+	template<uint64_t N>
+	PixelBase<N> operator*(const PixelBase<N>& pixel, float x);
+	template<uint64_t N>
+	PixelBase<N>&& operator*(PixelBase<N>&& pixel, float x);
+	template<uint64_t N>
+	PixelBase<N> operator*(float x, const PixelBase<N>& pixel);
+	template<uint64_t N>
+	PixelBase<N>&& operator*(float x, PixelBase<N>&& pixel);
+
+	template<uint64_t N>
+	PixelBase<N> operator/(const PixelBase<N>& pixel, float x);
+	template<uint64_t N>
+	PixelBase<N>&& operator/(PixelBase<N>&& pixel, float x);
+
+	template<uint64_t N>
+	PixelBase<N> operator%(const PixelBase<N>& pixel, float x);
+	template<uint64_t N>
+	PixelBase<N>&& operator%(PixelBase<N>&& pixel, float x);
+}
+
+namespace std
+{
+	template<uint64_t N>
+	float norm(const djv::PixelBase<N>& pixel);
+	template<uint64_t N>
+	float abs(const djv::PixelBase<N>& pixel);
 }
 
 namespace djv
@@ -60,7 +140,8 @@ namespace djv
 			Img<PixelType> subImage(const Shape& shape, const PixelType& pixelInit) const;
 			*/
 			void saveToFile(const std::string& filename) const;
-			scp::Mat<float> getComponent(uint64_t comp) const;
+			scp::Mat<float> getComponent(uint64_t i) const;
+			// void setComponent(uint64_t i, const scp::Mat<float>& comp);
 
 			uint64_t width() const;
 			uint64_t height() const;
@@ -78,40 +159,19 @@ namespace djv
 
 namespace djv
 {
-	struct GrayScalePixel : public PixelBase
+	struct GrayScalePixel : public PixelBase<1>
 	{
-		GrayScalePixel(float x = 0.f);
+		using PixelBase<1>::PixelBase;
+
+		GrayScalePixel(const PixelBase<1>& pixel);
+		GrayScalePixel(PixelBase<1>&& pixel);
 		GrayScalePixel(float r, float g, float b, float a);
 		GrayScalePixel(const GrayScalePixel& pixel) = default;
 		GrayScalePixel(GrayScalePixel&& pixel) = default;
 
 		GrayScalePixel& operator=(const GrayScalePixel& pixel) = default;
 		GrayScalePixel& operator=(GrayScalePixel&& pixel) = default;
-
-		GrayScalePixel& operator+=(const GrayScalePixel& pixel);
-		GrayScalePixel& operator-=(const GrayScalePixel& pixel);
-		GrayScalePixel& operator*=(float x);
-		GrayScalePixel& operator/=(float x);
-
-		static const uint64_t componentCount = 1;
-		float getComponent(uint64_t i) const;
-		void setComponent(uint64_t i, float x);
-		void getRGBA(uint8_t& red, uint8_t& green, uint8_t& blue, uint8_t& alpha) const;
-
-		float value;
 	};
-
-	GrayScalePixel operator+(const GrayScalePixel& p, const GrayScalePixel& q);
-	GrayScalePixel operator-(const GrayScalePixel& p, const GrayScalePixel& q);
-	GrayScalePixel operator*(const GrayScalePixel& p, float x);
-	GrayScalePixel operator*(float x, const GrayScalePixel& p);
-	GrayScalePixel operator/(const GrayScalePixel& p, float x);
-}
-
-namespace std
-{
-	float norm(const djv::GrayScalePixel& pixel);
-	float abs(const djv::GrayScalePixel& pixel);
 }
 
 namespace djv
@@ -139,53 +199,19 @@ namespace djv
 
 namespace djv
 {
-	struct RGBAPixel : public PixelBase
+	struct RGBAPixel : public PixelBase<4>
 	{
+		using PixelBase<4>::PixelBase;
+
 		RGBAPixel(float x = 0.f);
-		RGBAPixel(float red, float green, float blue, float alpha);
+		RGBAPixel(const PixelBase<4>& pixel);
+		RGBAPixel(PixelBase<4>&& pixel);
 		RGBAPixel(const RGBAPixel& pixel) = default;
 		RGBAPixel(RGBAPixel&& pixel) = default;
 
 		RGBAPixel& operator=(const RGBAPixel& pixel) = default;
 		RGBAPixel& operator=(RGBAPixel&& pixel) = default;
-
-		RGBAPixel& operator+=(const RGBAPixel& pixel);
-		RGBAPixel& operator-=(const RGBAPixel& pixel);
-		RGBAPixel& operator*=(float x);
-		RGBAPixel& operator/=(float x);
-
-		static const uint64_t componentCount = 4;
-		float getComponent(uint64_t i) const;
-		void setComponent(uint64_t i, float x);
-		void getRGBA(uint8_t & red, uint8_t & green, uint8_t & blue, uint8_t & alpha) const;
-
-		float r;
-		float g;
-		float b;
-		float a;
 	};
-
-	RGBAPixel operator+(const RGBAPixel& p, const RGBAPixel& q);
-	RGBAPixel&& operator+(RGBAPixel&& p, const RGBAPixel& q);
-	RGBAPixel&& operator+(const RGBAPixel& p, RGBAPixel&& q);
-	RGBAPixel&& operator+(RGBAPixel&& p, RGBAPixel&& q);
-
-	RGBAPixel operator-(const RGBAPixel& p, const RGBAPixel& q);
-	RGBAPixel&& operator-(RGBAPixel&& p, const RGBAPixel& q);
-
-	RGBAPixel operator*(const RGBAPixel& p, float x);
-	RGBAPixel&& operator*(RGBAPixel&& p, float x);
-	RGBAPixel operator*(float x, const RGBAPixel& p);
-	RGBAPixel&& operator*(float x, RGBAPixel&& p);
-
-	RGBAPixel operator/(const RGBAPixel& p, float x);
-	RGBAPixel&& operator/(RGBAPixel&& p, float x);
-}
-
-namespace std
-{
-	float norm(const djv::RGBAPixel& pixel);
-	float abs(const djv::RGBAPixel& pixel);
 }
 
 namespace djv

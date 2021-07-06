@@ -20,11 +20,11 @@ namespace djv
 				{
 					for (uint64_t k = 0; k < PixelType::componentCount; ++k)
 					{
-						float l = laplacian[i][j].getComponent(k), lx = laplacian[i + 1][j].getComponent(k), ly = laplacian[i + 1][j].getComponent(k);
+						float l = laplacian[i][j][k], lx = laplacian[i + 1][j][k], ly = laplacian[i + 1][j][k];
 						if (l*lx < 0 || l*ly < 0)
 						{
-							float gx = grad[0][i][j].getComponent(k), gy = grad[1][i][j].getComponent(k);
-							r[i][j].setComponent(k, gx*gx + gy*gy);
+							float gx = grad[0][i][j][k], gy = grad[1][i][j][k];
+							r[i][j][k] = gx*gx + gy*gy;
 						}
 					}
 				}
@@ -46,9 +46,9 @@ namespace djv
 				{
 					for (uint64_t k = 0; k < PixelType::componentCount; ++k)
 					{
-						float gx = grad[0][i][j].getComponent(k), gy = grad[1][i][j].getComponent(k);
-						gradMag[i][j].setComponent(k, gx*gx + gy*gy);
-						gradArg[i][j].setComponent(k, std::atan2(gy, gx));
+						float gx = grad[0][i][j][k], gy = grad[1][i][j][k];
+						gradMag[i][j][k] = gx*gx + gy*gy;
+						gradArg[i][j][k] = std::atan2(gy, gx);
 					}
 				}
 			}
@@ -64,7 +64,7 @@ namespace djv
 					{
 						int64_t x, y;
 
-						float garg = gradArg[i][j].getComponent(k);
+						float garg = gradArg[i][j][k];
 
 						if (garg >= 7*pi/8 || garg < -7*pi/8)
 						{
@@ -115,10 +115,10 @@ namespace djv
 						xBackward = std::min(std::max(static_cast<int64_t>(i) - x, static_cast<int64_t>(0)), static_cast<int64_t>(r.width() - 1));
 						yBackward = std::min(std::max(static_cast<int64_t>(j) - y, static_cast<int64_t>(0)), static_cast<int64_t>(r.height() - 1));
 
-						float gmag = gradMag[i][j].getComponent(k), gmagForward = gradMag[xForward][yForward].getComponent(k), gmagBackward = gradMag[xBackward][yBackward].getComponent(k);
+						float gmag = gradMag[i][j][k], gmagForward = gradMag[xForward][yForward][k], gmagBackward = gradMag[xBackward][yBackward][k];
 						if (gmagForward > gmag || gmagBackward > gmag)
 						{
-							r[i][j].setComponent(k, 0.f);
+							r[i][j][k] = 0.f;
 						}
 					}
 				}

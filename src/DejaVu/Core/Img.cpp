@@ -2,97 +2,17 @@
 
 namespace djv
 {
-	GrayScalePixel::GrayScalePixel(float x) :
-		value(x)
+	GrayScalePixel::GrayScalePixel(const PixelBase<1>& pixel) : PixelBase<1>(pixel)
 	{
 	}
 
-	GrayScalePixel::GrayScalePixel(float r, float g, float b, float a) :
-		value(r * 0.299f + g * 0.587f + b * 0.114f)
+	GrayScalePixel::GrayScalePixel(PixelBase<1>&& pixel) : PixelBase<1>(std::move(pixel))
 	{
 	}
 
-	GrayScalePixel& GrayScalePixel::operator+=(const GrayScalePixel& pixel)
+	GrayScalePixel::GrayScalePixel(float r, float g, float b, float a)
 	{
-		value += pixel.value;
-		return *this;
-	}
-
-	GrayScalePixel& GrayScalePixel::operator-=(const GrayScalePixel& pixel)
-	{
-		value -= pixel.value;
-		return *this;
-	}
-
-	GrayScalePixel& GrayScalePixel::operator*=(float x)
-	{
-		value *= x;
-		return *this;
-	}
-
-	GrayScalePixel& GrayScalePixel::operator/=(float x)
-	{
-		value /= x;
-		return *this;
-	}
-
-	float GrayScalePixel::getComponent(uint64_t i) const
-	{
-		assert(i == 0);
-		return value;
-	}
-
-	void GrayScalePixel::setComponent(uint64_t i, float x)
-	{
-		assert(i == 0);
-		value = x;
-	}
-
-	void GrayScalePixel::getRGBA(uint8_t& red, uint8_t& green, uint8_t& blue, uint8_t& alpha) const
-	{
-		uint8_t x = 255 * std::min(std::max(value, 0.f), 1.f);
-		red = x;
-		green = x;
-		blue = x;
-		alpha = 255;
-	}
-
-	GrayScalePixel operator+(const GrayScalePixel& p, const GrayScalePixel& q)
-	{
-		return p.value + q.value;
-	}
-
-	GrayScalePixel operator-(const GrayScalePixel& p, const GrayScalePixel& q)
-	{
-		return p.value - q.value;
-	}
-
-	GrayScalePixel operator*(const GrayScalePixel& p, float x)
-	{
-		return p.value * x;
-	}
-
-	GrayScalePixel operator*(float x, const GrayScalePixel& p)
-	{
-		return p.value * x;
-	}
-
-	GrayScalePixel operator/(const GrayScalePixel& p, float x)
-	{
-		return p.value / x;
-	}
-}
-
-namespace std
-{
-	float norm(const djv::GrayScalePixel& pixel)
-	{
-		return std::norm(pixel.value);
-	}
-
-	float abs(const djv::GrayScalePixel& pixel)
-	{
-		return std::abs(pixel.value);
+		components[0] = r * 0.299f + g * 0.587f + b * 0.114f;
 	}
 }
 
@@ -114,7 +34,7 @@ namespace djv
 		{
 			for (uint64_t j = 0; j < _data->shape(1); ++j)
 			{
-				(*_data)[i][j] = image[i][j].r * redWeight + image[i][j].g * greenWeight + image[i][j].b * blueWeight;
+				(*_data)[i][j] = image[i][j][0] * redWeight + image[i][j][1] * greenWeight + image[i][j][2] * blueWeight;
 			}
 		}
 	}
@@ -127,7 +47,7 @@ namespace djv
 		{
 			for (uint64_t j = 0; j < _data->shape(1); ++j)
 			{
-				(*_data)[i][j].value = image[i][j];
+				(*_data)[i][j][0] = image[i][j];
 			}
 		}
 	}
@@ -145,187 +65,17 @@ namespace djv
 
 namespace djv
 {
-	RGBAPixel::RGBAPixel(float x) :
-		r(x),
-		g(x),
-		b(x),
-		a(1.f)
+	RGBAPixel::RGBAPixel(float x) : PixelBase<4>(x)
+	{
+		components[3] = 1.f;
+	}
+
+	RGBAPixel::RGBAPixel(const PixelBase<4>& pixel) : PixelBase<4>(pixel)
 	{
 	}
 
-	RGBAPixel::RGBAPixel(float red, float green, float blue, float alpha) :
-		r(red),
-		g(green),
-		b(blue),
-		a(alpha)
+	RGBAPixel::RGBAPixel(PixelBase<4>&& pixel) : PixelBase<4>(std::move(pixel))
 	{
-	}
-
-	RGBAPixel& RGBAPixel::operator+=(const RGBAPixel& pixel)
-	{
-		r += pixel.r;
-		g += pixel.g;
-		b += pixel.b;
-		a += pixel.a;
-
-		return *this;
-	}
-
-	RGBAPixel& RGBAPixel::operator-=(const RGBAPixel& pixel)
-	{
-		r -= pixel.r;
-		g -= pixel.g;
-		b -= pixel.b;
-		a -= pixel.a;
-
-		return *this;
-	}
-
-	RGBAPixel& RGBAPixel::operator*=(float x)
-	{
-		r *= x;
-		g *= x;
-		b *= x;
-		a *= x;
-
-		return *this;
-	}
-
-	RGBAPixel& RGBAPixel::operator/=(float x)
-	{
-		r /= x;
-		g /= x;
-		b /= x;
-		a /= x;
-
-		return *this;
-	}
-
-	float RGBAPixel::getComponent(uint64_t i) const
-	{
-		assert(i < 4);
-
-		switch (i)
-		{
-		case 0:
-			return r;
-		case 1:
-			return g;
-		case 2:
-			return b;
-		default:
-			return a;
-		}
-	}
-
-	void RGBAPixel::setComponent(uint64_t i, float x)
-	{
-		assert(i < 4);
-
-		switch (i)
-		{
-		case 0:
-			r = x;
-			break;
-		case 1:
-			g = x;
-			break;
-		case 2:
-			b = x;
-			break;
-		default:
-			a = x;
-			break;
-		}
-	}
-
-	void RGBAPixel::getRGBA(uint8_t& red, uint8_t& green, uint8_t& blue, uint8_t& alpha) const
-	{
-		red = 255 * std::min(std::max(r, 0.f), 1.f);
-		green = 255 * std::min(std::max(g, 0.f), 1.f);
-		blue = 255 * std::min(std::max(b, 0.f), 1.f);
-		alpha = 255 * std::min(std::max(a, 0.f), 1.f);
-		alpha = 255;
-	}
-
-	RGBAPixel operator+(const RGBAPixel& p, const RGBAPixel& q)
-	{
-		return { p.r + q.r, p.g + q.g, p.b + q.b, p.a + q.a };
-	}
-
-	RGBAPixel&& operator+(RGBAPixel&& p, const RGBAPixel& q)
-	{
-		p += q;
-		return std::move(p);
-	}
-
-	RGBAPixel&& operator+(const RGBAPixel& p, RGBAPixel&& q)
-	{
-		q += p;
-		return std::move(q);
-	}
-
-	RGBAPixel&& operator+(RGBAPixel&& p, RGBAPixel&& q)
-	{
-		p += q;
-		return std::move(p);
-	}
-
-	RGBAPixel operator-(const RGBAPixel& p, const RGBAPixel& q)
-	{
-		return { p.r - q.r, p.g - q.g, p.b - q.b, p.a - q.a };
-	}
-
-	RGBAPixel&& operator-(RGBAPixel&& p, const RGBAPixel& q)
-	{
-		p -= q;
-		return std::move(p);
-	}
-
-	RGBAPixel operator*(const RGBAPixel& p, float x)
-	{
-		return { p.r * x, p.g * x, p.b * x, p.a * x };
-	}
-
-	RGBAPixel&& operator*(RGBAPixel&& p, float x)
-	{
-		p *= x;
-		return std::move(p);
-	}
-
-	RGBAPixel operator*(float x, const RGBAPixel& p)
-	{
-		return { p.r * x, p.g * x, p.b * x, p.a * x };
-	}
-
-	RGBAPixel&& operator*(float x, RGBAPixel&& p)
-	{
-		p *= x;
-		return std::move(p);
-	}
-
-	RGBAPixel operator/(const RGBAPixel& p, float x)
-	{
-		return { p.r / x, p.g / x, p.b / x, p.a / x };
-	}
-
-	RGBAPixel&& operator/(RGBAPixel&& p, float x)
-	{
-		p /= x;
-		return std::move(p);
-	}
-}
-
-namespace std
-{
-	float norm(const djv::RGBAPixel& pixel)
-	{
-		return pixel.r * pixel.r + pixel.g * pixel.g + pixel.b * pixel.b + pixel.a * pixel.a;
-	}
-
-	float abs(const djv::RGBAPixel& pixel)
-	{
-		return sqrt(norm(pixel));
 	}
 }
 
@@ -347,10 +97,10 @@ namespace djv
 		{
 			for (uint64_t j = 0; j < _data->shape(1); ++j)
 			{
-				(*_data)[i][j].r = image[i][j].value;
-				(*_data)[i][j].g = image[i][j].value;
-				(*_data)[i][j].b = image[i][j].value;
-				(*_data)[i][j].a = 1.f;
+				(*_data)[i][j][0] = image[i][j][0];
+				(*_data)[i][j][1] = image[i][j][0];
+				(*_data)[i][j][2] = image[i][j][0];
+				(*_data)[i][j][3] = 1.f;
 			}
 		}
 	}
@@ -366,10 +116,10 @@ namespace djv
 		{
 			for (uint64_t j = 0; j < _data->shape(1); ++j)
 			{
-				(*_data)[i][j].r = red[i][j];
-				(*_data)[i][j].g = green[i][j];
-				(*_data)[i][j].b = blue[i][j];
-				(*_data)[i][j].a = alpha[i][j];
+				(*_data)[i][j][0] = red[i][j];
+				(*_data)[i][j][1] = green[i][j];
+				(*_data)[i][j][2] = blue[i][j];
+				(*_data)[i][j][3] = alpha[i][j];
 			}
 		}
 	}

@@ -249,7 +249,7 @@ namespace djv
 							int64_t y = std::max(std::min(j + q, static_cast<int64_t>(m.height() - 1)), int64_t(0));
 							for (uint64_t k = 0; k < PixelType::componentCount; ++k)
 							{
-								h[k].push_back(m[x][y].getComponent(k));
+								h[k].push_back(m[x][y][k]);
 							}
 						}
 					}
@@ -257,7 +257,7 @@ namespace djv
 					for (uint64_t k = 0; k < PixelType::componentCount; ++k)
 					{
 						std::sort(h[k].begin(), h[k].end());
-						r[i][j].setComponent(k, h[k][histMiddle]);
+						r[i][j][k] = h[k][histMiddle];
 					}
 				}
 			}
