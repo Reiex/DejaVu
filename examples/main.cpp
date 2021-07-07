@@ -95,7 +95,12 @@ int main()
 
 	// Corner detectors
 
-	// djv::cornerDetectors::harris(rgbaImage).saveToFile("build/HarrisCornerDetector.png");
+	{
+		djv::RGBAImg result = djv::cornerDetectors::harris(rgbaImage);
+		result.setComponent(3, { rgbaImage.width(), rgbaImage.height(), 1.f });
+		result.normalize();
+		result.saveToFile("build/HarrisCornerDetector.png");
+	}
 
 
 	// Line extractors

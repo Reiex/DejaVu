@@ -72,8 +72,8 @@ namespace djv
 		/// 
 		/// The gradient computation method used is djv::operators::simpleGradient.
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		// template<typename PixelType>
-		// Img<PixelType> harris(const Img<PixelType>& m, float alpha = 0.05f, const scp::Mat<float>& window = { 3, 3, 1.f });
+		template<typename PixelType>
+		Img<PixelType> harris(const Img<PixelType>& m, float alpha = 0.05f, const scp::Mat<float>& window = { 3, 3, 1.f });
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// \}

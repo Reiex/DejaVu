@@ -130,19 +130,20 @@ namespace djv
 
 	namespace cornerDetectors
 	{
-		/*scp::Mat<float> harris(const scp::Mat<float>& m, float alpha, const scp::Mat<float>& window)
+		template<typename PixelType>
+		Img<PixelType> harris(const Img<PixelType>& m, float alpha, const scp::Mat<float>& window)
 		{
-			std::array<scp::Mat<float>, 2> grad = operators::simpleGradient(m);
-			std::array<scp::Mat<float>, 3> gradSq = { scp::Mat<float>(m.shape(0), m.shape(1)), scp::Mat<float>(m.shape(0), m.shape(1)), scp::Mat<float>(m.shape(0), m.shape(1)) };
-			scp::Mat<float> R(m.shape(0), m.shape(1)), result(m.shape(0), m.shape(1));
+			std::array<Img<PixelType>, 2> grad = operators::simpleGradient(m);
+			std::array<Img<PixelType>, 3> gradSq = { Img<PixelType>(m.width(), m.height()), Img<PixelType>(m.width(), m.height()), Img<PixelType>(m.width(), m.height()) };
+			Img<PixelType> R(m.width(), m.height()), result(m.width(), m.height());
 			int64_t ox = window.shape(0) / 2, oy = window.shape(1) / 2;
 
 			#pragma omp parallel
 			{
 				#pragma omp for
-				for (int64_t i = 0; i < m.shape(0); i++)
+				for (int64_t i = 0; i < m.width(); ++i)
 				{
-					for (int64_t j = 0; j < m.shape(1); j++)
+					for (int64_t j = 0; j < m.height(); ++j)
 					{
 						gradSq[0][i][j] = grad[0][i][j] * grad[0][i][j];
 						gradSq[1][i][j] = grad[0][i][j] * grad[1][i][j];
@@ -151,18 +152,17 @@ namespace djv
 				}
 
 				#pragma omp for
-				for (int64_t i = 0; i < m.shape(0); i++)
+				for (int64_t i = 0; i < m.width(); ++i)
 				{
-					for (int64_t j = 0; j < m.shape(1); j++)
+					for (int64_t j = 0; j < m.height(); ++j)
 					{
-						scp::Mat<float> M(2, 2);
-						float a(0), b(0), d(0);
-						for (int64_t p = 0; p < window.shape(0); p++)
+						PixelType a(0.f), b(0.f), d(0.f);
+						for (int64_t p = 0; p < window.shape(0); ++p)
 						{
-							for (int64_t q = 0; q < window.shape(1); q++)
+							for (int64_t q = 0; q < window.shape(1); ++q)
 							{
-								int64_t x = std::max(std::min(i + p - ox, static_cast<int64_t>(m.shape(0) - 1)), int64_t(0));
-								int64_t y = std::max(std::min(j + q - oy, static_cast<int64_t>(m.shape(1) - 1)), int64_t(0));
+								int64_t x = std::max(std::min(i + p - ox, static_cast<int64_t>(m.width() - 1)), int64_t(0));
+								int64_t y = std::max(std::min(j + q - oy, static_cast<int64_t>(m.height() - 1)), int64_t(0));
 								a += gradSq[0][x][y] * window[p][q];
 								b += gradSq[1][x][y] * window[p][q];
 								d += gradSq[2][x][y] * window[p][q];
@@ -174,32 +174,37 @@ namespace djv
 				}
 
 				#pragma omp for
-				for (int64_t i = 0; i < m.shape(0); i++)
+				for (int64_t i = 0; i < m.width(); ++i)
 				{
-					for (int64_t j = 0; j < m.shape(1); j++)
+					for (int64_t j = 0; j < m.height(); ++j)
 					{
-						bool localMaximum(R[i][j] > 0);
-						if (localMaximum)
+						for (uint64_t k = 0; k < PixelType::componentCount; ++k)
 						{
-							for (int64_t p = -1; p < 2; p++)
+							bool localMaximum(R[i][j][k] > 0);
+							if (localMaximum)
 							{
-								for (int64_t q = -1; q < 2; q++)
+								for (int64_t p = -1; p < 2; p++)
 								{
-									int64_t x = std::max(std::min(i + p, static_cast<int64_t>(m.shape(0) - 1)), int64_t(0));
-									int64_t y = std::max(std::min(j + q, static_cast<int64_t>(m.shape(1) - 1)), int64_t(0));
-									localMaximum = localMaximum && R[i][j] >= R[x][y];
+									for (int64_t q = -1; q < 2; q++)
+									{
+										int64_t x = std::max(std::min(i + p, static_cast<int64_t>(m.width() - 1)), int64_t(0));
+										int64_t y = std::max(std::min(j + q, static_cast<int64_t>(m.height() - 1)), int64_t(0));
+										localMaximum = localMaximum && R[i][j][k] >= R[x][y][k];
+									}
 								}
 							}
-						}
 
-						if (localMaximum)
-							result[i][j] = R[i][j];
+							if (localMaximum)
+							{
+								result[i][j][k] = R[i][j][k];
+							}
+						}
 					}
 				}
 			}
 
 			return result;
-		}*/
+		}
 	}
 
 	namespace lineExtractors
