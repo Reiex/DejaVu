@@ -134,18 +134,25 @@ namespace djv
 			scp::Vec<PixelType>& operator[](uint64_t i);
 			const scp::Vec<PixelType>& operator[](uint64_t i) const;
 
-			/*
-			void draw(const Drawable<PixelType>& drawable);
-			void applySegmentation(const segmentation::Segmentation<PixelType>& seg);
-			Img<PixelType> subImage(const Shape& shape, const PixelType& pixelInit) const;
-			*/
-			void saveToFile(const std::string& filename) const;
 			scp::Mat<float> getComponent(uint64_t i) const;
-			// void setComponent(uint64_t i, const scp::Mat<float>& comp);
+			void setComponent(uint64_t i, const scp::Mat<float>& comp);
+			// Img<PixelType> subImage(const Shape& shape, const PixelType& pixelInit) const;
+
+			void normalize(PixelType min = 0.f, PixelType max = 1.f);
+			// void scale(float factor);
+			// void scale(float xFactor, float yFactor);
+			// void scale(uint64_t width, uint64_t height);
+			// void rotate(float angle);
+			// void flipHorizontally();
+			// void flipVertically();
+			// void transpose();
+
+			// void draw(const Drawable<PixelType>& drawable);
 
 			uint64_t width() const;
 			uint64_t height() const;
 			const scp::Mat<PixelType>& getData() const;
+			void saveToFile(const std::string& filename) const;
 
 			~Img() = default;
 
@@ -203,7 +210,6 @@ namespace djv
 	{
 		using PixelBase<4>::PixelBase;
 
-		RGBAPixel(float x = 0.f);
 		RGBAPixel(const PixelBase<4>& pixel);
 		RGBAPixel(PixelBase<4>&& pixel);
 		RGBAPixel(const RGBAPixel& pixel) = default;

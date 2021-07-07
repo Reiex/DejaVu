@@ -7,24 +7,60 @@ int main()
 	djv::RGBAImg rgbaImage("examples/assets/Lena.jpg");
 	rgbaImage.saveToFile("build/Original.png");
 
-	djv::GrayScaleImg grayScaleImage("examples/assets/Lena.jpg"), result(grayScaleImage.width(), grayScaleImage.height());
+	djv::GrayScaleImg grayScaleImage("examples/assets/Lena.jpg");
 	grayScaleImage.saveToFile("build/GrayScaleOriginal.png");
 
 	// Operators
 
-	djv::operators::sobel(rgbaImage)[0].saveToFile("build/SobelX.png");
-	djv::operators::sobel(rgbaImage)[1].saveToFile("build/SobelY.png");
-	djv::operators::prewitt(rgbaImage)[0].saveToFile("build/PrewittX.png");
-	djv::operators::prewitt(rgbaImage)[1].saveToFile("build/PrewittY.png");
-	djv::operators::simpleGradient(rgbaImage)[0].saveToFile("build/SimpleGradientX.png");
-	djv::operators::simpleGradient(rgbaImage)[1].saveToFile("build/SimpleGradientY.png");
+	{
+		std::array<djv::Img<djv::RGBAPixel>, 2> result = djv::operators::sobel(rgbaImage);
+		result[0].setComponent(3, { rgbaImage.width(), rgbaImage.height(), 1.f });
+		result[0].normalize();
+		result[0].saveToFile("build/SobelX.png");
+		result[1].setComponent(3, { rgbaImage.width(), rgbaImage.height(), 1.f });
+		result[1].normalize();
+		result[1].saveToFile("build/SobelY.png");
+	}
 
-	djv::operators::simpleHessian(rgbaImage)[0].saveToFile("build/SimpleHessianXX.png");
-	djv::operators::simpleHessian(rgbaImage)[1].saveToFile("build/SimpleHessianXY.png");
-	djv::operators::simpleHessian(rgbaImage)[2].saveToFile("build/SimpleHessianYY.png");
+	{
+		std::array<djv::Img<djv::RGBAPixel>, 2> result = djv::operators::prewitt(rgbaImage);
+		result[0].setComponent(3, { rgbaImage.width(), rgbaImage.height(), 1.f });
+		result[0].normalize();
+		result[0].saveToFile("build/PrewittX.png");
+		result[1].setComponent(3, { rgbaImage.width(), rgbaImage.height(), 1.f });
+		result[1].normalize();
+		result[1].saveToFile("build/PrewittY.png");
+	}
 
-	djv::operators::simpleLaplacian(rgbaImage).saveToFile("build/SimpleLaplacian.png");
-	
+	{
+		std::array<djv::Img<djv::RGBAPixel>, 2> result = djv::operators::simpleGradient(rgbaImage);
+		result[0].setComponent(3, { rgbaImage.width(), rgbaImage.height(), 1.f });
+		result[0].normalize();
+		result[0].saveToFile("build/SimpleGradientX.png");
+		result[1].setComponent(3, { rgbaImage.width(), rgbaImage.height(), 1.f });
+		result[1].normalize();
+		result[1].saveToFile("build/SimpleGradientY.png");
+	}
+
+	{
+		std::array<djv::Img<djv::RGBAPixel>, 3> result = djv::operators::simpleHessian(rgbaImage);
+		result[0].setComponent(3, { rgbaImage.width(), rgbaImage.height(), 1.f });
+		result[0].normalize();
+		result[0].saveToFile("build/SimpleHessianXX.png");
+		result[1].setComponent(3, { rgbaImage.width(), rgbaImage.height(), 1.f });
+		result[1].normalize();
+		result[1].saveToFile("build/SimpleHessianXY.png");
+		result[2].setComponent(3, { rgbaImage.width(), rgbaImage.height(), 1.f });
+		result[2].normalize();
+		result[2].saveToFile("build/SimpleHessianYY.png");
+	}
+
+	{
+		djv::RGBAImg result = djv::operators::simpleLaplacian(rgbaImage);
+		result.setComponent(3, { rgbaImage.width(), rgbaImage.height(), 1.f });
+		result.normalize();
+		result.saveToFile("build/SimpleLaplacian.png");
+	}
 
 	// Blurs
 
@@ -42,8 +78,19 @@ int main()
 
 	// Edge detectors
 	
-	djv::edgeDetectors::marrHildreth(rgbaImage).saveToFile("build/MarrHildrethEdgeDetector.png");
-	djv::edgeDetectors::canny(rgbaImage).saveToFile("build/CannyEdgeDetector.png");
+	{
+		djv::RGBAImg result = djv::edgeDetectors::marrHildreth(rgbaImage);
+		result.setComponent(3, { rgbaImage.width(), rgbaImage.height(), 1.f });
+		result.normalize();
+		result.saveToFile("build/MarrHildrethEdgeDetector.png");
+	}
+
+	{
+		djv::RGBAImg result = djv::edgeDetectors::canny(rgbaImage);
+		result.setComponent(3, { rgbaImage.width(), rgbaImage.height(), 1.f });
+		result.normalize();
+		result.saveToFile("build/CannyEdgeDetector.png");
+	}
 	
 
 	// Corner detectors

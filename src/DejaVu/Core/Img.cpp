@@ -65,11 +65,6 @@ namespace djv
 
 namespace djv
 {
-	RGBAPixel::RGBAPixel(float x) : PixelBase<4>(x)
-	{
-		components[3] = 1.f;
-	}
-
 	RGBAPixel::RGBAPixel(const PixelBase<4>& pixel) : PixelBase<4>(pixel)
 	{
 	}

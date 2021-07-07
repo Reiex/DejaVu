@@ -74,7 +74,6 @@ namespace djv
 	template<uint64_t N>
 	PixelBase<N>& PixelBase<N>::operator*=(const PixelBase<N>& pixel)
 	{
-
 		for (uint64_t i = 0; i < N; i++)
 		{
 			components[i] *= pixel.components[i];
@@ -86,7 +85,6 @@ namespace djv
 	template<uint64_t N>
 	PixelBase<N>& PixelBase<N>::operator/=(const PixelBase<N>& pixel)
 	{
-
 		for (uint64_t i = 0; i < N; i++)
 		{
 			components[i] /= pixel.components[i];
@@ -98,7 +96,6 @@ namespace djv
 	template<uint64_t N>
 	PixelBase<N>& PixelBase<N>::operator%=(const PixelBase<N>& pixel)
 	{
-
 		for (uint64_t i = 0; i < N; i++)
 		{
 			components[i] %= pixel.components[i];
@@ -540,6 +537,96 @@ namespace djv
 	}
 
 	template<typename PixelType>
+	scp::Mat<float> Img<PixelType>::getComponent(uint64_t i) const
+	{
+		scp::Mat<float> r(_data->shape(0), _data->shape(1));
+
+		for (uint64_t i = 0; i < r.shape(0); ++i)
+		{
+			for (uint64_t j = 0; j < r.shape(1); ++j)
+			{
+				r[i][j] = (*_data)[i][j][i];
+			}
+		}
+
+		return r;
+	}
+
+	template<typename PixelType>
+	void Img<PixelType>::setComponent(uint64_t i, const scp::Mat<float>& comp)
+	{
+		assert(comp.shape(0) == _data->shape(0) && comp.shape(1) == _data->shape(1));
+		assert(i < PixelType::componentCount);
+
+		for (uint64_t x = 0; x < comp.shape(0); ++x)
+		{
+			for (uint64_t y = 0; y < comp.shape(1); ++y)
+			{
+				(*_data)[x][y][i] = comp[x][y];
+			}
+		}
+	}
+
+	template<typename PixelType>
+	void Img<PixelType>::normalize(PixelType min, PixelType max)
+	{
+		PixelType currentMin = (*_data)[0][0], currentMax = (*_data)[0][0];
+		for (uint64_t i = 0; i < _data->shape(0); ++i)
+		{
+			for (uint64_t j = 0; j < _data->shape(1); ++j)
+			{
+				for (uint64_t k = 0; k < PixelType::componentCount; ++k)
+				{
+					if ((*_data)[i][j][k] > currentMax[k])
+					{
+						currentMax[k] = (*_data)[i][j][k];
+					}
+					if ((*_data)[i][j][k] < currentMin[k])
+					{
+						currentMin[k] = (*_data)[i][j][k];
+					}
+				}
+			}
+		}
+
+		for (uint64_t k = 0; k < PixelType::componentCount; ++k)
+		{
+			for (uint64_t i = 0; i < _data->shape(0); ++i)
+			{
+				for (uint64_t j = 0; j < _data->shape(1); ++j)
+				{
+					if (currentMin[k] == currentMax[k])
+					{
+						(*_data)[i][j][k] = currentMin[k] < min[k] ? min[k] : max[k];
+					}
+					else
+					{
+						(*_data)[i][j][k] = min[k] + (max[k] - min[k])*((*_data)[i][j][k] - currentMin[k])/(currentMax[k] - currentMin[k]);
+					}
+				}
+			}
+		}
+	}
+
+	template<typename PixelType>
+	uint64_t Img<PixelType>::width() const
+	{
+		return _data->shape(0);
+	}
+
+	template<typename PixelType>
+	uint64_t Img<PixelType>::height() const
+	{
+		return _data->shape(1);
+	}
+
+	template<typename PixelType>
+	const scp::Mat<PixelType>& Img<PixelType>::getData() const
+	{
+		return *_data;
+	}
+
+	template<typename PixelType>
 	void Img<PixelType>::saveToFile(const std::string& filename) const
 	{
 		assert(filename.size() > 4);
@@ -594,39 +681,5 @@ namespace djv
 		{
 			throw std::runtime_error("File extension '" + filename + "' unrecognized.");
 		}
-	}
-
-	template<typename PixelType>
-	scp::Mat<float> Img<PixelType>::getComponent(uint64_t i) const
-	{
-		scp::Mat<float> r(_data->shape(0), _data->shape(1));
-
-		for (uint64_t i = 0; i < r.shape(0); ++i)
-		{
-			for (uint64_t j = 0; j < r.shape(1); ++j)
-			{
-				r[i][j] = (*_data)[i][j][i];
-			}
-		}
-
-		return r;
-	}
-
-	template<typename PixelType>
-	uint64_t Img<PixelType>::width() const
-	{
-		return _data->shape(0);
-	}
-
-	template<typename PixelType>
-	uint64_t Img<PixelType>::height() const
-	{
-		return _data->shape(1);
-	}
-
-	template<typename PixelType>
-	const scp::Mat<PixelType>& Img<PixelType>::getData() const
-	{
-		return *_data;
 	}
 }
