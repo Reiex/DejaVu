@@ -22,14 +22,14 @@
     <Filter Include="Header Files\ImageProcessing">
       <UniqueIdentifier>{165d17b6-8be0-4c9e-b757-228e748d78e2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\ImageProcessing">
-      <UniqueIdentifier>{3a06972f-913f-4269-ab8d-5472475cf1a7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Core\stb">
       <UniqueIdentifier>{de0928bd-83db-4152-b27e-8b86bb57219e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Core\stb">
       <UniqueIdentifier>{6d7f9a86-5c18-461b-8fc7-3c60b69e4514}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ImageProcessing">
+      <UniqueIdentifier>{818d911b-2a60-497e-a89c-e8da5303176f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -38,9 +38,6 @@
     </ClInclude>
     <ClInclude Include="..\..\include\DejaVu\Core\Img.hpp">
       <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\DejaVu\types.hpp">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\DejaVu\Core\stb\stb_image.hpp">
       <Filter>Header Files\Core\stb</Filter>
@@ -57,7 +54,7 @@
     <ClInclude Include="..\..\include\DejaVu\ImageProcessing\FeatureDetection.hpp">
       <Filter>Header Files\ImageProcessing</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\DejaVu\ImageProcessing\Segmentation.hpp">
+    <ClInclude Include="..\..\include\DejaVu\ImageProcessing\Clustering.hpp">
       <Filter>Header Files\ImageProcessing</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\DejaVu\Core\ImgT.hpp">
@@ -67,6 +64,21 @@
       <Filter>Header Files\ImageProcessing</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\DejaVu\ImageProcessing\FeatureDetectionT.hpp">
+      <Filter>Header Files\ImageProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\DejaVu\ImageProcessing\ClusteringT.hpp">
+      <Filter>Header Files\ImageProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\DejaVu\Core\Core.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\DejaVu\Core\types.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\DejaVu\ImageProcessing\ImageProcessing.hpp">
+      <Filter>Header Files\ImageProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\DejaVu\ImageProcessing\types.hpp">
       <Filter>Header Files\ImageProcessing</Filter>
     </ClInclude>
   </ItemGroup>
@@ -83,7 +95,7 @@
     <ClCompile Include="..\..\src\DejaVu\Core\Shape.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\DejaVu\ImageProcessing\Segmentation.cpp">
+    <ClCompile Include="..\..\src\ImageProcessing\Clustering.cpp">
       <Filter>Source Files\ImageProcessing</Filter>
     </ClCompile>
   </ItemGroup>

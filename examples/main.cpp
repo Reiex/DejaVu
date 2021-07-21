@@ -7,7 +7,7 @@ int main()
 	djv::RGBAImg rgbaImage("examples/assets/Lena.jpg");
 	rgbaImage.saveToFile("build/Original.png");
 
-	djv::GrayScaleImg grayScaleImage("examples/assets/Lena.jpg");
+	djv::GrayScaleImg grayScaleImage(rgbaImage.castToPixelType<djv::GrayScalePixel>());
 	grayScaleImage.saveToFile("build/GrayScaleOriginal.png");
 
 	// Operators
@@ -70,10 +70,10 @@ int main()
 	djv::blur::mean(rgbaImage, 10).saveToFile("build/MeanBlur.png");
 	
 
-	// Image segmentation
+	// Image clustering
 
-	// result.applySegmentationColor(djv::segmentation::kMeans(image, 5)); result.saveToFile("build/kMeans.png");
-	// result.applySegmentationColor(djv::segmentation::slic(image, 400)); result.saveToFile("build/SLIC.png");
+	djv::clustering::kMeans(rgbaImage, 5).appliedTo(rgbaImage).saveToFile("build/kMeans.png");
+	djv::clustering::slic(rgbaImage, 400).appliedTo(rgbaImage).saveToFile("build/SLIC.png");
 	
 
 	// Edge detectors

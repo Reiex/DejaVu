@@ -6,9 +6,5 @@
 /// \author Reiex
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#include <DejaVu/Core/Shape.hpp>
-#include <DejaVu/Core/Img.hpp>
-
-#include <DejaVu/ImageProcessing/Misc.hpp>
-#include <DejaVu/ImageProcessing/Segmentation.hpp>
-#include <DejaVu/ImageProcessing/FeatureDetection.hpp>
+#include <DejaVu/Core/Core.hpp>
+#include <DejaVu/ImageProcessing/ImageProcessing.hpp>

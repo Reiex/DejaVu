@@ -160,20 +160,20 @@ namespace djv
 	}
 
 	template<uint64_t N>
-	void PixelBase<N>::getRGBA(uint8_t & red, uint8_t & green, uint8_t & blue, uint8_t & alpha) const
+	void PixelBase<N>::getRGBA(float& red, float& green, float& blue, float& alpha) const
 	{
 		if constexpr (N >= 1)
 		{
-			red = 255 * std::min(std::max(components[0], 0.f), 1.f);
+			red = components[0];
 		}
 		else
 		{
-			red = 0;
+			red = 0.f;
 		}
 
 		if constexpr (N >= 2)
 		{
-			green = 255 * std::min(std::max(components[1], 0.f), 1.f);
+			green = components[1];
 		}
 		else
 		{
@@ -182,7 +182,7 @@ namespace djv
 
 		if constexpr (N >= 3)
 		{
-			blue = 255 * std::min(std::max(components[2], 0.f), 1.f);
+			blue = components[2];
 		}
 		else
 		{
@@ -191,11 +191,11 @@ namespace djv
 
 		if constexpr (N >= 4)
 		{
-			alpha = 255 * std::min(std::max(components[3], 0.f), 1.f);
+			alpha = components[3];
 		}
 		else
 		{
-			alpha = 255;
+			alpha = 1.f;
 		}
 	}
 
@@ -609,21 +609,22 @@ namespace djv
 	}
 
 	template<typename PixelType>
-	uint64_t Img<PixelType>::width() const
+	template<typename T>
+	Img<T> Img<PixelType>::castToPixelType() const
 	{
-		return _data->shape(0);
-	}
+		scp::Mat<T> mat(_data->shape(0), _data->shape(1));
+		for (uint64_t i = 0; i < _data->shape(0); ++i)
+		{
+			for (uint64_t j = 0; j < _data->shape(1); ++j)
+			{
+				float r, g, b, a;
+				(*_data)[i][j].getRGBA(r, g, b, a);
 
-	template<typename PixelType>
-	uint64_t Img<PixelType>::height() const
-	{
-		return _data->shape(1);
-	}
+				mat[i][j] = T(r, g, b, a);
+			}
+		}
 
-	template<typename PixelType>
-	const scp::Mat<PixelType>& Img<PixelType>::getData() const
-	{
-		return *_data;
+		return Img<T>(mat);
 	}
 
 	template<typename PixelType>
@@ -639,12 +640,12 @@ namespace djv
 		{
 			for (uint64_t i(0); i < w; ++i)
 			{
-				uint8_t r, g, b, a;
+				float r, g, b, a;
 				(*_data)[i][j].getRGBA(r, g, b, a);
-				*it = r;
-				*(++it) = g;
-				*(++it) = b;
-				*(++it) = a;
+				*it = 255 * std::max(std::min(r, 1.f), 0.f);
+				*(++it) = 255 * std::max(std::min(g, 1.f), 0.f);
+				*(++it) = 255 * std::max(std::min(b, 1.f), 0.f);
+				*(++it) = 255 * std::max(std::min(a, 1.f), 0.f);
 				++it;
 			}
 		}
@@ -681,5 +682,23 @@ namespace djv
 		{
 			throw std::runtime_error("File extension '" + filename + "' unrecognized.");
 		}
+	}
+
+	template<typename PixelType>
+	uint64_t Img<PixelType>::width() const
+	{
+		return _data->shape(0);
+	}
+
+	template<typename PixelType>
+	uint64_t Img<PixelType>::height() const
+	{
+		return _data->shape(1);
+	}
+
+	template<typename PixelType>
+	const scp::Mat<PixelType>& Img<PixelType>::getData() const
+	{
+		return *_data;
 	}
 }

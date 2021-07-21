@@ -1,6 +1,6 @@
 #pragma once
 
-#include <DejaVu/types.hpp>
+#include <DejaVu/Core/types.hpp>
 
 namespace djv
 {
@@ -32,7 +32,7 @@ namespace djv
 			PixelBase<N>& operator%=(float x);
 
 			static const uint64_t componentCount = N;
-			void getRGBA(uint8_t& red, uint8_t& green, uint8_t& blue, uint8_t& alpha) const;
+			void getRGBA(float& red, float& green, float& blue, float& alpha) const;
 
 		protected:
 
@@ -138,7 +138,11 @@ namespace djv
 			void setComponent(uint64_t i, const scp::Mat<float>& comp);
 			// Img<PixelType> subImage(const Shape& shape, const PixelType& pixelInit) const;
 
+
 			void normalize(PixelType min = 0.f, PixelType max = 1.f);
+			template<typename T> Img<T> castToPixelType() const;
+			void saveToFile(const std::string& filename) const;
+
 			// void scale(float factor);
 			// void scale(float xFactor, float yFactor);
 			// void scale(uint64_t width, uint64_t height);
@@ -152,7 +156,6 @@ namespace djv
 			uint64_t width() const;
 			uint64_t height() const;
 			const scp::Mat<PixelType>& getData() const;
-			void saveToFile(const std::string& filename) const;
 
 			~Img() = default;
 

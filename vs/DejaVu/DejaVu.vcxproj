@@ -19,25 +19,29 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\DejaVu\Core\Core.hpp" />
     <ClInclude Include="..\..\include\DejaVu\Core\Img.hpp" />
     <ClInclude Include="..\..\include\DejaVu\Core\ImgT.hpp" />
     <ClInclude Include="..\..\include\DejaVu\Core\Shape.hpp" />
     <ClInclude Include="..\..\include\DejaVu\Core\stb\stb_image.hpp" />
     <ClInclude Include="..\..\include\DejaVu\Core\stb\stb_image_write.hpp" />
+    <ClInclude Include="..\..\include\DejaVu\Core\types.hpp" />
     <ClInclude Include="..\..\include\DejaVu\DejaVu.hpp" />
     <ClInclude Include="..\..\include\DejaVu\ImageProcessing\FeatureDetection.hpp" />
     <ClInclude Include="..\..\include\DejaVu\ImageProcessing\FeatureDetectionT.hpp" />
+    <ClInclude Include="..\..\include\DejaVu\ImageProcessing\ImageProcessing.hpp" />
     <ClInclude Include="..\..\include\DejaVu\ImageProcessing\Misc.hpp" />
     <ClInclude Include="..\..\include\DejaVu\ImageProcessing\MiscT.hpp" />
-    <ClInclude Include="..\..\include\DejaVu\ImageProcessing\Segmentation.hpp" />
-    <ClInclude Include="..\..\include\DejaVu\types.hpp" />
+    <ClInclude Include="..\..\include\DejaVu\ImageProcessing\Clustering.hpp" />
+    <ClInclude Include="..\..\include\DejaVu\ImageProcessing\ClusteringT.hpp" />
+    <ClInclude Include="..\..\include\DejaVu\ImageProcessing\types.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\DejaVu\Core\Img.cpp" />
     <ClCompile Include="..\..\src\DejaVu\Core\Shape.cpp" />
     <ClCompile Include="..\..\src\DejaVu\Core\stb\stb_image.cpp" />
     <ClCompile Include="..\..\src\DejaVu\Core\stb\stb_image_write.cpp" />
-    <ClCompile Include="..\..\src\DejaVu\ImageProcessing\Segmentation.cpp" />
+    <ClCompile Include="..\..\src\ImageProcessing\Clustering.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

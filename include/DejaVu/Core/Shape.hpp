@@ -1,6 +1,6 @@
 #pragma once
 
-#include <DejaVu/types.hpp>
+#include <DejaVu/Core/types.hpp>
 
 namespace djv
 {
