@@ -117,5 +117,15 @@ int main()
 		result.saveToFile("build/houghLineExtractor.png");
 	}*/
 
+	// Shapes drawing
+
+	{
+		djv::RGBAImg copy = rgbaImage;
+		djv::shape::Disc rect{ 200, 200, 100 };
+
+		rect.draw(copy, { 1.f, 0.f, 0.f, 1.f });
+		copy.saveToFile("build/Shapes.png");
+	}
+
 	return 0;
 }
