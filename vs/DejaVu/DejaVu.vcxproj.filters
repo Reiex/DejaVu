@@ -81,6 +81,9 @@
     <ClInclude Include="..\..\include\DejaVu\ImageProcessing\types.hpp">
       <Filter>Header Files\ImageProcessing</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\DejaVu\Core\ShapeT.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\DejaVu\Core\Img.cpp">

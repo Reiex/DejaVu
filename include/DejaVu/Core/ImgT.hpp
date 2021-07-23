@@ -7,7 +7,7 @@ namespace djv
 	template<uint64_t N>
 	PixelBase<N>::PixelBase(float x)
 	{
-		std::fill<float*, float>(components, components + N, x);
+		std::fill<float*, float>(_components, _components + N, x);
 	}
 
 	template<uint64_t N>
@@ -15,23 +15,23 @@ namespace djv
 	{
 		if constexpr (N >= 1)
 		{
-			components[0] = r;
+			_components[0] = r;
 		}
 		if constexpr (N >= 2)
 		{
-			components[1] = g;
+			_components[1] = g;
 		}
 		if constexpr (N >= 3)
 		{
-			components[2] = b;
+			_components[2] = b;
 		}
 		if constexpr (N >= 4)
 		{
-			components[3] = a;
+			_components[3] = a;
 		}
 		if constexpr (N >= 5)
 		{
-			std::fill<float*, float>(components + 4, components + N, 0.f);
+			std::fill<float*, float>(_components + 4, _components + N, 0.f);
 		}
 	}
 
@@ -39,14 +39,14 @@ namespace djv
 	float& PixelBase<N>::operator[](uint64_t i)
 	{
 		assert(i < N);
-		return components[i];
+		return _components[i];
 	}
 
 	template<uint64_t N>
 	const float& PixelBase<N>::operator[](uint64_t i) const
 	{
 		assert(i < N);
-		return components[i];
+		return _components[i];
 	}
 
 	template<uint64_t N>
@@ -54,7 +54,7 @@ namespace djv
 	{
 		for (uint64_t i = 0; i < N; i++)
 		{
-			components[i] += pixel.components[i];
+			_components[i] += pixel._components[i];
 		}
 
 		return *this;
@@ -65,7 +65,7 @@ namespace djv
 	{
 		for (uint64_t i = 0; i < N; i++)
 		{
-			components[i] -= pixel.components[i];
+			_components[i] -= pixel._components[i];
 		}
 
 		return *this;
@@ -76,7 +76,7 @@ namespace djv
 	{
 		for (uint64_t i = 0; i < N; i++)
 		{
-			components[i] *= pixel.components[i];
+			_components[i] *= pixel._components[i];
 		}
 
 		return *this;
@@ -87,7 +87,7 @@ namespace djv
 	{
 		for (uint64_t i = 0; i < N; i++)
 		{
-			components[i] /= pixel.components[i];
+			_components[i] /= pixel._components[i];
 		}
 
 		return *this;
@@ -98,7 +98,7 @@ namespace djv
 	{
 		for (uint64_t i = 0; i < N; i++)
 		{
-			components[i] %= pixel.components[i];
+			_components[i] %= pixel._components[i];
 		}
 
 		return *this;
@@ -109,7 +109,7 @@ namespace djv
 	{
 		for (uint64_t i = 0; i < N; i++)
 		{
-			components[i] += x;
+			_components[i] += x;
 		}
 
 		return *this;
@@ -120,7 +120,7 @@ namespace djv
 	{
 		for (uint64_t i = 0; i < N; i++)
 		{
-			components[i] -= x;
+			_components[i] -= x;
 		}
 
 		return *this;
@@ -131,7 +131,7 @@ namespace djv
 	{
 		for (uint64_t i = 0; i < N; i++)
 		{
-			components[i] *= x;
+			_components[i] *= x;
 		}
 
 		return *this;
@@ -142,7 +142,7 @@ namespace djv
 	{
 		for (uint64_t i = 0; i < N; i++)
 		{
-			components[i] /= x;
+			_components[i] /= x;
 		}
 
 		return *this;
@@ -153,7 +153,7 @@ namespace djv
 	{
 		for (uint64_t i = 0; i < N; i++)
 		{
-			components[i] %= x;
+			_components[i] %= x;
 		}
 
 		return *this;
@@ -164,7 +164,7 @@ namespace djv
 	{
 		if constexpr (N >= 1)
 		{
-			red = components[0];
+			red = _components[0];
 		}
 		else
 		{
@@ -173,7 +173,7 @@ namespace djv
 
 		if constexpr (N >= 2)
 		{
-			green = components[1];
+			green = _components[1];
 		}
 		else
 		{
@@ -182,7 +182,7 @@ namespace djv
 
 		if constexpr (N >= 3)
 		{
-			blue = components[2];
+			blue = _components[2];
 		}
 		else
 		{
@@ -191,7 +191,7 @@ namespace djv
 
 		if constexpr (N >= 4)
 		{
-			alpha = components[3];
+			alpha = _components[3];
 		}
 		else
 		{

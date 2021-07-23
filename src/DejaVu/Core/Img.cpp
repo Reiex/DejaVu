@@ -12,7 +12,7 @@ namespace djv
 
 	GrayScalePixel::GrayScalePixel(float r, float g, float b, float a)
 	{
-		components[0] = r * 0.299f + g * 0.587f + b * 0.114f;
+		_components[0] = r * 0.299f + g * 0.587f + b * 0.114f;
 	}
 }
 

@@ -36,7 +36,7 @@ namespace djv
 
 		protected:
 
-			float components[N];
+			float _components[N];
 	};
 
 	template<uint64_t N>
