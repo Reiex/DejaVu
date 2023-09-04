@@ -1,0 +1,9 @@
+[submodule "external/SciPP"]
+	path = external/SciPP
+	url = https://github.com/Reiex/SciPP.git
+[submodule "external/Diskon"]
+	path = external/Diskon
+	url = https://github.com/Reiex/Diskon.git
+[submodule "external/Ruc"]
+	path = external/Ruc
+	url = https://github.com/Reiex/Ruc.git

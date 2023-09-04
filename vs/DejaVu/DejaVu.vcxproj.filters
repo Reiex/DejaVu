@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Core">
+      <UniqueIdentifier>{2a098f5a-b564-46c6-a31a-ba9a87c7967e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\templates">
+      <UniqueIdentifier>{88e7d69e-ce31-4c86-8283-531ea543bb19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Processing">
+      <UniqueIdentifier>{6ad11c3a-90d6-4046-8bff-667231cc625b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Processing\templates">
+      <UniqueIdentifier>{6e009a2b-0ab7-4218-b3e2-b5c6e3520614}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core">
+      <UniqueIdentifier>{e7d87f67-c37d-48d1-8c8f-bc6809e941a5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\DejaVu\DejaVu.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\DejaVu\DejaVuDecl.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\DejaVu\DejaVuTypes.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\DejaVu\Core\Core.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\DejaVu\Core\CoreDecl.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\DejaVu\Core\CoreTypes.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\DejaVu\Core\Image.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\DejaVu\Core\Pixel.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\DejaVu\Core\Shape.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\DejaVu\Core\templates\Image.hpp">
+      <Filter>Header Files\Core\templates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\DejaVu\Core\templates\Pixel.hpp">
+      <Filter>Header Files\Core\templates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\DejaVu\Processing\PrImage.hpp">
+      <Filter>Header Files\Processing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\DejaVu\Processing\Processing.hpp">
+      <Filter>Header Files\Processing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\DejaVu\Processing\ProcessingDecl.hpp">
+      <Filter>Header Files\Processing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\DejaVu\Processing\ProcessingTypes.hpp">
+      <Filter>Header Files\Processing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\DejaVu\Processing\templates\PrImage.hpp">
+      <Filter>Header Files\Processing\templates</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\DejaVu\Core\Shape.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
