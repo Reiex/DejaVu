@@ -14,5 +14,6 @@
 #include <Diskon/Diskon.hpp>
 
 
+#include <DejaVu/Core/templates/Shape.hpp>
 #include <DejaVu/Core/templates/Pixel.hpp>
 #include <DejaVu/Core/templates/Image.hpp>

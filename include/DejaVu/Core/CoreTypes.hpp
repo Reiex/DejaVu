@@ -30,17 +30,27 @@
 
 namespace djv
 {
-	class Shape;
-	namespace shape
-	{
-		class ThickRect;
-		class FilledRect;
-		class Rect;
-		class Crown;
-		class Disc;
-		class Circle;
-		class Line;
-	}
+	template<typename T> concept CShape = (
+		requires {
+			typename T::Generator;
+		}
+		&& requires (T a, int64_t x, int64_t y) {
+			{ a.getGenerator() } -> std::same_as<typename T::Generator>;
+			{ a.getGenerator().getNextPixel(x, y) } -> std::same_as<bool>;
+		}
+		&& std::movable<T>
+		&& std::copyable<T>
+		&& std::movable<typename T::Generator>
+		&& std::copyable<typename T::Generator>
+	);
+
+	class ShapeThickRect;
+	class ShapeCrown;
+	class ShapeLine;
+	class ShapeFilledRect;
+	class ShapeRect;
+	class ShapeDisc;
+	class ShapeCircle;
 
 	template<typename TComponent, uint8_t ComponentCount> class Pixel;
 	template<typename T> concept CPixel = requires { typename T::ComponentType; T::componentCount; } && std::derived_from<T, Pixel<typename T::ComponentType, T::componentCount>>;

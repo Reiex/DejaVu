@@ -56,6 +56,9 @@
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
+    <Import Project="..\DejaVu\DejaVu.vcxitems" Label="Shared" />
+    <Import Project="..\..\external\Ruc\vs\Ruc\Ruc.vcxitems" Label="Shared" />
+    <Import Project="..\..\external\SciPP\vs\SciPP\SciPP.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -115,12 +118,11 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\lib\;$(ProjectDir)..\..\external\Diskon\lib\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>DejaVu-$(Configuration)-$(Platform).lib;Diskon-$(Configuration)-$(Platform).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\external\Diskon\lib\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Diskon-$(Configuration)-$(Platform).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)..\..\lib\DejaVu-$(Configuration)-$(Platform).dll" "$(ProjectDir)..\..\build\"
-xcopy /y /d "$(ProjectDir)..\..\external\Diskon\lib\Diskon-$(Configuration)-$(Platform).dll" "$(ProjectDir)..\..\build\"</Command>
+      <Command>xcopy /y /d "$(ProjectDir)..\..\external\Diskon\lib\Diskon-$(Configuration)-$(Platform).dll" "$(ProjectDir)..\..\build\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -140,12 +142,11 @@ xcopy /y /d "$(ProjectDir)..\..\external\Diskon\lib\Diskon-$(Configuration)-$(Pl
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\lib\;$(ProjectDir)..\..\external\Diskon\lib\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>DejaVu-$(Configuration)-$(Platform).lib;Diskon-$(Configuration)-$(Platform).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\external\Diskon\lib\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Diskon-$(Configuration)-$(Platform).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)..\..\lib\DejaVu-$(Configuration)-$(Platform).dll" "$(ProjectDir)..\..\build\"
-xcopy /y /d "$(ProjectDir)..\..\external\Diskon\lib\Diskon-$(Configuration)-$(Platform).dll" "$(ProjectDir)..\..\build\"</Command>
+      <Command>xcopy /y /d "$(ProjectDir)..\..\external\Diskon\lib\Diskon-$(Configuration)-$(Platform).dll" "$(ProjectDir)..\..\build\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -161,12 +162,11 @@ xcopy /y /d "$(ProjectDir)..\..\external\Diskon\lib\Diskon-$(Configuration)-$(Pl
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\lib\;$(ProjectDir)..\..\external\Diskon\lib\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>DejaVu-$(Configuration)-$(Platform).lib;Diskon-$(Configuration)-$(Platform).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\external\Diskon\lib\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Diskon-$(Configuration)-$(Platform).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)..\..\lib\DejaVu-$(Configuration)-$(Platform).dll" "$(ProjectDir)..\..\build\"
-xcopy /y /d "$(ProjectDir)..\..\external\Diskon\lib\Diskon-$(Configuration)-$(Platform).dll" "$(ProjectDir)..\..\build\"</Command>
+      <Command>xcopy /y /d "$(ProjectDir)..\..\external\Diskon\lib\Diskon-$(Configuration)-$(Platform).dll" "$(ProjectDir)..\..\build\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -186,20 +186,19 @@ xcopy /y /d "$(ProjectDir)..\..\external\Diskon\lib\Diskon-$(Configuration)-$(Pl
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\lib\;$(ProjectDir)..\..\external\Diskon\lib\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>DejaVu-$(Configuration)-$(Platform).lib;Diskon-$(Configuration)-$(Platform).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\external\Diskon\lib\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Diskon-$(Configuration)-$(Platform).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d "$(ProjectDir)..\..\lib\DejaVu-$(Configuration)-$(Platform).dll" "$(ProjectDir)..\..\build\"
-xcopy /y /d "$(ProjectDir)..\..\external\Diskon\lib\Diskon-$(Configuration)-$(Platform).dll" "$(ProjectDir)..\..\build\"</Command>
+      <Command>xcopy /y /d "$(ProjectDir)..\..\external\Diskon\lib\Diskon-$(Configuration)-$(Platform).dll" "$(ProjectDir)..\..\build\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\examples\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DejaVu\DejaVu.vcxproj">
-      <Project>{2487cc34-0455-4f36-ac8e-0cd81df93449}</Project>
+    <ProjectReference Include="..\..\external\Diskon\vs\Diskon\Diskon.vcxproj">
+      <Project>{0a8dafa6-2b5c-4787-ab62-113b9c03ebdd}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

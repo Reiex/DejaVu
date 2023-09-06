@@ -87,8 +87,8 @@ namespace djv
 			template<scp::InterpolationMethod IMethod, scp::BorderBehaviour BBehaviour> constexpr void rotate(float angle);
 
 			template<bool Vertically, bool Horizontally> constexpr void flip();
-			constexpr void draw(const Shape& shape, const TPixel& color);
-			constexpr void draw(const Shape& shape, const Image<TPixel>& image);
+			template<CShape TShape> constexpr void draw(const TShape& shape, const TPixel& color);
+			template<CShape TShape> constexpr void draw(const TShape& shape, const Image<TPixel>& image);
 
 			// Blurs
 

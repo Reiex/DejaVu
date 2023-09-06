@@ -625,12 +625,13 @@ namespace djv
 	}
 
 	template<CPixel TPixel>
-	constexpr void Image<TPixel>::draw(const Shape& shape, const TPixel& color)
+	template<CShape TShape>
+	constexpr void Image<TPixel>::draw(const TShape& shape, const TPixel& color)
 	{
-		auto it = shape.getPixelIterator();
-
+		typename TShape::Generator generator = shape.getGenerator();
+		
 		int64_t x, y;
-		while (it->getPixel(x, y))
+		while (generator.getNextPixel(x, y))
 		{
 			if (x >= 0 && y >= 0 && x < _width && y < _height)
 			{
@@ -640,7 +641,8 @@ namespace djv
 	}
 
 	template<CPixel TPixel>
-	constexpr void Image<TPixel>::draw(const Shape& shape, const Image<TPixel>& image)
+	template<CShape TShape>
+	constexpr void Image<TPixel>::draw(const TShape& shape, const Image<TPixel>& image)
 	{
 		// TODO: Rewrite draw
 		/*
@@ -649,10 +651,10 @@ namespace djv
 			- Pixels out of image but in shape should be drawn using BBehaviour/_zeroColor
 		*/
 
-		auto it = shape.getPixelIterator();
+		typename TShape::Generator generator = shape.getGenerator();
 
 		int64_t x, y;
-		while (it->getPixel(x, y))
+		while (generator.getNextPixel(x, y))
 		{
 			if (x >= 0 && y >= 0 && x < _width && y < _height && x < image._width && y < image._height)
 			{
@@ -1485,6 +1487,7 @@ namespace djv
 		{
 			dsk::OStream* stream = new dsk::OStream(file, _djv::write);
 			_saveToStream(stream, imageFormat, swizzling);
+			stream->flush();
 			delete stream;
 		}
 
@@ -1524,88 +1527,96 @@ namespace djv
 			pnmHeader.maxSampleVal.emplace(65535);
 		}
 
-		switch (Format)
+		uint64_t bufferCount = _width;
+		if constexpr (Format == ImageFormat::Pbm)
 		{
-			case ImageFormat::Pbm:
-			{
-				pnmHeader.format = dsk::fmt::pnm::Format::PlainPBM;
-				break;
-			}
-			case ImageFormat::Pgm:
-			{
-				pnmHeader.format = dsk::fmt::pnm::Format::PlainPGM;
-				break;
-			}
-			case ImageFormat::Ppm:
-			{
-				pnmHeader.format = dsk::fmt::pnm::Format::PlainPPM;
-				break;
-			}
-			case ImageFormat::Pnm:
-			{
-				pnmHeader.format = dsk::fmt::pnm::Format::PlainPPM;
-				break;
-			}
+			pnmHeader.format = dsk::fmt::pnm::Format::PlainPBM;
+		}
+		else if constexpr (Format == ImageFormat::Pgm)
+		{
+			pnmHeader.format = dsk::fmt::pnm::Format::PlainPGM;
+		}
+		else if constexpr (Format == ImageFormat::Ppm)
+		{
+			pnmHeader.format = dsk::fmt::pnm::Format::PlainPPM;
+			bufferCount *= 3;
+		}
+		else
+		{
+			pnmHeader.format = dsk::fmt::pnm::Format::RawPPM;
+			bufferCount *= 3;
 		}
 
 		pnmOStream.writeHeader(pnmHeader);
 
-		uint16_t buffer[3];
-		for (uint64_t i = 0; i < n; ++i)
+		TPixel* it = _pixels;
+		uint16_t* buffer = reinterpret_cast<uint16_t*>(alloca(bufferCount * sizeof(uint16_t)));
+
+		--buffer;
+		for (uint64_t j = 0; j < _height; ++j)
 		{
-			switch (pnmHeader.format)
+			for (uint64_t i = 0; i < _width; ++i, ++it)
 			{
-				case dsk::fmt::pnm::Format::PlainPBM:
-				case dsk::fmt::pnm::Format::PlainPGM:
+				if constexpr (Format == ImageFormat::Pbm)
 				{
 					if (swizzling[0] == UINT8_MAX)
 					{
-						buffer[0] = 0;
+						*(++buffer) = 0;
+					}
+					else
+					{
+						it->get(swizzling[0], *(++buffer));
+						*(++buffer) = (*(++buffer) != 0);
+					}
+				}
+				else if constexpr (Format == ImageFormat::Pgm)
+				{
+					if (swizzling[0] == UINT8_MAX)
+					{
+						*(++buffer) = 0;
 					}
 					else
 					{
 						if constexpr (sizeof(TComponent) == 1)
 						{
 							uint8_t tmp;
-							_pixels[i].get(swizzling[0], tmp);
-							buffer[0] = tmp;
+							it->get(swizzling[0], tmp);
+							*(++buffer) = tmp;
 						}
 						else
 						{
-							_pixels[i].get(swizzling[0], buffer[0]);
+							it->get(swizzling[0], *(++buffer));
 						}
 					}
-
-					break;
 				}
-				case dsk::fmt::pnm::Format::PlainPPM:
+				else
 				{
-					for (uint8_t j = 0; j < 3; ++j)
+					for (uint8_t k = 0; k < 3; ++k)
 					{
-						if (swizzling[j] == UINT8_MAX)
+						if (swizzling[k] == UINT8_MAX)
 						{
-							buffer[j] = 0;
+							*(++buffer) = 0;
 						}
 						else
 						{
 							if constexpr (sizeof(TComponent) == 1)
 							{
 								uint8_t tmp;
-								_pixels[i].get(swizzling[j], tmp);
-								buffer[j] = tmp;
+								it->get(swizzling[k], tmp);
+								*(++buffer) = tmp;
 							}
 							else
 							{
-								_pixels[i].get(swizzling[j], buffer[j]);
+								it->get(swizzling[k], *(++buffer));
 							}
 						}
 					}
-
-					break;
 				}
 			}
 
-			pnmOStream.writePixels(buffer, 1);
+			buffer -= bufferCount;
+
+			pnmOStream.writePixels(buffer + 1, _width);
 		}
 	}
 
