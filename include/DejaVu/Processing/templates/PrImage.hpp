@@ -1151,7 +1151,7 @@ namespace djv
 				// Compute superpixel associated to each pixel
 
 				s = 0;
-				distances.fill(FLT_MAX);
+				std::fill(distances.begin(), distances.end(), FLT_MAX);
 				for (const _proc::SlicSuperpixel<TPixel>& superpixel : superpixels)
 				{
 					const int64_t xBegin = std::max<int64_t>(superpixel.center.x - patchRadiusX, 0);

@@ -310,7 +310,8 @@ namespace djv
 	}
 
 	template<CPixel TPixel>
-	template<scp::InterpolationMethod IMethod> constexpr void Image<TPixel>::createFromResize(const Image<TPixel>& image, uint64_t width, uint64_t height)
+	template<scp::InterpolationMethod IMethod>
+	constexpr void Image<TPixel>::createFromResize(const Image<TPixel>& image, uint64_t width, uint64_t height)
 	{
 		createNew(width, height);
 
@@ -427,7 +428,7 @@ namespace djv
 			scp::Tensor<TPixel>* imageTensor = scp::Tensor<TPixel>::createAroundMemory({ image._height, image._width }, const_cast<TPixel*>(image._pixels));
 			scp::Tensor<TPixel>* tensor = scp::Tensor<TPixel>::createAroundMemory({ _height, _width }, _pixels);
 
-			tensor->interpolation<float, IMethod>(*imageTensor);
+			tensor->resize<float, IMethod>(*imageTensor);
 
 			delete imageTensor;
 			delete tensor;
