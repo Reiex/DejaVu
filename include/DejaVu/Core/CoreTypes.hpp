@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //! \file
-//! \author Reiex
+//! \author Pélégrin Marius
 //! \copyright The MIT License (MIT)
-//! \date 2020-2022
+//! \date 2020-2023
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -15,18 +15,6 @@
 
 #include <SciPP/SciPPTypes.hpp>
 #include <Diskon/DiskonTypes.hpp>
-
-#if defined(_WIN32)
-	#ifdef DEJAVU_EXPORTS
-		#define DJV_API __declspec(dllexport)
-	#else
-		#define DJV_API __declspec(dllimport)
-	#endif
-#elif defined(__linux__)
-	#define DSK_API
-#else
-	#error "Unrecognized platform"
-#endif
 
 namespace djv
 {

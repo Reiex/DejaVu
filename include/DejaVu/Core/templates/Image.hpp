@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //! \file
-//! \author Reiex
+//! \author Pélégrin Marius
 //! \copyright The MIT License (MIT)
-//! \date 2020-2022
+//! \date 2020-2023
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -203,17 +203,17 @@ namespace djv
 
 	namespace _djv
 	{
-		uint64_t read(void* handle, uint8_t* data, uint64_t size)
+		inline uint64_t read(void* handle, uint8_t* data, uint64_t size)
 		{
 			return std::fread(data, 1, size, reinterpret_cast<std::FILE*>(handle));
 		}
 
-		bool eof(void* handle)
+		inline bool eof(void* handle)
 		{
 			return std::feof(reinterpret_cast<std::FILE*>(handle));
 		}
 
-		uint64_t write(void* handle, const uint8_t* data, uint64_t size)
+		inline uint64_t write(void* handle, const uint8_t* data, uint64_t size)
 		{
 			return std::fwrite(data, 1, size, reinterpret_cast<std::FILE*>(handle));
 		}
