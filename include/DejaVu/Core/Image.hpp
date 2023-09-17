@@ -124,6 +124,7 @@ namespace djv
 			constexpr const TPixel* cbegin() const;
 			constexpr const TPixel* cend() const;
 
+			constexpr const ruc::Status& getStatus() const;
 			constexpr const uint64_t& getWidth() const;
 			constexpr const uint64_t& getHeight() const;
 			constexpr TPixel* getData();
@@ -169,6 +170,8 @@ namespace djv
 			};
 			static constexpr bool _extensionToImageFormat(const std::filesystem::path& extension, ImageFormat& format);
 
+
+			mutable ruc::Status _status;
 
 			uint64_t _width;
 			uint64_t _height;

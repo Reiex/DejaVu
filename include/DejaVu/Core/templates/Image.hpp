@@ -56,6 +56,7 @@ namespace djv
 
 	template<CPixel TPixel>
 	constexpr Image<TPixel>::Image() :
+		_status(),
 		_width(0),
 		_height(0),
 		_pixels(nullptr),
@@ -1250,6 +1251,12 @@ namespace djv
 	}
 
 	template<CPixel TPixel>
+	constexpr const ruc::Status& Image<TPixel>::getStatus() const
+	{
+		return _status;
+	}
+
+	template<CPixel TPixel>
 	constexpr const uint64_t& Image<TPixel>::getWidth() const
 	{
 		return _width;
@@ -1315,6 +1322,7 @@ namespace djv
 			_create(image._width, image._height);
 		}
 
+		_status = image._status;
 		std::copy_n(image._pixels, _width * _height, _pixels);
 	}
 
@@ -1329,6 +1337,7 @@ namespace djv
 
 		_destroy();
 
+		_status = std::move(image._status);
 		_width = image._width;
 		_height = image._height;
 		_pixels = image._pixels;
@@ -1394,83 +1403,97 @@ namespace djv
 
 		dsk::fmt::pnm::Header pnmHeader;
 		pnmIStream.readHeader(pnmHeader);
+		RUC_RELAYCOPY(pnmIStream.getStatus(), _status, RUC_VOID);
 
+		uint8_t samplesPerPixel = 1;
 		switch (Format)
 		{
 			case ImageFormat::Pbm:
 			{
-				if (pnmHeader.format != dsk::fmt::pnm::Format::PlainPBM && pnmHeader.format != dsk::fmt::pnm::Format::RawPBM)
-				{
-					return;
-				}
-
+				RUC_CHECK(
+					_status,
+					RUC_VOID,
+					pnmHeader.format == dsk::fmt::pnm::Format::PlainPBM || pnmHeader.format == dsk::fmt::pnm::Format::RawPBM,
+					std::format("Expected PBM format (1 or 4) but instead got {}", static_cast<uint8_t>(pnmHeader.format))
+				);
 				break;
 			}
 			case ImageFormat::Pgm:
 			{
-				if (pnmHeader.format != dsk::fmt::pnm::Format::PlainPGM && pnmHeader.format != dsk::fmt::pnm::Format::RawPGM)
-				{
-					return;
-				}
-
+				RUC_CHECK(
+					_status,
+					RUC_VOID,
+					pnmHeader.format == dsk::fmt::pnm::Format::PlainPGM || pnmHeader.format == dsk::fmt::pnm::Format::RawPGM,
+					std::format("Expected PBM format (2 or 5) but instead got {}", static_cast<uint8_t>(pnmHeader.format))
+				);
 				break;
 			}
 			case ImageFormat::Ppm:
 			{
-				if (pnmHeader.format != dsk::fmt::pnm::Format::PlainPPM && pnmHeader.format != dsk::fmt::pnm::Format::RawPPM)
+				RUC_CHECK(
+					_status,
+					RUC_VOID,
+					pnmHeader.format == dsk::fmt::pnm::Format::PlainPPM || pnmHeader.format == dsk::fmt::pnm::Format::RawPPM,
+					std::format("Expected PBM format (3 or 6) but instead got {}", static_cast<uint8_t>(pnmHeader.format))
+				);
+				samplesPerPixel = 3;
+				break;
+			}
+			case ImageFormat::Pnm:
+			{
+				if (pnmHeader.format == dsk::fmt::pnm::Format::PlainPPM || pnmHeader.format == dsk::fmt::pnm::Format::RawPPM)
 				{
-					return;
+					samplesPerPixel = 3;
 				}
-
 				break;
 			}
 		}
 
 		createNew(pnmHeader.width, pnmHeader.height);
 
+		// TODO: Do better than use that... (check the component type and pnmHeader.maxSampleVal...)
 		const float ratio = 2.f / pnmHeader.maxSampleVal.value();
-		const uint64_t n = _width * _height;
-		uint16_t buffer[3];
 
-		for (uint64_t i = 0; i < n; ++i)
+		const uint64_t bufferCount = _width * samplesPerPixel;
+		TPixel* it = _pixels;
+		uint16_t* buffer = reinterpret_cast<uint16_t*>(alloca(bufferCount * sizeof(uint16_t)));
+
+		for (uint64_t j = 0; j < _height; ++j)
 		{
-			pnmIStream.readPixels(buffer, 1);
+			pnmIStream.readPixels(buffer, _width);
+			RUC_RELAYCOPY(pnmIStream.getStatus(), _status, RUC_VOID);
 
-			for (uint8_t j = 0; j < componentCount; ++j)
+			for (uint64_t i = 0; i < _width; ++i, ++it, buffer += samplesPerPixel)
 			{
-				if (swizzling[j] == UINT8_MAX)
+				for (uint8_t k = 0; k < componentCount; ++k)
 				{
-					_pixels[i][j] = colors::black<TComponent, componentCount>[j];
-				}
-				else if (swizzling[j] == 3)
-				{
-					_pixels[i][j] = colors::white<TComponent, componentCount>[j];
-				}
-				else
-				{
-					switch (pnmHeader.format)
+					if (swizzling[k] == UINT8_MAX)
 					{
-						case dsk::fmt::pnm::Format::PlainPBM:
-						case dsk::fmt::pnm::Format::RawPBM:
+						(*it)[k] = colors::black<TComponent, componentCount>[k];
+					}
+					else if (swizzling[k] == 3)
+					{
+						(*it)[k] = colors::white<TComponent, componentCount>[k];
+					}
+					else
+					{
+						if constexpr (Format == ImageFormat::Pbm)
 						{
-							_pixels[i][j] = buffer[0] ? colors::white<TComponent, componentCount>[j] : colors::black<TComponent, componentCount>[j];
-							break;
+							(*it)[k] = buffer[0] ? colors::white<TComponent, componentCount>[k] : colors::black<TComponent, componentCount>[k];
 						}
-						case dsk::fmt::pnm::Format::PlainPGM:
-						case dsk::fmt::pnm::Format::RawPGM:
+						else if constexpr (Format == ImageFormat::Pgm)
 						{
-							_pixels[i].set<float>(j, buffer[0] * ratio - 1.f);
-							break;
+							it->set(k, buffer[0] * ratio - 1.f);
 						}
-						case dsk::fmt::pnm::Format::PlainPPM:
-						case dsk::fmt::pnm::Format::RawPPM:
+						else
 						{
-							_pixels[i].set<float>(j, buffer[swizzling[j]] * ratio - 1.f);
-							break;
+							it->set(k, buffer[swizzling[k]] * ratio - 1.f);
 						}
 					}
 				}
 			}
+
+			buffer -= bufferCount;
 		}
 	}
 
@@ -1513,8 +1536,6 @@ namespace djv
 	{
 		dsk::fmt::PnmOStream pnmOStream(stream);
 
-		const uint64_t n = _width * _height;
-
 		dsk::fmt::pnm::Header pnmHeader;
 		pnmHeader.width = _width;
 		pnmHeader.height = _height;
@@ -1549,6 +1570,7 @@ namespace djv
 		}
 
 		pnmOStream.writeHeader(pnmHeader);
+		RUC_RELAYCOPY(pnmOStream.getStatus(), _status, RUC_VOID);
 
 		TPixel* it = _pixels;
 		uint16_t* buffer = reinterpret_cast<uint16_t*>(alloca(bufferCount * sizeof(uint16_t)));
@@ -1618,6 +1640,7 @@ namespace djv
 			buffer -= bufferCount;
 
 			pnmOStream.writePixels(buffer + 1, _width);
+			RUC_RELAYCOPY(pnmOStream.getStatus(), _status, RUC_VOID);
 		}
 	}
 
