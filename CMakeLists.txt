@@ -15,22 +15,29 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
-option(DEJAVU_LIBRARY_ONLY "Build only the library")
-
 # Add external dependencies
 
-set(RUC_LIBRARY_ONLY ON)
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/external/Ruc)
+option(DEJAVU_ADD_DEPENDENCIES "Add external dependencies to the project" ON)
 
-set(SCIPP_LIBRARY_ONLY ON)
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/external/SciPP)
+if(DEJAVU_ADD_DEPENDENCIES)
 
-set(DISKON_LIBRARY_ONLY ON)
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/external/Diskon)
+    set(RUC_ADD_EXAMPLES OFF)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/external/Ruc)
+
+    set(SCIPP_ADD_EXAMPLES OFF)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/external/SciPP)
+
+    set(DISKON_ADD_DEPENDENCIES OFF)
+    set(DISKON_ADD_EXAMPLES OFF)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/external/Diskon)
+
+endif()
 
 # DejaVu examples
 
-if(NOT DEJAVU_LIBRARY_ONLY)
+option(DEJAVU_ADD_EXAMPLES "Add target dejavu-examples" ON)
+
+if(DEJAVU_ADD_EXAMPLES)
 
     add_executable(
         dejavu-examples
