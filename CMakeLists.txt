@@ -33,6 +33,36 @@ if(DEJAVU_ADD_DEPENDENCIES)
 
 endif()
 
+# DejaVu
+
+add_custom_target(
+    dejavu SOURCES
+    ${CMAKE_CURRENT_LIST_DIR}/include/DejaVu/DejaVu.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/DejaVu/DejaVuDecl.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/DejaVu/DejaVuTypes.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/DejaVu/Core/Core.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/DejaVu/Core/CoreDecl.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/DejaVu/Core/CoreTypes.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/DejaVu/Core/Image.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/DejaVu/Core/Pixel.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/DejaVu/Core/Shape.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/DejaVu/Core/templates/Image.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/DejaVu/Core/templates/Pixel.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/DejaVu/Core/templates/Shape.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/DejaVu/Processing/Processing.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/DejaVu/Processing/ProcessingDecl.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/DejaVu/Processing/ProcessingTypes.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/DejaVu/Processing/PrImage.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/DejaVu/Processing/templates/PrImage.hpp
+)
+
+add_dependencies(
+    dejavu
+    ruc
+    scipp
+    diskon
+)
+
 # DejaVu examples
 
 option(DEJAVU_ADD_EXAMPLES "Add target dejavu-examples" ON)
@@ -46,7 +76,7 @@ if(DEJAVU_ADD_EXAMPLES)
 
     add_dependencies(
         dejavu-examples
-        diskon
+        dejavu
     )
 
     target_include_directories(
