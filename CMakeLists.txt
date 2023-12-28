@@ -17,20 +17,19 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 # Add external dependencies
 
-option(DEJAVU_ADD_DEPENDENCIES "Add external dependencies to the project" ON)
-
-if(DEJAVU_ADD_DEPENDENCIES)
-
-    set(RUC_ADD_EXAMPLES OFF)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/external/Ruc)
-
+if(NOT TARGET scipp)
     set(SCIPP_ADD_EXAMPLES OFF)
     add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/external/SciPP)
+endif()
 
-    set(DISKON_ADD_DEPENDENCIES OFF)
+if(NOT TARGET ruc)
+    set(RUC_ADD_EXAMPLES OFF)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/external/Ruc)
+endif()
+
+if(NOT TARGET diskon)
     set(DISKON_ADD_EXAMPLES OFF)
     add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/external/Diskon)
-
 endif()
 
 # DejaVu
